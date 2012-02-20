@@ -1,10 +1,11 @@
-package ec.nem;
+package ec.nem.BlueNet.test;
 
+import ec.nem.BlueNet.R;
 import android.app.Activity;
 import android.os.Bundle;
 
-public class BlueNetActivity extends Activity {
-    /** Called when the activity is first created. */
+public class BlueNetLibApp extends Activity {
+	/** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
