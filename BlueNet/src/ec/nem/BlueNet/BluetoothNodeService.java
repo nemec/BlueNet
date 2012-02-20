@@ -4,6 +4,7 @@ import java.util.List;
 
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothServerSocket;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
@@ -11,12 +12,24 @@ import android.widget.Toast;
 
 public class BluetoothNodeService extends Service {
 	
-	private final IBinder binder = new LocalBinder(); 
+	private final IBinder binder = new LocalBinder();
 	
 	BluetoothAdapter adapter;
 	List<NodeListener> nodeListeners;
 	List<MessageListener> messageListeners;
 	//private static int REQUEST_ENABLE_BT = 100001;
+	
+	/*
+	* BuildNetworkActivity
+	* - takes minimum network size, name, uuid, next activity?
+	* - starts bluetooth, displays paired devices,
+	*   gives access to device discovery
+	*/
+	
+	/*
+	* SocketManager for all BlueToothSockets
+	* ServerSocket runs in own thread.
+	*/
 	
 	@Override
 	public void onCreate() {
@@ -29,8 +42,16 @@ public class BluetoothNodeService extends Service {
 			//btIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 			//context.startActivity(btIntent);
 		}*/
+		S
 	    Toast.makeText(this, "Service created...", Toast.LENGTH_LONG).show();
 	}
+	
+	@Override
+	public int onStartCommand(Intent intent, int flags, int startId) {
+		handleStart(intent, startId);
+		return START_NOT_STICKY;
+	}
+
 	
 	public boolean supportsBluetooth(){
 		return adapter != null;
