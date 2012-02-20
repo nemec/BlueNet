@@ -1,18 +1,22 @@
 package ec.nem.BlueNet.test;
 
-import ec.nem.BlueNet.BluetoothConnector;
-import android.test.AndroidTestCase;
+import android.test.ActivityInstrumentationTestCase2;
 
-public class BlueNetTest extends AndroidTestCase {
+public class BlueNetTest extends ActivityInstrumentationTestCase2<BlueNetLibApp> {
 
-	private BluetoothConnector connector;
+	private BlueNetLibApp activity;
+	
+	public BlueNetTest(){
+		super(BlueNetLibApp.class);
+	}
 	
 	@Override
 	protected void setUp(){
-		connector = new BluetoothConnector();
+		activity = this.getActivity();
 	}
 	
-	public void testConnector(){
-		assertEquals("test", connector.getName());
+	public void testServiceBound() throws InterruptedException{
+		Thread.sleep(5100);
+		assertTrue(activity.isBound());
 	}
 }

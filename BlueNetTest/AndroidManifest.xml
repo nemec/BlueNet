@@ -5,6 +5,10 @@
     android:versionName="1.0" >
 
     <uses-sdk android:minSdkVersion="10" />
+    
+    
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
 
     <instrumentation
         android:name="android.test.InstrumentationTestRunner"
@@ -14,6 +18,18 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name" >
         <uses-library android:name="android.test.runner" />
+        <activity android:name=".BlueNetLibApp">
+            <intent-filter>
+	            <action android:name="android.intent.action.MAIN" />
+	            <category android:name="android.intent.category.LAUNCHER" />
+        	</intent-filter>
+        </activity>
+        
+        <!-- 
+        	Remember to add all activities/services that you use
+        	from BlueNet to the base application's Manifest. 
+        -->
+        <service android:name="ec.nem.BlueNet.BluetoothNodeService" />
     </application>
 
 </manifest>
