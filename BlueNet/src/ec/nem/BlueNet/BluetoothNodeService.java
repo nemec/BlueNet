@@ -42,13 +42,13 @@ public class BluetoothNodeService extends Service {
 			//btIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 			//context.startActivity(btIntent);
 		}*/
-		S
+		
 	    Toast.makeText(this, "Service created...", Toast.LENGTH_LONG).show();
 	}
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		handleStart(intent, startId);
+		
 		return START_NOT_STICKY;
 	}
 
