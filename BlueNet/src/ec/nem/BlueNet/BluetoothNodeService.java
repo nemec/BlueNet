@@ -14,6 +14,9 @@ public class BluetoothNodeService extends Service {
 	
 	private final IBinder binder = new LocalBinder();
 	
+	//This is a test to see if GIT works --Evin
+	private final int one = 1;
+	
 	BluetoothAdapter adapter;
 	List<NodeListener> nodeListeners;
 	List<MessageListener> messageListeners;
