@@ -40,3 +40,8 @@ local.properties
 
 # PDT-specific
 .buildpath
+
+# Doxygen
+doc/
+#svn
+.svn/

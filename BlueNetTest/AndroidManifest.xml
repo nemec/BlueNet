@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="ec.nem.BlueNet.test"
+    package="ec.nem.bluenet.test"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -29,7 +29,7 @@
         	Remember to add all activities/services that you use
         	from BlueNet to the base application's Manifest. 
         -->
-        <service android:name="ec.nem.BlueNet.BluetoothNodeService" />
+        <service android:name="ec.nem.bluenet.BluetoothNodeService" />
     </application>
 
 </manifest>

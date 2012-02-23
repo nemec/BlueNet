@@ -8,9 +8,9 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.widget.TextView;
-import ec.nem.BlueNet.BluetoothNodeService;
-import ec.nem.BlueNet.BluetoothNodeService.LocalBinder;
-import ec.nem.BlueNet.R;
+import ec.nem.bluenet.BluetoothNodeService;
+import ec.nem.bluenet.R;
+import ec.nem.bluenet.BluetoothNodeService.LocalBinder;
 
 public class BlueNetLibApp extends Activity {
 	
