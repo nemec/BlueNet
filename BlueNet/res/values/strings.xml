@@ -2,5 +2,6 @@
 <resources>
 
     <string name="app_name">BlueNet</string>
+	<string name="begin_game">Begin Game</string>
 
 </resources>
