@@ -3,5 +3,6 @@
 
     <string name="app_name">BlueNet</string>
 	<string name="begin_game">Begin Game</string>
+	<string name="discover_users">Discover Users</string>
 
 </resources>
