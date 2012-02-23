@@ -66,6 +66,7 @@ public class BuildNetworkActivity extends Activity implements MessageListener, N
 
         if(boundToService){
         	unbindService(connection);
+        	boundToService = false;
         }
         // Make sure we're not doing discovery anymore
         if (btAdapter != null) {
@@ -90,6 +91,7 @@ public class BuildNetworkActivity extends Activity implements MessageListener, N
 		super.onStop();
     	if(boundToService){
     		unbindService(connection);
+        	boundToService = false;
     	}
 	}
 	
