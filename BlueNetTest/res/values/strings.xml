@@ -3,5 +3,6 @@
 
     <string name="hello">Hello World!</string>
     <string name="app_name">BlueNetTestTest</string>
+    <string name="connect_with_others">Find a Group</string>
 
 </resources>

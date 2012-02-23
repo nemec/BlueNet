@@ -12,7 +12,7 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name" >
         <service android:name="BluetoothNodeService"></service>
-        <activity android:name="Base" />
+        <activity android:name="BuildNetworkActivity" />
     </application>
 
 </manifest>

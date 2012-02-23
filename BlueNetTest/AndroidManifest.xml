@@ -30,6 +30,7 @@
         	from BlueNet to the base application's Manifest. 
         -->
         <service android:name="ec.nem.BlueNet.BluetoothNodeService" />
+        <activity android:name="ec.nem.BlueNet.BuildNetworkActivity" />
     </application>
 
 </manifest>

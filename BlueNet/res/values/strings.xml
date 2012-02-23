@@ -3,5 +3,12 @@
 
     <string name="app_name">BlueNet</string>
 	<string name="begin_game">Begin Game</string>
+	<string name="discover_users">Discover Users</string>
+	<string name="title_paired_devices">Paired Devices</string>
+	<string name="title_other_devices">Other Devices</string>
+	<string name="scanning">Scanning...</string>
+	<string name="select_device">Select a Device</string>
+	<string name="none_found">No Devices Found</string>
+	<string name="none_paired">No Devices Paired</string>
 
 </resources>

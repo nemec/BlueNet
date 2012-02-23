@@ -4,19 +4,61 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <ListView
-        android:id="@+id/pairedDevices"
+    <TextView android:id="@+id/title_paired_devices"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-    </ListView>
+        android:layout_height="wrap_content"
+        android:text="@string/title_paired_devices"
+        android:visibility="gone"
+        android:background="#666"
+        android:textColor="#fff"
+        android:paddingLeft="5dp"
+    />
+    <ListView android:id="@+id/paired_devices"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:stackFromBottom="true"
+        android:layout_weight="1"
+    />
+    <TextView android:id="@+id/title_new_devices"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/title_other_devices"
+        android:visibility="gone"
+        android:background="#666"
+        android:textColor="#fff"
+        android:paddingLeft="5dp"
+    />
+    <ListView android:id="@+id/new_devices"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:stackFromBottom="true"
+        android:layout_weight="2"
+    />
 
-    <LinearLayout
+    <RelativeLayout
 	    android:layout_width="match_parent"
-	    android:layout_height="match_parent"
+	    android:layout_height="wrap_content"
+	    android:weightSum="1"
 	    android:orientation="horizontal" >
+	    <View android:id="@+id/build_network_button_strut"
+	        android:layout_width="0dp"
+	        android:layout_height="0dp" 
+	        android:layout_centerHorizontal="true"/>
 		<Button
-		    android:id="@+id/beginGame"
+		    android:layout_width="fill_parent"
+	    	android:layout_height="wrap_content"
+	    	android:layout_alignParentLeft="true"
+	    	android:layout_toLeftOf="@id/build_network_button_strut"
+		    android:id="@+id/begin_game_button"
 		    android:text="@string/begin_game"
 		    />
-	</LinearLayout>
+		<Button
+		    android:layout_width="fill_parent"
+	    	android:layout_height="wrap_content"
+	    	android:layout_toRightOf="@id/build_network_button_strut"
+	    	android:layout_alignParentRight="true"
+		    android:id="@+id/discover_users_button"
+		    android:text="@string/discover_users"
+		    />
+	</RelativeLayout>
 </LinearLayout>

@@ -15,8 +15,8 @@ public class BlueNetTest extends ActivityInstrumentationTestCase2<BlueNetLibApp>
 		activity = this.getActivity();
 	}
 	
-	public void testServiceBound() throws InterruptedException{
+	/*public void testServiceBound() throws InterruptedException{
 		Thread.sleep(5100);
 		assertTrue(activity.isBound());
-	}
+	}*/
 }
