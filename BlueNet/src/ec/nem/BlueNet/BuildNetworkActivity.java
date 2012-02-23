@@ -2,8 +2,6 @@ package ec.nem.BlueNet;
 
 import java.util.Set;
 
-import ec.nem.BlueNet.BluetoothNodeService.LocalBinder;
-
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -22,8 +20,10 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ExpandableListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import ec.nem.BlueNet.BluetoothNodeService.LocalBinder;
 
 public class BuildNetworkActivity extends Activity implements MessageListener, NodeListener {
 
@@ -35,6 +35,7 @@ public class BuildNetworkActivity extends Activity implements MessageListener, N
 	private BluetoothAdapter btAdapter;
     private ArrayAdapter<String> pairedDevicesArrayAdapter;
     private ArrayAdapter<String> newDevicesArrayAdapter;
+    private ExpandableListAdapter currentNetworkListAdapter;
     
     /*
 	* BuildNetworkActivity
@@ -72,10 +73,17 @@ public class BuildNetworkActivity extends Activity implements MessageListener, N
         }
         	
         // Unregister broadcast listeners
-        if(mReceiver != null){
+        /*if(mReceiver != null){
         	this.unregisterReceiver(mReceiver);
-        }
+        }*/
     }
+	
+	@Override
+	protected void onStart(){
+		super.onStart();
+		Intent intent = new Intent(this, BluetoothNodeService.class);
+    	bindService(intent, connection, Context.BIND_AUTO_CREATE);
+	}
 	
 	@Override
 	protected void onStop(){
@@ -96,6 +104,8 @@ public class BuildNetworkActivity extends Activity implements MessageListener, N
 	                v.setVisibility(View.GONE);
 	            }
 	        });
+	        
+	        //currentNetworkListAdapter = new BluetoothExpandableListAdapter()
 	        
 	        pairedDevicesArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
 	        newDevicesArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
@@ -128,9 +138,6 @@ public class BuildNetworkActivity extends Activity implements MessageListener, N
 	            String noDevices = getResources().getText(R.string.none_paired).toString();
 	            pairedDevicesArrayAdapter.add(noDevices);
 	        }
-	        
-			Intent intent = new Intent(this, BluetoothNodeService.class);
-	    	bindService(intent, connection, Context.BIND_AUTO_CREATE);
 		}
 		else{
 			Log.d(TAG, "Bluetooth was not enabled. Exiting.");

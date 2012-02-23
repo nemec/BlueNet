@@ -4,41 +4,66 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <TextView android:id="@+id/title_paired_devices"
+    <ExpandableListView
+        android:id="@+id/current_network"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/title_paired_devices"
-        android:visibility="gone"
-        android:background="#666"
-        android:textColor="#fff"
-        android:paddingLeft="5dp"
-    />
-    <ListView android:id="@+id/paired_devices"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:stackFromBottom="true"
+        android:layout_height="wrap_content" >
+    </ExpandableListView>
+    
+    <ScrollView
+        android:id="@+id/device_list_scrollview"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
         android:layout_weight="1"
-    />
-    <TextView android:id="@+id/title_new_devices"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/title_other_devices"
-        android:visibility="gone"
-        android:background="#666"
-        android:textColor="#fff"
-        android:paddingLeft="5dp"
-    />
-    <ListView android:id="@+id/new_devices"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:stackFromBottom="true"
-        android:layout_weight="2"
-    />
+        android:fillViewport="true"
+    	android:layout_alignParentTop="true"  >
+
+        <LinearLayout
+            android:id="@+id/device_list_container"
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical" >
+            
+            <TextView android:id="@+id/title_paired_devices"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:text="@string/title_paired_devices"
+		        android:visibility="gone"
+		        android:background="#666"
+		        android:textColor="#fff"
+		        android:paddingLeft="5dp"
+		    />
+            
+            <ListView android:id="@+id/paired_devices"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:stackFromBottom="true"
+		        android:layout_gravity="top"
+		    />
+		    <TextView android:id="@+id/title_new_devices"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:text="@string/title_other_devices"
+		        android:visibility="gone"
+		        android:background="#666"
+		        android:textColor="#fff"
+		        android:paddingLeft="5dp"
+		    />
+		    <ListView android:id="@+id/new_devices"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:stackFromBottom="true"
+		        android:layout_weight="1"
+		        android:layout_gravity="top"
+		    />
+        </LinearLayout>
+    </ScrollView>
 
     <RelativeLayout
+        android:id="@+id/build_network_buttons_layout"
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
-	    android:weightSum="1"
+	    android:layout_below="@id/device_list_scrollview"
 	    android:orientation="horizontal" >
 	    <View android:id="@+id/build_network_button_strut"
 	        android:layout_width="0dp"
@@ -51,14 +76,13 @@
 	    	android:layout_toLeftOf="@id/build_network_button_strut"
 		    android:id="@+id/begin_game_button"
 		    android:text="@string/begin_game"
-		    />
+		    android:enabled="false" />
 		<Button
 		    android:layout_width="fill_parent"
 	    	android:layout_height="wrap_content"
 	    	android:layout_toRightOf="@id/build_network_button_strut"
 	    	android:layout_alignParentRight="true"
 		    android:id="@+id/discover_users_button"
-		    android:text="@string/discover_users"
-		    />
+		    android:text="@string/discover_users" />
 	</RelativeLayout>
 </LinearLayout>

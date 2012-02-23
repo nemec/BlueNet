@@ -28,7 +28,7 @@ public class BluetoothNodeService extends Service {
 		super.onCreate();
 		nodeListeners = new ArrayList<NodeListener>();
 		messageListeners = new ArrayList<MessageListener>();
-	    Toast.makeText(this, "Service created...", Toast.LENGTH_LONG).show();
+	    Toast.makeText(this, "Service started...", Toast.LENGTH_LONG).show();
 	}
 	
 	@Override
