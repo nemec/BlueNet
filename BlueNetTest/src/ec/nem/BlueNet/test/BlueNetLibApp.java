@@ -1,73 +1,40 @@
 package ec.nem.bluenet.test;
 
 import android.app.Activity;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
+import android.view.View;
 import android.widget.TextView;
-import ec.nem.bluenet.BluetoothNodeService;
-import ec.nem.bluenet.R;
-import ec.nem.bluenet.BluetoothNodeService.LocalBinder;
+import ec.nem.bluenet.*;
 
 public class BlueNetLibApp extends Activity {
 	
-	private BluetoothNodeService connectionService;
-	private boolean bound = false;
+	private static final int RESULT_BUILD_NETWORK = 3478344;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        Intent intent = new Intent(this, BluetoothNodeService.class);
-    	startService(intent);
+        
+    }
+    
+    public void onBuildNetworkClicked(View v){
+    	Intent intent = new Intent(this, BuildNetworkActivity.class);
+    	startActivityForResult(intent, RESULT_BUILD_NETWORK);
     }
     
     @Override
-    protected void onDestroy(){
-    	super.onDestroy();
-    	unbindService(connection);
-    }
-    
-    @Override
-    protected void onStart(){
-    	super.onStart();
-    	Intent intent = new Intent(this, BluetoothNodeService.class);
-    	bindService(intent, connection, Context.BIND_AUTO_CREATE);
-    }
-    
-    @Override
-    protected void onStop(){
-    	super.onStop();
-    	if(bound){
-    		unbindService(connection);
-    	}
-    }
-    
-    public boolean isBound(){
-    	return bound;
-    }
-    
-    private ServiceConnection connection = new ServiceConnection() {
-
-        @Override
-        public void onServiceConnected(ComponentName className,
-                IBinder service) {
-            // We've bound to LocalService, cast the IBinder and get LocalService instance
-            LocalBinder binder = (LocalBinder) service;
-            connectionService = binder.getService();
-            TextView v = (TextView)findViewById(R.id.text);
-            v.setText("Bound!");
-            bound = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-        	TextView v = (TextView)findViewById(R.id.text);
-            v.setText("No longer bound...");
-            bound = false;
-        }
-    };
+	protected void onActivityResult(int requestCode, int resultCode, Intent data){
+		super.onActivityResult(requestCode, resultCode, data);
+		if(requestCode == RESULT_BUILD_NETWORK){
+			if(resultCode == RESULT_OK){
+				String name = data.getStringExtra(BuildNetworkActivity.EXTRA_DEVICE_ADDRESS);
+				TextView v = (TextView)findViewById(R.id.text);
+				v.setText(name);
+			}
+			else if(resultCode == RESULT_CANCELED){
+				// Could not connect.
+			}
+		}
+	}
 }

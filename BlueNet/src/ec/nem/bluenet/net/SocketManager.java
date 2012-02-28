@@ -118,6 +118,7 @@ public final class SocketManager {
 			UDPHeader header = (UDPHeader) s.transportSegment;
 			int port = header.getDestinationPort();
 			if(port == 50000) {
+				/// \todo: iterate message listeners and call on message 
 				storeMessage(header.getData());
 			}
 			else {
@@ -136,6 +137,10 @@ public final class SocketManager {
 		}
 	}
 	
+	/***
+	 * 
+	 * \todo: delete
+	 */
 	public void storeMessage(byte[] data) {
 		ec.nem.bluenet.Message message = ec.nem.bluenet.Message.deserialize(data);
 			

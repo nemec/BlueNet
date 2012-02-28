@@ -1,5 +1,6 @@
 package ec.nem.bluenet;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Service;
@@ -12,11 +13,10 @@ import android.widget.Toast;
 public class BluetoothNodeService extends Service {
 	
 	private final IBinder binder = new LocalBinder();
-		
+
 	BluetoothAdapter adapter;
 	List<NodeListener> nodeListeners;
 	List<MessageListener> messageListeners;
-	//private static int REQUEST_ENABLE_BT = 100001;
 	
 	/*
 	* BuildNetworkActivity
@@ -33,21 +33,13 @@ public class BluetoothNodeService extends Service {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		//adapter = BluetoothAdapter.getDefaultAdapter();
-		/*if(supportsBluetooth() && !adapter.isEnabled()){
-			//Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-			//startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-			//Intent btIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-			//btIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			//context.startActivity(btIntent);
-		}*/
-		
-	    Toast.makeText(this, "Service created...", Toast.LENGTH_LONG).show();
+		nodeListeners = new ArrayList<NodeListener>();
+		messageListeners = new ArrayList<MessageListener>();
+	    Toast.makeText(this, "Service started...", Toast.LENGTH_LONG).show();
 	}
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		
 		return START_NOT_STICKY;
 	}
 
