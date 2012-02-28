@@ -1,18 +1,18 @@
 package ec.nem.bluenet.net;
 
 
-import android.os.*;
-import android.util.Log;
-import android.bluetooth.*;
-
-import java.text.ParseException;
-import java.util.*;
 import java.io.*;
 import java.lang.reflect.Method;
+import java.text.ParseException;
+import java.util.*;
 
-import ec.nem.bluenet.*;
-import ec.nem.bluenet.Message;
-//import ec.nem.bluenet.BaseActivity.ProgressHandler;
+import android.bluetooth.*;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.util.Log;
+import ec.nem.bluenet.CommunicationThread;
+import ec.nem.bluenet.Node;
+import ec.nem.bluenet.NodeFactory;
 
 /**
  * Responsible for moving frames between nodes on the network.<br><br>

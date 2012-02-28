@@ -44,7 +44,7 @@ public class Socket {
 	
 	public boolean bind(int port) {
 		mSourcePort = port;
-		// TODO:  Any checks to perform here?
+		/// \TODO:  Any checks to perform here?
 		return true;
 	}
 	
@@ -65,7 +65,7 @@ public class Socket {
 			STCPHeader stcpHeader = (STCPHeader) mSegment.transportSegment;
 			stcpHeader.setSourcePort(mSourcePort);
 			stcpHeader.setDestinationPort(mDestinationPort);
-			// TODO: Send out connection packet, await response?
+			/// \TODO: Send out connection packet, await response?
 			
 			break;
 		}
@@ -101,7 +101,7 @@ public class Socket {
 			header.setData(data);
 			break;
 		case Segment.TYPE_STCP:
-			// TODO: TCP segment, need to check if connected, otherwise
+			/// \TODO: TCP segment, need to check if connected, otherwise
 			// say no?
 			break;
 		}

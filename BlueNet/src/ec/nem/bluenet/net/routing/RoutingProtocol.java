@@ -2,13 +2,12 @@ package ec.nem.bluenet.net.routing;
 
 
 
-import android.util.*;
 import java.text.MessageFormat;
-import java.util.concurrent.*;
 import java.util.*;
 
-import ec.nem.bluenet.*;
-import ec.nem.bluenet.net.*;
+import android.util.Log;
+import ec.nem.bluenet.Node;
+import ec.nem.bluenet.net.NetworkLayer;
 import ec.nem.bluenet.net.routing.RoutingMessage.Type;
 
 /**

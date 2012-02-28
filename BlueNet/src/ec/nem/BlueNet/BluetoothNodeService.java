@@ -4,7 +4,6 @@ import java.util.List;
 
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothServerSocket;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
@@ -13,10 +12,7 @@ import android.widget.Toast;
 public class BluetoothNodeService extends Service {
 	
 	private final IBinder binder = new LocalBinder();
-	
-	//This is a test to see if GIT works --Evin
-	private final int one = 1;
-	
+		
 	BluetoothAdapter adapter;
 	List<NodeListener> nodeListeners;
 	List<MessageListener> messageListeners;
