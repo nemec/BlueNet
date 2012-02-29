@@ -19,6 +19,13 @@ public class BluetoothNodeService extends Service {
 	List<MessageListener> messageListeners;
 	
 	/*
+	* BuildNetworkActivity
+	* - takes minimum network size, name, uuid, next activity?
+	* - starts bluetooth, displays paired devices,
+	*   gives access to device discovery
+	*/
+	
+	/*
 	* SocketManager for all BlueToothSockets
 	* ServerSocket runs in own thread.
 	*/
