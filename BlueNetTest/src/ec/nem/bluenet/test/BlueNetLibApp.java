@@ -1,12 +1,14 @@
-package ec.nem.BlueNet.test;
+package ec.nem.bluenet.test;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
-import ec.nem.BlueNet.BuildNetworkActivity;
-import ec.nem.BlueNet.R;
+import ec.nem.bluenet.BluetoothNodeService;
+import ec.nem.bluenet.BuildNetworkActivity;
+import ec.nem.bluenet.R;
+import ec.nem.bluenet.BluetoothNodeService.LocalBinder;
 
 public class BlueNetLibApp extends Activity {
 	
@@ -16,7 +18,6 @@ public class BlueNetLibApp extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        
     }
     
     public void onBuildNetworkClicked(View v){

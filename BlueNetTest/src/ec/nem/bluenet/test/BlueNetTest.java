@@ -1,4 +1,4 @@
-package ec.nem.BlueNet.test;
+package ec.nem.bluenet.test;
 
 import android.test.ActivityInstrumentationTestCase2;
 

@@ -1,4 +1,4 @@
-package ec.nem.BlueNet;
+package ec.nem.bluenet;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +13,7 @@ import android.widget.Toast;
 public class BluetoothNodeService extends Service {
 	
 	private final IBinder binder = new LocalBinder();
-	
+
 	BluetoothAdapter adapter;
 	List<NodeListener> nodeListeners;
 	List<MessageListener> messageListeners;

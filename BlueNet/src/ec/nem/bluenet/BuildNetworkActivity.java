@@ -1,6 +1,7 @@
-package ec.nem.BlueNet;
+package ec.nem.bluenet;
 
 import java.util.Set;
+
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
@@ -23,7 +24,7 @@ import android.widget.Button;
 import android.widget.ExpandableListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import ec.nem.BlueNet.BluetoothNodeService.LocalBinder;
+import ec.nem.bluenet.BluetoothNodeService.LocalBinder;
 
 public class BuildNetworkActivity extends Activity implements MessageListener, NodeListener {
 
@@ -49,13 +50,6 @@ public class BuildNetworkActivity extends Activity implements MessageListener, N
 		super.onCreate(savedInstance);
 		setContentView(R.layout.buildnetwork);
 		btAdapter = BluetoothAdapter.getDefaultAdapter();
-		if (btAdapter != null && !btAdapter.isEnabled()) {
-		    Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-		    startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-		}
-		else{
-			onBluetoothEnabled(RESULT_OK, null);
-		}
 		// Set result CANCELED incase the user backs out
 		setResult(Activity.RESULT_CANCELED);
 	}
@@ -72,7 +66,7 @@ public class BuildNetworkActivity extends Activity implements MessageListener, N
         if (btAdapter != null) {
             btAdapter.cancelDiscovery();
         }
-        	
+        
         // Unregister broadcast listeners
         /*if(mReceiver != null){
         	this.unregisterReceiver(mReceiver);
@@ -82,6 +76,13 @@ public class BuildNetworkActivity extends Activity implements MessageListener, N
 	@Override
 	protected void onStart(){
 		super.onStart();
+		if (btAdapter != null && !btAdapter.isEnabled()) {
+		    Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+		    startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+		}
+		else{
+			onBluetoothEnabled(RESULT_OK, null);
+		}
 		Intent intent = new Intent(this, BluetoothNodeService.class);
     	bindService(intent, connection, Context.BIND_AUTO_CREATE);
 	}

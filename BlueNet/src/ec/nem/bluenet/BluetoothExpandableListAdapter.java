@@ -1,4 +1,4 @@
-package ec.nem.BlueNet;
+package ec.nem.bluenet;
 
 import java.util.List;
 

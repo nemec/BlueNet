@@ -48,6 +48,7 @@
 		        android:background="#666"
 		        android:textColor="#fff"
 		        android:paddingLeft="5dp"
+		        android:layout_gravity="top"
 		    />
 		    <ListView android:id="@+id/new_devices"
 		        android:layout_width="match_parent"
