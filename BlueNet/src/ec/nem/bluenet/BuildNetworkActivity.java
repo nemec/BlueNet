@@ -2,13 +2,14 @@ package ec.nem.bluenet;
 
 import java.util.Set;
 
-
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -76,12 +77,26 @@ public class BuildNetworkActivity extends Activity implements MessageListener, N
 	@Override
 	protected void onStart(){
 		super.onStart();
-		if (btAdapter != null && !btAdapter.isEnabled()) {
-		    Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-		    startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+		if (btAdapter != null){
+			if(!btAdapter.isEnabled()) {
+			    Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+			    startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+			}
+			else{
+				onBluetoothEnabled(RESULT_OK, null);
+			}
 		}
 		else{
-			onBluetoothEnabled(RESULT_OK, null);
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setMessage("Error: No Bluetooth Adapter available on this device.")
+			       .setCancelable(false)
+			       .setNeutralButton("OK", new DialogInterface.OnClickListener() {
+			           public void onClick(DialogInterface dialog, int id) {
+			                BuildNetworkActivity.this.finish();
+			           }
+			       });
+			AlertDialog alert = builder.create();
+			alert.show();
 		}
 		Intent intent = new Intent(this, BluetoothNodeService.class);
     	bindService(intent, connection, Context.BIND_AUTO_CREATE);

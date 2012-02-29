@@ -52,6 +52,9 @@ public final class SocketManager {
 		mMessageDatabase = MessageDatabase.getInstance(context);
 	}
 	
+	/*
+	 * \todo: Why is this a singleton if it's only used in one place?
+	 */
 	public static SocketManager getInstance(Context context) {
 		if(mInstance == null) {
 			mInstance = new SocketManager(context);
