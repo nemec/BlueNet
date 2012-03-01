@@ -16,7 +16,7 @@ import android.os.Message;
 /**
  * Moves datagrams between hosts.  This is where the IP and routing logic resides.
  * 
- * @author Darren White
+ * @author Darren White drastically cleaned up by Ivan Hernandez
  */
 
 public class NetworkLayer extends Layer {
@@ -40,7 +40,7 @@ public class NetworkLayer extends Layer {
 	public void handleMessageFromAbove(Message msg) {
 		Segment s = (Segment) msg.obj;
 		
-		/* TODO: This doesn't handle the case where there isn't a route */
+		// TODO: This doesn't handle the case where there isn't a route
 		byte[] destination = s.IPHeader.destinationAddress;
 		Node nextHop = mRoutingTable.getNextHop(destination);
 		if(nextHop != null) {
@@ -48,6 +48,7 @@ public class NetworkLayer extends Layer {
 			sendMessageBelow(s);
 		}
 		else {
+			///\TODO: handle route non-existence 
 //			mCommThread.showProgressError(ProgressHandler.ROUTE_FAILURE);
 		}
 	}
@@ -63,13 +64,15 @@ public class NetworkLayer extends Layer {
 			Node myNode = mCommThread.getLocalNode();
 			
 			if (!Arrays.equals(destination, myNode.getIPAddress())) {
-				/* handle packets that should be transported through this node */
+				// handle packets that should be transported through this node 
 				Node nextHop = mRoutingTable.getNextHop(destination);
 				s.nextHopMACAddress = nextHop.getAddressBytes();
 				sendMessageBelow(s);
 			}
-			
-			sendMessageAbove(s);
+			else {
+				// otherwise send to UI
+				sendMessageAbove(s);
+			}
 		}
 	}
 
