@@ -22,22 +22,28 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ExpandableListAdapter;
+import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 import ec.nem.bluenet.BluetoothNodeService.LocalBinder;
 
 public class BuildNetworkActivity extends Activity implements MessageListener, NodeListener {
 
 	private static final String TAG = "BuildNetworkActivity";
 	public static String EXTRA_DEVICE_ADDRESS = "device_address";
+	public static String EXTRA_MINIMUM_NETWORK_SIZE = "network_size";
 	private static final int REQUEST_ENABLE_BT = 2039234;
+	
 	private BluetoothNodeService connectionService;
 	private boolean boundToService = false;
 	private BluetoothAdapter btAdapter;
-    private ArrayAdapter<String> pairedDevicesArrayAdapter;
+    
+	private ArrayAdapter<String> pairedDevicesArrayAdapter;
     private ArrayAdapter<String> newDevicesArrayAdapter;
-    private ExpandableListAdapter currentNetworkListAdapter;
+    private BluetoothExpandableListAdapter currentNetworkListAdapter;
+    
+    private int minimumNetworkSize;
     
     /*
 	* BuildNetworkActivity
@@ -49,9 +55,11 @@ public class BuildNetworkActivity extends Activity implements MessageListener, N
 	@Override
 	public void onCreate(Bundle savedInstance){
 		super.onCreate(savedInstance);
+		minimumNetworkSize = getIntent().getIntExtra(EXTRA_MINIMUM_NETWORK_SIZE, 2);
 		setContentView(R.layout.buildnetwork);
 		btAdapter = BluetoothAdapter.getDefaultAdapter();
-		// Set result CANCELED incase the user backs out
+		currentNetworkListAdapter = new BluetoothExpandableListAdapter(this);
+		// Set result CANCELED in case the user backs out
 		setResult(Activity.RESULT_CANCELED);
 	}
 	
@@ -119,11 +127,13 @@ public class BuildNetworkActivity extends Activity implements MessageListener, N
 	        scanButton.setOnClickListener(new OnClickListener() {
 	            public void onClick(View v) {
 	                doDiscovery();
-	                v.setVisibility(View.GONE);
+	                Button discoverUsers = (Button)v;
+	                discoverUsers.setEnabled(false);
 	            }
 	        });
-	        
-	        //currentNetworkListAdapter = new BluetoothExpandableListAdapter()
+
+	        ExpandableListView currentNetworkView = (ExpandableListView)findViewById(R.id.current_network);
+	        currentNetworkView.setAdapter(currentNetworkListAdapter);
 	        
 	        pairedDevicesArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
 	        newDevicesArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
@@ -190,15 +200,10 @@ public class BuildNetworkActivity extends Activity implements MessageListener, N
 
             // Get the device MAC address, which is the last 17 chars in the View
             String info = ((TextView) v).getText().toString();
-            String address = info.substring(info.length() - 17);
+            //String address = info.substring(info.length() - 17);
 
-            // Create the result Intent and include the MAC address
-            Intent intent = new Intent();
-            intent.putExtra(EXTRA_DEVICE_ADDRESS, address);
-
-            // Set result and finish this Activity
-            setResult(Activity.RESULT_OK, intent);
-            finish();
+            // \TODO: Join group here.
+            Toast.makeText(BuildNetworkActivity.this, "Connected to " + info, Toast.LENGTH_SHORT).show();
         }
     };
     
@@ -226,6 +231,8 @@ public class BuildNetworkActivity extends Activity implements MessageListener, N
                     newDevicesArrayAdapter.add(noDevices);
                 }
             }
+            Button discoverUsers = (Button)findViewById(R.id.discover_users_button);
+            discoverUsers.setEnabled(true);
         }
     };
     
@@ -239,6 +246,7 @@ public class BuildNetworkActivity extends Activity implements MessageListener, N
             connectionService = binder.getService();
             connectionService.addMessageListener(BuildNetworkActivity.this);
             connectionService.addNodeListener(BuildNetworkActivity.this);
+            connectionService.addNodeListener(currentNetworkListAdapter);
             boundToService = true;
         }
 
@@ -257,17 +265,26 @@ public class BuildNetworkActivity extends Activity implements MessageListener, N
 	}
 
 	@Override
-	public void onNodeEnter() {
+	public void onNodeEnter(Object node) {
 		Log.d(TAG, "New node in network.");
+		// \TODO: Once network reaches correct size, enable 
+		if(connectionService.getNetworkSize() >= minimumNetworkSize){
+			Button b = (Button)findViewById(R.id.begin_game_button);
+			b.setEnabled(true);
+		}
 	}
 
 	@Override
-	public void onNodeExit() {
+	public void onNodeExit(Object node) {
 		Log.d(TAG, "A node left the network.");
+		if(connectionService.getNetworkSize() < minimumNetworkSize){
+			Button b = (Button)findViewById(R.id.begin_game_button);
+			b.setEnabled(false);
+		}
 	}
 
 	@Override
-	public void onMessageReceived() {
-		Log.d(TAG, "A new message has been received.");
+	public void onMessageReceived(Object message) {
+		Log.d(TAG, "A new message has been received: " + message.toString());
 	}
 }

@@ -18,18 +18,6 @@ public class BluetoothNodeService extends Service {
 	List<NodeListener> nodeListeners;
 	List<MessageListener> messageListeners;
 	
-	/*
-	* BuildNetworkActivity
-	* - takes minimum network size, name, uuid, next activity?
-	* - starts bluetooth, displays paired devices,
-	*   gives access to device discovery
-	*/
-	
-	/*
-	* SocketManager for all BlueToothSockets
-	* ServerSocket runs in own thread.
-	*/
-	
 	@Override
 	public void onCreate() {
 		super.onCreate();
@@ -46,6 +34,11 @@ public class BluetoothNodeService extends Service {
 	
 	public boolean supportsBluetooth(){
 		return adapter != null;
+	}
+	
+	public int getNetworkSize(){
+		// \TODO: Figure out how to pull network size
+		return 1;
 	}
 	
 	public void addNodeListener(NodeListener l){

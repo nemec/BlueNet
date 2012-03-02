@@ -30,9 +30,9 @@ public class BlueNetLibApp extends Activity {
 		super.onActivityResult(requestCode, resultCode, data);
 		if(requestCode == RESULT_BUILD_NETWORK){
 			if(resultCode == RESULT_OK){
-				String name = data.getStringExtra(BuildNetworkActivity.EXTRA_DEVICE_ADDRESS);
+				// The network is built. You would start the actual game here.
 				TextView v = (TextView)findViewById(R.id.text);
-				v.setText(name);
+				v.setText("Network has been built.");
 			}
 			else if(resultCode == RESULT_CANCELED){
 				// Could not connect.
