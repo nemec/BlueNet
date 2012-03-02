@@ -2,7 +2,6 @@ package ec.nem.bluenet.net;
 
 import java.util.ArrayList;
 
-import ec.nem.bluenet.MessageDatabase;
 import ec.nem.bluenet.Node;
 import ec.nem.bluenet.net.Socket.ReceiveHandler;
 
@@ -33,7 +32,6 @@ public final class SocketManager {
 	/** Processes packets as they flow up the stack */
 	private HandlerThread upThread;
 	
-	private static MessageDatabase mMessageDatabase;
 	private ArrayList<Socket> mSockets;
 	private Node mLocalNode;
 	
@@ -48,12 +46,10 @@ public final class SocketManager {
 				handleMessageFromBelow(msg);
 			}
 		};
-		
-		mMessageDatabase = MessageDatabase.getInstance(context);
 	}
 	
 	/*
-	 * \todo: Why is this a singleton if it's only used in one place?
+	 * \TODO: Why is this a singleton if it's only used in one place?
 	 */
 	public static SocketManager getInstance(Context context) {
 		if(mInstance == null) {
@@ -68,7 +64,6 @@ public final class SocketManager {
 	
 	public void stopManager() {
 		upThread.quit();
-		mMessageDatabase.close();
 	}
 	
 	public Socket requestSocket(int type) {
@@ -118,11 +113,12 @@ public final class SocketManager {
 		Segment s = (Segment) msg.obj;
 		final int type = s.getType();
 		if(type == Segment.TYPE_UDP) {
+			/// Handles UPD packets \TODO: this can probably be deleted down to the else
 			UDPHeader header = (UDPHeader) s.transportSegment;
 			int port = header.getDestinationPort();
 			if(port == 50000) {
 				/// \todo: iterate message listeners and call on message 
-				storeMessage(header.getData());
+//				storeMessage(header.getData());
 			}
 			else {
 				socket = getSocketByPort(port);
@@ -136,25 +132,26 @@ public final class SocketManager {
 			}
 		}
 		else if(type == Segment.TYPE_STCP) {
-			// TODO: Add TCP Header actions
+			/// Handles UPD packets 
+			/// \TODO: Add TCP Header actions
 		}
 	}
 	
 	/***
 	 * 
-	 * \todo: delete
+	 * \TODO: delete
 	 */
-	public void storeMessage(byte[] data) {
-		ec.nem.bluenet.Message message = ec.nem.bluenet.Message.deserialize(data);
-			
-		// Write it to the database
-    	String txName = message.getTransmitterName();
-    	String txAddr = message.getTransmitterAddress();
-    	String rxName = mLocalNode.getDeviceName();
-    	String rxAddr = mLocalNode.getAddress();
-    	String text = message.getText();
-    	long time = message.getTimeInMillis();
-    	
-        mMessageDatabase.insert(txName, txAddr, rxName, rxAddr, text, time);
-	}
+//	public void storeMessage(byte[] data) {
+//		ec.nem.bluenet.Message message = ec.nem.bluenet.Message.deserialize(data);
+//			
+//		// Write it to the database
+//    	String txName = message.getTransmitterName();
+//    	String txAddr = message.getTransmitterAddress();
+//    	String rxName = mLocalNode.getDeviceName();
+//    	String rxAddr = mLocalNode.getAddress();
+//    	String text = message.getText();
+//    	long time = message.getTimeInMillis();
+//    	
+//        mMessageDatabase.insert(txName, txAddr, rxName, rxAddr, text, time);
+//	}
 }

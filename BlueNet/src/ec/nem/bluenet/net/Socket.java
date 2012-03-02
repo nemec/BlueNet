@@ -7,7 +7,12 @@ import ec.nem.bluenet.net.stcp.Receiver;
 import ec.nem.bluenet.net.stcp.STCPHeader;
 import ec.nem.bluenet.net.stcp.Sender;
 
-
+/**
+ * This socket interfaces with our network structure 
+ * \TODO: This needs to be heavily tested.
+ * @author Ivan Hernandez
+ *
+ */
 public class Socket {
 	private int mSourcePort;
 	private int mDestinationPort;

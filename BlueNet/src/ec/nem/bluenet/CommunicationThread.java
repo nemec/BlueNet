@@ -1,6 +1,5 @@
 package ec.nem.bluenet;
 
-//import ec.nem.bluenet.BaseActivity.ProgressHandler;
 import ec.nem.bluenet.net.Layer;
 import ec.nem.bluenet.net.LinkLayer;
 import ec.nem.bluenet.net.NetworkLayer;
@@ -12,12 +11,15 @@ import android.os.Handler;
 import android.util.Log;
 import java.util.*;
 
+/*
+ * This sets up the communication between all the layers and the application. 
+ */
+
 public class CommunicationThread extends Thread {
 	private final String TAG = "CommunicationThread";
 	
 	private boolean running;
 	
-//	private ProgressHandler mProgressHandler;
 	private SocketManager mSocketManager;
 	private Layer mTransportLayer;
 	private NetworkLayer mNetworkLayer;
