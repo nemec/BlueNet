@@ -92,16 +92,12 @@ public class BluetoothNodeService extends Service {
 	public boolean supportsBluetooth(){
 		return adapter != null;
 	}
-<<<<<<< HEAD
 	
 	public int getNetworkSize(){
-		// \TODO: Figure out how to pull network size
+		/// \TODO: Figure out how to pull network size
 		return 1;
 	}
 	
-=======
-
->>>>>>> 372b71448810c435f61a3526bb49c742c79bad39
 	public void addNodeListener(NodeListener l){
 		nodeListeners.add(l);
 	}
