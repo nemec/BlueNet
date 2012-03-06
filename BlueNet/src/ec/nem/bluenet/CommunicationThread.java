@@ -89,6 +89,9 @@ public class CommunicationThread extends Thread {
 		return running;
 	}
 	
+	/*
+	 * Retrieve all nodes in the routing graph.
+	 */
 	public List<Node> getAvailableNodes() {
 		return mNetworkLayer.getAvailableNodes();
 	}
@@ -119,13 +122,6 @@ public class CommunicationThread extends Thread {
 	
 	public List<NodeListener> getNodeListeners(){
 		return nodeListeners;
-	}
-	
-	/*
-	 * Broadcast a message to every connected user.
-	 */
-	public void broadcastMessage(String text){
-		mSocketManager.broadcastMessage(text);
 	}
 
 	/*

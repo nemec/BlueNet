@@ -1,6 +1,5 @@
 package ec.nem.bluenet;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Service;
@@ -10,6 +9,9 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
+import ec.nem.bluenet.net.Segment;
+import ec.nem.bluenet.net.Socket;
+import ec.nem.bluenet.net.SocketManager;
 
 public class BluetoothNodeService extends Service {
 	private static final String TAG = "BluetoothNodeService";
@@ -19,6 +21,8 @@ public class BluetoothNodeService extends Service {
 
 	/** Exposes the service to clients. */
 	private final IBinder binder = new LocalBinder();
+	
+	private Socket socket;
 
 	BluetoothAdapter adapter;
 	@Override
@@ -27,6 +31,10 @@ public class BluetoothNodeService extends Service {
 		Toast.makeText(this, "Service started...", Toast.LENGTH_LONG).show();
 
 		mCommThread = new CommunicationThread(this.getApplicationContext());
+		
+		SocketManager sm = SocketManager.getInstance(this);
+        socket = sm.requestSocket(Segment.TYPE_UDP);
+        socket.bind(SocketManager.BLUENET_PORT);
 	}
 
 	@Override
@@ -93,7 +101,15 @@ public class BluetoothNodeService extends Service {
 	}
 	
 	public void broadcastMessage(String text){
-		mCommThread.broadcastMessage(text);
+		for(Node n: mCommThread.getAvailableNodes()){
+			sendMessage(n, text);
+		}
+	}
+	
+	public void sendMessage(Node destinationNode, String text){
+		Message m = new Message("No one.", text, (System.currentTimeMillis() / 1000L));
+		socket.connect(destinationNode, 50000);
+		socket.send(Message.serialize(m));
 	}
 	
 	public void addNodeListener(NodeListener l){

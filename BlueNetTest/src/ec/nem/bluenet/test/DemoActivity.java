@@ -15,6 +15,7 @@ import ec.nem.bluenet.BluetoothNodeService.LocalBinder;
 import ec.nem.bluenet.Message;
 import ec.nem.bluenet.MessageListener;
 import ec.nem.bluenet.NodeListener;
+import ec.nem.bluenet.net.SocketManager;
 
 public class DemoActivity extends Activity implements MessageListener, NodeListener {
 
@@ -28,7 +29,6 @@ public class DemoActivity extends Activity implements MessageListener, NodeListe
         setContentView(R.layout.demo);
         
         logAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
-        
         
         Intent intent = new Intent(this, BluetoothNodeService.class);
     	bindService(intent, connection, Context.BIND_AUTO_CREATE);
@@ -55,17 +55,40 @@ public class DemoActivity extends Activity implements MessageListener, NodeListe
 
 	@Override
 	public void onNodeEnter(String node) {
-		logAdapter.add("Node " + node + " has joined the chat.");
+		final String txt = node;
+		runOnUiThread(new Runnable() {
+			
+			@Override
+			public void run() {
+				logAdapter.add("Node " + txt + " has joined the chat.");
+			}
+		});
 	}
 
 	@Override
 	public void onNodeExit(String node) {
-		logAdapter.add("Node " + node + "has left the chat.");
+		final String txt = node;
+		runOnUiThread(new Runnable() {
+			
+			@Override
+			public void run() {
+				logAdapter.add("Node " + txt + " has left the chat.");
+			}
+		});
 	}
 
 	@Override
 	public void onMessageReceived(Message message) {
-		logAdapter.add(message.getTransmitterAddress() + ": " + message.getText());
+		final String from = message.getTransmitterAddress();
+		final String text = message.getText();
+		
+		runOnUiThread(new Runnable() {
+			
+			@Override
+			public void run() {
+				logAdapter.add(from + ": " + text);
+			}
+		});
 	}
 	
 	public void sendMessage(View v){
