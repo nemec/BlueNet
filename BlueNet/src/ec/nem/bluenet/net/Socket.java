@@ -14,13 +14,39 @@ import ec.nem.bluenet.net.stcp.Sender;
  *
  */
 public class Socket {
+	/*
+	 * The source port where data is sent from on this machine
+	 */
 	private int mSourcePort;
+	
+	/*
+	 * This is the destination port on the remote node where data will be sent
+	 */
 	private int mDestinationPort;
+	
+	/*
+	 * UDP or TCP
+	 */
 	private int mType;
+	
+	/*
+	 * Storage for the header segment of the packet
+	 */
 	private Segment mSegment;
 	
+	/*
+	 * The thread managing what this socket sends
+	 */
 	private HandlerThread mHandlerThread;
-	private ReceiveHandler mReceiveHandler;
+	
+	/*
+	 * The thread that handles message receipt for this socket.
+	 */
+	private ReceiveHandler mReceiveHandler; 
+	
+	/*
+	 * The socket manager that contains this Socket(since there could be more than one)
+	 */
 	private SocketManager mSocketManager;
 	
 	private Sender mSender;
@@ -43,20 +69,30 @@ public class Socket {
 		}
 	}
 	
+	/* 
+	 * Returns the message handler associated with this socket (I assume for debugging)
+	 */
 	public ReceiveHandler getMessageHandler() {
 		return mReceiveHandler;
 	}
 	
+	/*
+	 * Sets the port from which this socket will send data
+	 */
 	public boolean bind(int port) {
 		mSourcePort = port;
-		/// \TODO:  Any checks to perform here?
 		return true;
 	}
-	
+	 /* 
+	  * Returns the bound port for this socket.
+	  */
 	public int getBoundPort() {
 		return mSourcePort;
 	}
 	
+	/*
+	 * Connects to the specified None on the specified port.
+	 */
 	public boolean connect(Node node, int destinationPort) {
 		mDestinationPort = destinationPort;
 		mSegment = new Segment(mType);
@@ -97,7 +133,7 @@ public class Socket {
 	/**
 	 * Sends the given data
 	 * 
-	 * @param data
+	 * @param data The data to be sent
 	 */
 	public void send(byte[] data) {
 		switch(mType) {
