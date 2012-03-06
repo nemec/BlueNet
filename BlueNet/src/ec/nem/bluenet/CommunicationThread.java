@@ -45,7 +45,6 @@ public class CommunicationThread extends Thread {
 		mNetworkLayer.setBelowTargetHandler(mLinkLayer.getAboveHandler());
 		
 		mLinkLayer.setAboveTargetHandler(mNetworkLayer.getBelowHandler());
-		mSocketManager.setLocalNode(getLocalNode());
 		Log.d(TAG, "Communication Thread Initialized");
 	}
 	
