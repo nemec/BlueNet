@@ -14,7 +14,7 @@ public class LinkStateAdvertisement implements Serializable {
 	
 	public Node source;
 	public int sequence = initialSequence;
-	public ArrayList<Node> other = new ArrayList<Node>();
+	public ArrayList<Node> others = new ArrayList<Node>();
 	
 	public static final int initialSequence = 1;
 	
@@ -22,15 +22,15 @@ public class LinkStateAdvertisement implements Serializable {
 		oos.writeObject(source.getAddress());
 		oos.writeObject(sequence);
 		
-		oos.writeObject(other.size());
-		for (Node n: other) {
+		oos.writeObject(others.size());
+		for (Node n: others) {
 			oos.writeObject(n.getAddress());
 			oos.writeObject(n.getDeviceName());
 		}
 	}
 	
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
-		other = new ArrayList<Node>();
+		others = new ArrayList<Node>();
 		
 		String source = (String) ois.readObject();
 		try {
@@ -51,7 +51,7 @@ public class LinkStateAdvertisement implements Serializable {
 				Node n = NodeFactory.factory.fromMacAddress(address);
 				n.setName(name);
 				n.setDeviceName(name);
-				other.add(n);
+				others.add(n);
 			} catch (ParseException e) {
 				Log.d(TAG, "Failed to get node from factory properly");
 			}
