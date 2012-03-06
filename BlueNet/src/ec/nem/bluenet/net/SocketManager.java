@@ -1,15 +1,15 @@
 package ec.nem.bluenet.net;
 
 import java.util.ArrayList;
-
-import ec.nem.bluenet.Node;
-import ec.nem.bluenet.net.Socket.ReceiveHandler;
-
+import java.util.List;
 
 import android.content.Context;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.os.Message;
+import ec.nem.bluenet.Message;
+import ec.nem.bluenet.MessageListener;
+import ec.nem.bluenet.Node;
+import ec.nem.bluenet.net.Socket.ReceiveHandler;
 
 /**
  * The SocketManager sits above the network stack and interfaces with sockets that
@@ -23,6 +23,7 @@ import android.os.Message;
  * @author Darren White
  */
 public final class SocketManager {
+	public static final int BLUENET_PORT = 50000;
 	private static SocketManager mInstance;
 	/** Handles input to this layer from a lower layer */
 	private Handler hReceiveFromBelow;
@@ -32,17 +33,19 @@ public final class SocketManager {
 	/** Processes packets as they flow up the stack */
 	private HandlerThread upThread;
 	
+	private List<MessageListener> messageListeners;
 	private ArrayList<Socket> mSockets;
 	private Node mLocalNode;
 	
 	private SocketManager(Context context) {
+		messageListeners = new ArrayList<MessageListener>();
 		mSockets = new ArrayList<Socket>();
 		upThread = new HandlerThread("SocketManager Receive Thread");
 		upThread.start();
 		
 		hReceiveFromBelow = new Handler(upThread.getLooper()) {
 			@Override
-			public void handleMessage(Message msg) {
+			public void handleMessage(android.os.Message msg) {
 				handleMessageFromBelow(msg);
 			}
 		};
@@ -93,7 +96,7 @@ public final class SocketManager {
 	
 	/** Passes a message to the layer below this one */
 	public void sendMessageBelow(Object o) {
-		Message msg = hSendBelow.obtainMessage();
+		android.os.Message msg = hSendBelow.obtainMessage();
 		msg.obj = o;
 		hSendBelow.sendMessage(msg);
 	}
@@ -107,7 +110,7 @@ public final class SocketManager {
 		return null;
 	}
 	
-	public void handleMessageFromBelow(Message msg) {
+	public void handleMessageFromBelow(android.os.Message msg) {
 		Socket socket;
 		
 		Segment s = (Segment) msg.obj;
@@ -116,42 +119,55 @@ public final class SocketManager {
 			/// Handles UPD packets \TODO: this can probably be deleted down to the else
 			UDPHeader header = (UDPHeader) s.transportSegment;
 			int port = header.getDestinationPort();
-			if(port == 50000) {
-				/// \todo: iterate message listeners and call on message 
-//				storeMessage(header.getData());
+			if(port == BLUENET_PORT) {
+				Message message = Message.deserialize(header.getData());
+				for(MessageListener l : messageListeners){
+					l.onMessageReceived(message);
+				}
 			}
 			else {
 				socket = getSocketByPort(port);
 				if(socket != null) {
 					ReceiveHandler rh = socket.getMessageHandler();
 					if(rh != null) {
-						Message m = rh.obtainMessage(Segment.TYPE_UDP, header.getData());
+						android.os.Message m = rh.obtainMessage(Segment.TYPE_UDP, header.getData());
 						rh.sendMessage(m);
 					}
 				}
 			}
 		}
 		else if(type == Segment.TYPE_STCP) {
-			/// Handles UPD packets 
 			/// \TODO: Add TCP Header actions
+			throw new IllegalArgumentException("Cannot use Segment type STCP"); 
 		}
 	}
 	
-	/***
-	 * 
-	 * \TODO: delete
+	/*
+	 * Send a message to a specific destination.
 	 */
-//	public void storeMessage(byte[] data) {
-//		ec.nem.bluenet.Message message = ec.nem.bluenet.Message.deserialize(data);
-//			
-//		// Write it to the database
-//    	String txName = message.getTransmitterName();
-//    	String txAddr = message.getTransmitterAddress();
-//    	String rxName = mLocalNode.getDeviceName();
-//    	String rxAddr = mLocalNode.getAddress();
-//    	String text = message.getText();
-//    	long time = message.getTimeInMillis();
-//    	
-//        mMessageDatabase.insert(txName, txAddr, rxName, rxAddr, text, time);
-//	}
+	public void sendMessage(int port, String text){
+		Socket s = getSocketByPort(port);
+		if(s != null){
+			Message m = new Message("No one.", text, (System.currentTimeMillis() / 1000L));
+			s.send(Message.serialize(m));
+		}
+	}
+	
+	/*
+	 * Send a message to everyone.
+	 */
+	public void broadcastMessage(String text){
+		for(Socket s : mSockets){
+			Message m = new Message("No one.", text, (System.currentTimeMillis() / 1000L));
+			s.send(Message.serialize(m));
+		}
+	}
+	
+	public void addMessageListener(MessageListener l){
+		messageListeners.add(l);
+	}
+
+	public boolean removeMessageListener(MessageListener l){
+		return messageListeners.remove(l);
+	}
 }

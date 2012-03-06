@@ -27,6 +27,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import ec.nem.bluenet.BluetoothNodeService.LocalBinder;
+import ec.nem.bluenet.utils.BluetoothExpandableListAdapter;
+import ec.nem.bluenet.utils.UniqueArrayAdapter;
 
 public class BuildNetworkActivity extends Activity implements MessageListener, NodeListener {
 
@@ -77,9 +79,11 @@ public class BuildNetworkActivity extends Activity implements MessageListener, N
         }
         
         // Unregister broadcast listeners
-        /*if(mReceiver != null){
-        	this.unregisterReceiver(mReceiver);
-        }*/
+        if(mReceiver != null){
+        	try{
+        		this.unregisterReceiver(mReceiver);
+        	} catch(IllegalArgumentException e){}
+        }
     }
 	
 	@Override
@@ -106,8 +110,6 @@ public class BuildNetworkActivity extends Activity implements MessageListener, N
 			AlertDialog alert = builder.create();
 			alert.show();
 		}
-		Intent intent = new Intent(this, BluetoothNodeService.class);
-    	bindService(intent, connection, Context.BIND_AUTO_CREATE);
 	}
 	
 	@Override
@@ -123,6 +125,10 @@ public class BuildNetworkActivity extends Activity implements MessageListener, N
 		if(resultCode == RESULT_OK){
 			Log.d(TAG, "Bluetooth has been enabled.");
 			
+			Intent intent = new Intent(this, BluetoothNodeService.class);
+			startService(intent);
+	    	bindService(intent, connection, Context.BIND_AUTO_CREATE);
+			
 			Button scanButton = (Button) findViewById(R.id.discover_users_button);
 	        scanButton.setOnClickListener(new OnClickListener() {
 	            public void onClick(View v) {
@@ -135,8 +141,8 @@ public class BuildNetworkActivity extends Activity implements MessageListener, N
 	        ExpandableListView currentNetworkView = (ExpandableListView)findViewById(R.id.current_network);
 	        currentNetworkView.setAdapter(currentNetworkListAdapter);
 	        
-	        pairedDevicesArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
-	        newDevicesArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
+	        pairedDevicesArrayAdapter = new UniqueArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
+	        newDevicesArrayAdapter = new UniqueArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
 	        
 	        ListView pairedListView = (ListView) findViewById(R.id.paired_devices);
 	        pairedListView.setAdapter(pairedDevicesArrayAdapter);
@@ -230,9 +236,9 @@ public class BuildNetworkActivity extends Activity implements MessageListener, N
                     String noDevices = getResources().getText(R.string.none_found).toString();
                     newDevicesArrayAdapter.add(noDevices);
                 }
+                Button discoverUsers = (Button)findViewById(R.id.discover_users_button);
+                discoverUsers.setEnabled(true);
             }
-            Button discoverUsers = (Button)findViewById(R.id.discover_users_button);
-            discoverUsers.setEnabled(true);
         }
     };
     
@@ -265,26 +271,43 @@ public class BuildNetworkActivity extends Activity implements MessageListener, N
 	}
 
 	@Override
-	public void onNodeEnter(Object node) {
+	public void onNodeEnter(String node) {
 		Log.d(TAG, "New node in network.");
 		// \TODO: Once network reaches correct size, enable 
 		if(connectionService.getNetworkSize() >= minimumNetworkSize){
-			Button b = (Button)findViewById(R.id.begin_game_button);
-			b.setEnabled(true);
+			runOnUiThread(new Runnable() {
+				
+				@Override
+				public void run() {
+					Button b = (Button)findViewById(R.id.begin_game_button);
+					b.setEnabled(true);	
+				}
+			});
 		}
 	}
 
 	@Override
-	public void onNodeExit(Object node) {
+	public void onNodeExit(String node) {
 		Log.d(TAG, "A node left the network.");
 		if(connectionService.getNetworkSize() < minimumNetworkSize){
-			Button b = (Button)findViewById(R.id.begin_game_button);
-			b.setEnabled(false);
+			runOnUiThread(new Runnable() {
+				
+				@Override
+				public void run() {
+					Button b = (Button)findViewById(R.id.begin_game_button);
+					b.setEnabled(false);	
+				}
+			});
 		}
 	}
 
 	@Override
-	public void onMessageReceived(Object message) {
+	public void onMessageReceived(Message message) {
 		Log.d(TAG, "A new message has been received: " + message.toString());
+	}
+	
+	public void closeNetworkBuilder(View v){
+		setResult(Activity.RESULT_OK);
+		finish();
 	}
 }

@@ -24,7 +24,8 @@
 	            <category android:name="android.intent.category.LAUNCHER" />
         	</intent-filter>
         </activity>
-        
+        <activity android:name=".DemoActivity"></activity>
+            
         <!-- 
         	Remember to add all activities/services that you use
         	from BlueNet to the base application's Manifest. 

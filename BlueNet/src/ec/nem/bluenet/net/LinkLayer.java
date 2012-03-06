@@ -2,6 +2,7 @@ package ec.nem.bluenet.net;
 
 
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.util.*;
@@ -13,6 +14,7 @@ import android.util.Log;
 import ec.nem.bluenet.CommunicationThread;
 import ec.nem.bluenet.Node;
 import ec.nem.bluenet.NodeFactory;
+import ec.nem.bluenet.NodeListener;
 
 /**
  * Responsible for moving frames between nodes on the network.<br><br>
@@ -31,7 +33,6 @@ public class LinkLayer extends Layer {
 	AcceptThread mAcceptThread;
 	
 	private BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-	
 	
 	private Map<String, Handler> mConnectionHandlers;
 	
@@ -60,11 +61,14 @@ public class LinkLayer extends Layer {
 			
 //			mCommThread.showProgress(true);
 			Handler h = connectToNode(node);
-			android.os.Message m = h.obtainMessage();
-			m.obj = bytes;
-			h.sendMessage(m);
-//			mCommThread.showProgress(false);
+			if(h != null){
+				android.os.Message m = h.obtainMessage();
+				m.obj = bytes;
+				h.sendMessage(m);
+//				mCommThread.showProgress(false);
+			}
 		} catch (Exception e) {
+			// \TODO: Really? Ignore all exceptions? We should fix this. 
 			e.printStackTrace();
 //			mCommThread.showProgress(false);
 		}
@@ -97,7 +101,19 @@ public class LinkLayer extends Layer {
 			ct.start();
 			return ct.getHandler();
 		}
-		catch(Exception e) {
+		catch(IOException e) {
+			Log.e("DEBUG", "connectToNode: " + e.getMessage());
+			return null;
+		}
+		catch(NoSuchMethodException e){
+			Log.e("DEBUG", "connectToNode: " + e.getMessage());
+			return null;
+		}
+		catch(InvocationTargetException e){
+			Log.e("DEBUG", "connectToNode: " + e.getMessage());
+			return null;
+		}
+		catch(IllegalAccessException e){
 			Log.e("DEBUG", "connectToNode: " + e.getMessage());
 			return null;
 		}
@@ -132,11 +148,14 @@ public class LinkLayer extends Layer {
 
 		for (BluetoothDevice device : paired) {
 			try {
-				Node n = NodeFactory.factory.fromMacAddress(device.getAddress());
-				n.setName(device.getName());
-				n.setDeviceName(device.getName());
-
-				out.add(n);
+				String address = device.getAddress();
+				if(address != null){
+					Node n = NodeFactory.factory.fromMacAddress(address);
+					n.setName(device.getName());
+					n.setDeviceName(device.getName());
+	
+					out.add(n);
+				}
 			}
 			catch(ParseException ex) {
 				// TODO: handle errors, but if Android gives us a bad Bluetooth
@@ -223,6 +242,9 @@ public class LinkLayer extends Layer {
 			BluetoothDevice remote = mSocket.getRemoteDevice();
 			mRemoteAddress = remote.getAddress();
 			mConnectionHandlers.put(mRemoteAddress, mHandler);
+			for(NodeListener l:mCommThread.getNodeListeners()){
+				l.onNodeEnter(mRemoteAddress);
+			}
 		}
 		
 		public Handler getHandler() {
@@ -242,10 +264,15 @@ public class LinkLayer extends Layer {
 				
 				if(mHandlerThread != null)
 					mHandlerThread.quit();
-				mConnectionHandlers.remove(mRemoteAddress);
 			}
 			catch(NullPointerException e) {
 				e.printStackTrace();
+			}
+			finally{
+				mConnectionHandlers.remove(mRemoteAddress);
+				for(NodeListener l:mCommThread.getNodeListeners()){
+					l.onNodeExit(mRemoteAddress);
+				}
 			}
 		}
 		

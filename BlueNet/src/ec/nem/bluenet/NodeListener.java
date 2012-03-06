@@ -1,17 +1,15 @@
 package ec.nem.bluenet;
 
-/// \TODO: Delete this file not needed really.
-
 public interface NodeListener {
 	/**
 	 * Called when a new Node enters the network.
-	 * \TODO: Figure out Node type
+	 * Argument is the remote address of the node.
 	 */
-	public void onNodeEnter(Object node);
+	public void onNodeEnter(String remoteAddress);
 	
 	/**
 	 * Called when a Node leaves the network.
-	 * \TODO: Figure out Node type
+	 * Argument is the remote address of the node.
 	 */
-	public void onNodeExit(Object node);
+	public void onNodeExit(String remoteAddress);
 }

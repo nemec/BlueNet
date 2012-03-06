@@ -24,10 +24,14 @@ public class CommunicationThread extends Thread {
 	private Layer mTransportLayer;
 	private NetworkLayer mNetworkLayer;
 	private LinkLayer mLinkLayer;
+
+	private List<NodeListener> nodeListeners;
 	
 	public CommunicationThread(Context context) {
 		Log.d(TAG, "Initializing Communication Thread");
 		setPriority(Thread.MIN_PRIORITY);
+		
+		nodeListeners = new ArrayList<NodeListener>();
 		
 		mSocketManager = SocketManager.getInstance(context);
 		
@@ -103,6 +107,39 @@ public class CommunicationThread extends Thread {
 	
 	public void setApplicationLayerHandler(Handler h) {
 		mTransportLayer.setAboveTargetHandler(h);
+	}
+	
+	public void addNodeListener(NodeListener l){
+		nodeListeners.add(l);
+	}
+
+	public boolean removeNodeListener(NodeListener l){
+		return nodeListeners.remove(l);
+	}
+	
+	public List<NodeListener> getNodeListeners(){
+		return nodeListeners;
+	}
+	
+	/*
+	 * Broadcast a message to every connected user.
+	 */
+	public void broadcastMessage(String text){
+		mSocketManager.broadcastMessage(text);
+	}
+
+	/*
+	 * Register a message listener. 
+	 */
+	public void addMessageListener(MessageListener l){
+		mSocketManager.addMessageListener(l);
+	}
+
+	/*
+	 * Remove a message listener from being activated.
+	 */
+	public boolean removeMessageListener(MessageListener l){
+		return mSocketManager.removeMessageListener(l);
 	}
 	
 //	public void setProgressHandler(ProgressHandler progress) {

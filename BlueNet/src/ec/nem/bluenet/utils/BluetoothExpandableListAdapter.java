@@ -1,7 +1,9 @@
-package ec.nem.bluenet;
+package ec.nem.bluenet.utils;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import ec.nem.bluenet.NodeListener;
 
 import android.content.Context;
 import android.view.Gravity;
@@ -18,15 +20,21 @@ public class BluetoothExpandableListAdapter extends BaseExpandableListAdapter im
 	TextView title;
 	
 	public static class Child {
+		String name;
 		TextView title;
 		
-		public Child(Context c, String text){
+		public Child(Context c, String name, String text){
+			this.name = name;
 			title = new TextView(c);
 			title.setText(text);
 			AbsListView.LayoutParams lp = new AbsListView.LayoutParams(
 			ViewGroup.LayoutParams.FILL_PARENT, 64);
 			title.setLayoutParams(lp);
 			title.setPadding(36, 0, 0, 0);
+		}
+		
+		public String getName(){
+			return name;
 		}
 		
 		public View getView(){
@@ -45,15 +53,7 @@ public class BluetoothExpandableListAdapter extends BaseExpandableListAdapter im
 		title.setLayoutParams(lp);
 		title.setPadding(36, 0, 0, 0);
 		title.setGravity(Gravity.CENTER_VERTICAL | Gravity.LEFT);
-		
-		connectedNodes.add(new Child(c, "Example Person 1"));
-		connectedNodes.add(new Child(c, "Example Person 2"));
-		connectedNodes.add(new Child(c, "Example Person 3"));
-		connectedNodes.add(new Child(c, "Example Person 4"));
-		connectedNodes.add(new Child(c, "Example Person 5"));
-		connectedNodes.add(new Child(c, "Example Person 6"));
-		connectedNodes.add(new Child(c, "Example Person 7"));
-		connectedNodes.add(new Child(c, "Example Person 8"));
+
 		onNodeEnter(null);
 	}
 	
@@ -111,20 +111,25 @@ public class BluetoothExpandableListAdapter extends BaseExpandableListAdapter im
 	}
 
 	@Override
-	public void onNodeEnter(Object node) {
+	public void onNodeEnter(String node) {
 		if(node !=  null){
-			connectedNodes.add(new Child(context, node.toString()));
+			connectedNodes.add(new Child(context, node, node));
+			/*title.setText("Connected to network: " +
+					connectedNodes.get(0).getName() +
+					"\nClick to view network.");*/
 		}
-		title.setText("Connected to network: " +
-				connectedNodes.get(0).title.getText() +
-				"\nClick to view network.");
 	}
 
 	@Override
-	public void onNodeExit(Object node) {
-		// \TODO: Remove exiting node by name/id/something
+	public void onNodeExit(String node) {
+		for(int x = 0; x < connectedNodes.size(); x++){
+			if(connectedNodes.get(x).getName() == node){
+				connectedNodes.remove(x);
+				x--;
+			}
+		}
 		if(connectedNodes.size() == 0){
-			title.setText("No connected devices.");
+			//title.setText("No connected devices.");
 		}
 	}
 

@@ -7,6 +7,6 @@ public interface MessageListener {
 	 * node in the network.
 	 * \TODO: Figure out message type that we will be using
 	 */
-	public void onMessageReceived(Object message);
+	public void onMessageReceived(Message message);
 	
 }

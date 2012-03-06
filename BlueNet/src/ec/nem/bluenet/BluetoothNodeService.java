@@ -21,14 +21,9 @@ public class BluetoothNodeService extends Service {
 	private final IBinder binder = new LocalBinder();
 
 	BluetoothAdapter adapter;
-	List<NodeListener> nodeListeners;
-	List<MessageListener> messageListeners;
-
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		nodeListeners = new ArrayList<NodeListener>();
-		messageListeners = new ArrayList<MessageListener>();
 		Toast.makeText(this, "Service started...", Toast.LENGTH_LONG).show();
 
 		mCommThread = new CommunicationThread(this.getApplicationContext());
@@ -45,7 +40,7 @@ public class BluetoothNodeService extends Service {
 			mCommThread = new CommunicationThread(this.getApplicationContext());
 			mCommThread.start();
 		}
-		return START_NOT_STICKY;
+		return START_STICKY;
 	}
 
 	@Override
@@ -94,24 +89,27 @@ public class BluetoothNodeService extends Service {
 	}
 	
 	public int getNetworkSize(){
-		/// \TODO: Figure out how to pull network size
-		return 1;
+		return mCommThread.getAvailableNodes().size();
+	}
+	
+	public void broadcastMessage(String text){
+		mCommThread.broadcastMessage(text);
 	}
 	
 	public void addNodeListener(NodeListener l){
-		nodeListeners.add(l);
+		mCommThread.addNodeListener(l);
 	}
 
 	public boolean removeNodeListener(NodeListener l){
-		return nodeListeners.remove(l);
+		return mCommThread.removeNodeListener(l);
 	}
 
 	public void addMessageListener(MessageListener l){
-		messageListeners.add(l);
+//		messageListeners.add(l);
 	}
 
 	public boolean removeMessageListener(MessageListener l){
-		return messageListeners.remove(l);
+		return false;//messageListeners.remove(l);
 	}
 
 	public class LocalBinder extends Binder{

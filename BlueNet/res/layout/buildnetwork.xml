@@ -77,7 +77,8 @@
 	    	android:layout_toLeftOf="@id/build_network_button_strut"
 		    android:id="@+id/begin_game_button"
 		    android:text="@string/begin_game"
-		    android:enabled="false" />
+		    android:onClick="closeNetworkBuilder"
+		    android:enabled="true" />
 		<Button
 		    android:layout_width="fill_parent"
 	    	android:layout_height="wrap_content"
