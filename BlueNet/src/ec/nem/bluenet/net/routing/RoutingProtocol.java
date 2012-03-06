@@ -195,6 +195,7 @@ public class RoutingProtocol {
 		 * Compare based on distance, then by node MAC, then by predecessor MAC
 		 * Provides a complete ordering so as not to screw with other data structures
 		 */
+		@Override
 		public int compareTo(GraphNode o) {
 			if (distance == o.distance) {
 				int compNode = node.getAddress().compareTo(o.node.getAddress());

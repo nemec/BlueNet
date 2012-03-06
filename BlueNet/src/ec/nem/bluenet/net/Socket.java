@@ -181,7 +181,8 @@ public class Socket {
     		super(l);
     	}
     	
-    	public synchronized void handleMessage(android.os.Message msg) {
+    	@Override
+		public synchronized void handleMessage(android.os.Message msg) {
     		switch(msg.what) {
     		case Segment.TYPE_UDP:
     			data = (byte[]) msg.obj;

@@ -99,7 +99,8 @@ public class BuildNetworkActivity extends Activity implements MessageListener, N
 			builder.setMessage("Error: No Bluetooth Adapter available on this device.")
 			       .setCancelable(false)
 			       .setNeutralButton("OK", new DialogInterface.OnClickListener() {
-			           public void onClick(DialogInterface dialog, int id) {
+			           @Override
+					public void onClick(DialogInterface dialog, int id) {
 			                BuildNetworkActivity.this.finish();
 			           }
 			       });
@@ -125,7 +126,8 @@ public class BuildNetworkActivity extends Activity implements MessageListener, N
 			
 			Button scanButton = (Button) findViewById(R.id.discover_users_button);
 	        scanButton.setOnClickListener(new OnClickListener() {
-	            public void onClick(View v) {
+	            @Override
+				public void onClick(View v) {
 	                doDiscovery();
 	                Button discoverUsers = (Button)v;
 	                discoverUsers.setEnabled(false);
@@ -194,7 +196,8 @@ public class BuildNetworkActivity extends Activity implements MessageListener, N
 	
 	// The on-click listener for all devices in the ListViews
     private OnItemClickListener mDeviceClickListener = new OnItemClickListener() {
-        public void onItemClick(AdapterView<?> av, View v, int arg2, long arg3) {
+        @Override
+		public void onItemClick(AdapterView<?> av, View v, int arg2, long arg3) {
             // Cancel discovery because it's costly and we're about to connect
             btAdapter.cancelDiscovery();
 

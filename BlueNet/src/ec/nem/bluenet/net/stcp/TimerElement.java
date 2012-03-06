@@ -27,6 +27,7 @@ public class TimerElement implements Comparable<TimerElement> {
 		return 0;
 	}
 
+	@Override
 	public int compareTo(TimerElement o) {
 		final long expiration = mStartTime + mWaitTime;
 		final long otherExpiration = o.mStartTime + o.mWaitTime;

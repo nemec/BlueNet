@@ -2,7 +2,6 @@ package ec.nem.bluenet.net;
 
 import java.util.ArrayList;
 
-import ec.nem.bluenet.Node;
 import ec.nem.bluenet.net.Socket.ReceiveHandler;
 
 

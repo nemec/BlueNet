@@ -201,6 +201,7 @@ public class STCPHeader extends TransportSegment {
 		return this.data;
 	}
 
+	@Override
 	public byte[] getRawBytes() {
 		int index = 0;
 		byte[] rawBytes;
@@ -221,6 +222,7 @@ public class STCPHeader extends TransportSegment {
 		return rawBytes;
 	}
 
+	@Override
 	public void setRawBytes(byte[] rawBytes) {
 		// Sum of source + destination + control + info + data
 		int rawLength = rawBytes.length;

@@ -168,6 +168,7 @@ public class LinkLayer extends Layer {
 			mServerSocket = mBluetoothAdapter.listenUsingRfcommWithServiceRecord(NAME, UUID);
 		}
 
+		@Override
 		public void run() {
 			try {
 				while(running) {
@@ -209,6 +210,7 @@ public class LinkLayer extends Layer {
 			mHandlerThread.start();
 			
 			mHandler = new Handler(mHandlerThread.getLooper()) {
+				@Override
 				public void handleMessage(android.os.Message msg) {
 					try {
 						mSocket.getOutputStream().write((byte[])msg.obj);
@@ -249,6 +251,7 @@ public class LinkLayer extends Layer {
 			}
 		}
 		
+		@Override
 		public void run() {
 			// TODO: this is probably really slow ... I should do something
 			// so that I don't have to read byte-by-byte

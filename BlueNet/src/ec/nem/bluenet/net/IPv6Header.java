@@ -42,12 +42,12 @@ public class IPv6Header {
 	
 	/** Gets the 8bit next header field */
 	public int getNextHeader() {
-		return 0xFF & ((int) headerFields[6]);
+		return 0xFF & headerFields[6];
 	}
 	
 	/** Gets the 8bit hop limit field */
 	public int getHopLimit() {
-		return 0xFF & ((int) headerFields[7]);
+		return 0xFF & headerFields[7];
 	}
 	
 	/** Sets the version number (4bits).  Note: Should be set to 6 */

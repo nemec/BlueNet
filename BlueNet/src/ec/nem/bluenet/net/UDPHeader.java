@@ -130,6 +130,7 @@ public class UDPHeader extends TransportSegment {
 		calculateChecksum();
 	}
 	
+	@Override
 	public byte[] getRawBytes() {
 		int index = 0;
 		byte[] rawBuffer = new byte[getLength()];
@@ -143,6 +144,7 @@ public class UDPHeader extends TransportSegment {
 		return rawBuffer;
 	}
 
+	@Override
 	public void setRawBytes(byte[] rawBuffer) {
 		// Sum of source + destination + length + checksum + data
 		int rawLength = rawBuffer.length;
