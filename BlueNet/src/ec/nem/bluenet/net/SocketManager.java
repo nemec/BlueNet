@@ -136,27 +136,6 @@ public final class SocketManager {
 		}
 	}
 	
-	/*
-	 * Send a message to a specific destination.
-	 */
-	public void sendMessage(int port, String text){
-		Socket s = getSocketByPort(port);
-		if(s != null){
-			Message m = new Message("No one.", text, (System.currentTimeMillis() / 1000L));
-			s.send(Message.serialize(m));
-		}
-	}
-	
-	/*
-	 * Send a message to everyone.
-	 */
-	public void broadcastMessage(String text){
-		for(Socket s : mSockets){
-			Message m = new Message("No one.", text, (System.currentTimeMillis() / 1000L));
-			s.send(Message.serialize(m));
-		}
-	}
-	
 	public void addMessageListener(MessageListener l){
 		messageListeners.add(l);
 	}
