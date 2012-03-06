@@ -35,7 +35,6 @@ public final class SocketManager {
 	
 	private List<MessageListener> messageListeners;
 	private ArrayList<Socket> mSockets;
-	private Node mLocalNode;
 	
 	private SocketManager(Context context) {
 		messageListeners = new ArrayList<MessageListener>();
@@ -52,17 +51,13 @@ public final class SocketManager {
 	}
 	
 	/*
-	 * \TODO: Why is this a singleton if it's only used in one place?
+	 * This is the singleton for the class.
 	 */
 	public static SocketManager getInstance(Context context) {
 		if(mInstance == null) {
 			mInstance = new SocketManager(context);
 		}
 		return mInstance;
-	}
-	
-	public void setLocalNode(Node n) {
-		mLocalNode = n;
 	}
 	
 	public void stopManager() {
