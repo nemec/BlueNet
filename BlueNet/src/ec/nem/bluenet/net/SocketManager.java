@@ -33,6 +33,7 @@ public final class SocketManager {
 	private HandlerThread upThread;
 	
 	private ArrayList<Socket> mSockets;
+	private Node mLocalNode;
 	
 	private SocketManager(Context context) {
 		mSockets = new ArrayList<Socket>();
@@ -48,13 +49,17 @@ public final class SocketManager {
 	}
 	
 	/*
-	 * This is the singleton for the class.
+	 * \TODO: Why is this a singleton if it's only used in one place?
 	 */
 	public static SocketManager getInstance(Context context) {
 		if(mInstance == null) {
 			mInstance = new SocketManager(context);
 		}
 		return mInstance;
+	}
+	
+	public void setLocalNode(Node n) {
+		mLocalNode = n;
 	}
 	
 	public void stopManager() {
@@ -132,4 +137,21 @@ public final class SocketManager {
 		}
 	}
 	
+	/***
+	 * 
+	 * \TODO: delete
+	 */
+//	public void storeMessage(byte[] data) {
+//		ec.nem.bluenet.Message message = ec.nem.bluenet.Message.deserialize(data);
+//			
+//		// Write it to the database
+//    	String txName = message.getTransmitterName();
+//    	String txAddr = message.getTransmitterAddress();
+//    	String rxName = mLocalNode.getDeviceName();
+//    	String rxAddr = mLocalNode.getAddress();
+//    	String text = message.getText();
+//    	long time = message.getTimeInMillis();
+//    	
+//        mMessageDatabase.insert(txName, txAddr, rxName, rxAddr, text, time);
+//	}
 }
