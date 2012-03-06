@@ -111,7 +111,7 @@ public class RoutingProtocol {
 			msg.obj = lsa;
 			
 			LinkStateAdvertisement thisLsa = mGraph.get(mNode);
-			for (Node n: thisLsa.other) {
+			for (Node n: thisLsa.others) {
 				mNetworkLayer.sendRoutingMessage(n, msg);
 			}
 			
@@ -138,10 +138,10 @@ public class RoutingProtocol {
 			mGraph.put(mNode, thisLsa);
 		}
 		
-		thisLsa.other.add(n);
+		thisLsa.others.add(n);
 		
 		// Send the new link state announcement to all connected devices
-		for (Node other: thisLsa.other) {
+		for (Node other: thisLsa.others) {
 			Log.d(TAG, MessageFormat.format("Sending updated LSA sequence {0} from {1} to {2}",
 					thisLsa.sequence, thisLsa.source.getAddress(), other.getAddress()));
 			
@@ -243,9 +243,11 @@ public class RoutingProtocol {
 
 			finalGraph.put(gn.node, gn);
 			
-			for (Node n: mGraph.get(gn.node).other) {
-				// Only add the node to the queue if we've received an LSA from it.
-				if (mGraph.containsKey(n)) {
+			for (Node n: mGraph.get(gn.node).others) {
+				/* Only add the node to the queue if we've received an LSA from it
+				 * and is well connected. 
+				 */
+				if (mGraph.containsKey(n) && mGraph.get(n).others.contains(gn.node)) {
 					/* Find the next hop for the routing table */
 					Node predecessor;
 					if (gn.node == mNode) {
@@ -253,10 +255,15 @@ public class RoutingProtocol {
 						 * want to actually set the predecessor */
 						predecessor = n;
 					} else {
-						/* Otherwise, let's take the same predecessor that got us here */
+						/* Otherwise, let's take the same predecessor from the node that got us here */
 						predecessor = gn.predecessor;
 					}
-					
+					/*
+					 * \TODO: when we want to change the connection graph 
+					 * 			we need to make gn.distance+1 to + magic formula 
+					 * 			taking in battery if we can get to the nodes some 
+					 * 			other manner (may be costly)
+					 */
 					GraphNode ngn = new GraphNode(n, gn.distance + 1, predecessor);
 					queue.add(ngn);
 				} else {
