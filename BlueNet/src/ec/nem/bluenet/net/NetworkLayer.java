@@ -30,10 +30,20 @@ public class NetworkLayer extends Layer {
 		mRoutingProtocol = new RoutingProtocol(mCommThread.getLocalNode(), this);
 	}
 	
+	/**
+	 * This connects to all the paired devices
+	 */
 	public void run() {
 		for (Node n: mCommThread.getPairedNodes()) {
 			mRoutingProtocol.connectTo(n);
 		}
+	}
+	
+	/**
+	 * This connects to the specified node
+	 */
+	public void run(Node n) {
+		mRoutingProtocol.connectTo(n);
 	}
 	
 	@Override

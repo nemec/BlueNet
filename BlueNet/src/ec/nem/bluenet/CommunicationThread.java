@@ -77,6 +77,30 @@ public class CommunicationThread extends Thread {
 		mLinkLayer.stopLayer();
 	}
 	
+	public void run(Node n) {
+		running = true;
+		
+		mLinkLayer.run();
+		mNetworkLayer.run(n);
+		
+		while(running) {
+			synchronized(this) {
+				try {
+					// Now just wait until stopThread() is called.
+					wait();
+				}
+				catch(InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		mSocketManager.stopManager();
+		mTransportLayer.stopLayer();
+		mNetworkLayer.stopLayer();
+		mLinkLayer.stopLayer();
+	}
+	
 	public void stopThread() {
 		running = false;
 		synchronized(this) {

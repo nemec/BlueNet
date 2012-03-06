@@ -178,7 +178,7 @@ public class RoutingProtocol {
 	
 	/**
 	 * Helper class for Dijkstra's algorithm.
-	 * @author mmullins
+	 * @author mmullins, Ivan Hernandez
 	 */
 	public class GraphNode implements Comparable<GraphNode> {
 		public Node node;
@@ -258,7 +258,7 @@ public class RoutingProtocol {
 						/* Otherwise, let's take the same predecessor from the node that got us here */
 						predecessor = gn.predecessor;
 					}
-					/*
+					/**
 					 * \TODO: when we want to change the connection graph 
 					 * 			we need to make gn.distance+1 to + magic formula 
 					 * 			taking in battery if we can get to the nodes some 
