@@ -1,10 +1,8 @@
 package ec.nem.bluenet.net;
 
-import ec.nem.bluenet.net.stcp.STCPHeader;
-
 public class Segment {
 	public static final int TYPE_UDP = 0;
-	public static final int TYPE_STCP = 1;
+	public static final int TYPE_STCP = 1;///< \TODO: This isn't used but we're keeping it here anyways just in case 
 	public static final int TYPE_ROUTING = 2;
 	
 	public byte[] nextHopMACAddress = new byte[6];
@@ -17,9 +15,6 @@ public class Segment {
 		switch(type) {
 		case TYPE_UDP:
 			transportSegment = new UDPHeader();
-			break;
-		case TYPE_STCP:
-			transportSegment = new STCPHeader();
 			break;
 		case TYPE_ROUTING:
 			transportSegment = new DataSegment();

@@ -3,9 +3,6 @@ package ec.nem.bluenet.net;
 import android.os.*;
 
 import ec.nem.bluenet.Node;
-import ec.nem.bluenet.net.stcp.Receiver;
-import ec.nem.bluenet.net.stcp.STCPHeader;
-import ec.nem.bluenet.net.stcp.Sender;
 
 /**
  * This socket interfaces with our network structure 
@@ -49,9 +46,6 @@ public class Socket {
 	 */
 	private SocketManager mSocketManager;
 	
-	private Sender mSender;
-	private Receiver mReceiver;
-	
 	public Socket(int type, SocketManager sm) {
 		mType = type;
 		mSourcePort = 0;
@@ -62,11 +56,6 @@ public class Socket {
 		mHandlerThread.start();
 		
 		mSocketManager = sm;
-		
-		if(type == Segment.TYPE_STCP) {
-			mSender = new Sender();
-			mReceiver = new Receiver();
-		}
 	}
 	
 	/* 
@@ -101,13 +90,6 @@ public class Socket {
 			UDPHeader udpHeader = (UDPHeader) mSegment.transportSegment;
 			udpHeader.setSourcePort(mSourcePort);
 			udpHeader.setDestinationPort(mDestinationPort);
-			break;
-		case Segment.TYPE_STCP:
-			STCPHeader stcpHeader = (STCPHeader) mSegment.transportSegment;
-			stcpHeader.setSourcePort(mSourcePort);
-			stcpHeader.setDestinationPort(mDestinationPort);
-			/// \TODO: Send out connection packet, await response?
-			
 			break;
 		}
 		
