@@ -2,7 +2,7 @@ package ec.nem.bluenet.net;
 
 public class Segment {
 	public static final int TYPE_UDP = 0;
-	public static final int TYPE_STCP = 1;///< \TODO: This isn't used but we're keeping it here anyways just in case 
+//	public static final int TYPE_STCP = 1; 
 	public static final int TYPE_ROUTING = 2;
 	
 	public byte[] nextHopMACAddress = new byte[6];
@@ -28,7 +28,7 @@ public class Segment {
 
 	/**
 	 * Gets the transport header type of this socket.
-	 * Either Socket.TYPE_TCP or Socket.TYPE_UDP
+	 * Socket.TYPE_UDP
 	 * 
 	 * @return the mType
 	 */

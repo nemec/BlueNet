@@ -131,9 +131,8 @@ public final class SocketManager {
 				}
 			}
 		}
-		else if(type == Segment.TYPE_STCP) {
-			/// \TODO: Add TCP Header actions
-			throw new IllegalArgumentException("Cannot use Segment type STCP"); 
+		else {
+			throw new IllegalArgumentException("Cannot use Non-UDP Segment"); 
 		}
 	}
 	

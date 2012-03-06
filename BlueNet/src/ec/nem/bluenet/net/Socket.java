@@ -22,7 +22,7 @@ public class Socket {
 	private int mDestinationPort;
 	
 	/*
-	 * UDP or TCP
+	 * Currently always UDP
 	 */
 	private int mType;
 	
@@ -99,9 +99,6 @@ public class Socket {
 		case Segment.TYPE_UDP:
 			mSegment.IPHeader.setNextHeader(IPv6Header.NH_UDP);
 			break;
-		case Segment.TYPE_STCP:
-			mSegment.IPHeader.setNextHeader(IPv6Header.NH_SCTP);
-			break;
 		}
 		
 		return true;
@@ -122,10 +119,6 @@ public class Socket {
 		case Segment.TYPE_UDP:
 			UDPHeader header = (UDPHeader) mSegment.transportSegment;
 			header.setData(data);
-			break;
-		case Segment.TYPE_STCP:
-			/// \TODO: TCP segment, need to check if connected, otherwise
-			// say no?
 			break;
 		}
 		mSocketManager.sendMessageBelow(mSegment);
@@ -166,9 +159,6 @@ public class Socket {
     	public synchronized void handleMessage(android.os.Message msg) {
     		switch(msg.what) {
     		case Segment.TYPE_UDP:
-    			data = (byte[]) msg.obj;
-    			break;
-    		case Segment.TYPE_STCP:
     			data = (byte[]) msg.obj;
     			break;
     		default:

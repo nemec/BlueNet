@@ -2,7 +2,7 @@ package ec.nem.bluenet.net;
 
 public class IPv6Header {
 	public static final int NH_UDP = 1;
-	public static final int NH_SCTP = 2;
+//	public static final int NH_SCTP = 2; 
 	public static final int NH_ROUTING = 3;
 	
 	public byte[] headerFields = new byte[8];
