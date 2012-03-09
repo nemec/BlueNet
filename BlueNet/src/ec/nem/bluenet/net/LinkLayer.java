@@ -288,7 +288,7 @@ public class LinkLayer extends Layer {
 				while(true) {
 					int i = is.read();
 					os.write(i);
-					Log.d(TAG, "Connection thread got something..." + i);
+//					Log.d(TAG, "Connection thread got something..." + i);
 					
 					if (i == 0x7e) {
 						LinkFrame frame = LinkFrame.fromEncapsulated(os.toByteArray());

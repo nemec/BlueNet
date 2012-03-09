@@ -121,7 +121,8 @@ public class BluetoothNodeService extends Service {
 	}
 
 	public void addMessageListener(MessageListener l){
-//		messageListeners.add(l);
+		/// This would break if we don't have the socketmanager in existance \TODO: change this I don't like passing null 
+		SocketManager.getInstance(this.getApplicationContext()).addMessageListener(l);
 	}
 
 	public boolean removeMessageListener(MessageListener l){

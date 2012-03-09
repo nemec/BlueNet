@@ -21,7 +21,7 @@ import ec.nem.bluenet.net.Socket.ReceiveHandler;
  * The SocketManager is a singleton, and users should get an instance of it using
  * getInstance().
  * 
- * @author Darren White
+ * @author Darren White, Ivan Hernandez
  */
 public final class SocketManager {
 	private static final String TAG = "SocketManager";
@@ -118,7 +118,7 @@ public final class SocketManager {
 			int port = header.getDestinationPort();
 			if(port == BLUENET_PORT) {
 				Message message = Message.deserialize(header.getData());
-				Log.d(TAG,"Message Reveived on BluePort:"+message+"\nWe have " + messageListeners.size() + " Listeners");
+				Log.d(TAG,"Message Received on BluePort:"+message+"\nWe have " + messageListeners.size() + " Listeners\n");
 				for(MessageListener l : messageListeners){
 					l.onMessageReceived(message);
 				}
