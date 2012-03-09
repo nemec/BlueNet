@@ -159,4 +159,9 @@ public class UDPHeader extends TransportSegment {
 			index = copyFromBuffer(rawBuffer, data, index);
 		}
 	}
+	
+	@Override
+	public String toString(){
+		return "Source Port:"+ sourcePort.toString() + "\nDestinationPort:"+ destinationPort +"\nData:" + data.toString();
+	}
 }

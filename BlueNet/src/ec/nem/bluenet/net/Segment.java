@@ -35,4 +35,9 @@ public class Segment {
 	public int getType() {
 		return mType;
 	}
+	
+	@Override
+	public String toString(){
+		return "Segment\nGoing to:"+nextHopMACAddress+"\nWith Data:"+transportSegment; 
+	}
 }

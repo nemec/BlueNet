@@ -12,6 +12,7 @@ import ec.nem.bluenet.net.routing.*;
 
 
 import android.os.Message;
+import android.util.Log;
 
 /**
  * Moves datagrams between hosts.  This is where the IP and routing logic resides.
@@ -20,6 +21,7 @@ import android.os.Message;
  */
 
 public class NetworkLayer extends Layer {
+	private static final String TAG = "NetworkLayer";
 	CommunicationThread mCommThread;
 	RoutingTable mRoutingTable = new RoutingTable();
 	RoutingProtocol mRoutingProtocol;
@@ -55,11 +57,13 @@ public class NetworkLayer extends Layer {
 		Node nextHop = mRoutingTable.getNextHop(destination);
 		if(nextHop != null) {
 			s.nextHopMACAddress = nextHop.getAddressBytes();
+			Log.d(TAG, "Sending to:" + s );
 			sendMessageBelow(s);
 		}
 		else {
 			///\TODO: handle route non-existence 
 //			mCommThread.showProgressError(ProgressHandler.ROUTE_FAILURE);
+			Log.e(TAG, "Route doesn't exist" + s );
 		}
 	}
 
@@ -68,6 +72,7 @@ public class NetworkLayer extends Layer {
 		Segment s = (Segment) msg.obj;
 		
 		if (s.IPHeader.getNextHeader() == IPv6Header.NH_ROUTING) {
+			Log.d(TAG, "Forwarding Routing Message.");
 			dispatchRoutingMessage(s);
 		} else {
 			byte[] destination = s.IPHeader.destinationAddress;
@@ -77,10 +82,12 @@ public class NetworkLayer extends Layer {
 				// handle packets that should be transported through this node 
 				Node nextHop = mRoutingTable.getNextHop(destination);
 				s.nextHopMACAddress = nextHop.getAddressBytes();
+				Log.d(TAG, "Forwarding message to:" + nextHop);
 				sendMessageBelow(s);
 			}
 			else {
-				// otherwise send to UI
+				// otherwise send to Transport Layer
+				Log.d(TAG, "Sending up:" + s );
 				sendMessageAbove(s);
 			}
 		}

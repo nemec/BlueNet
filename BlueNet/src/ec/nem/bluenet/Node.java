@@ -12,7 +12,7 @@ import java.util.Formatter;
 /**
  * Represents a user on the mesh.
  * 
- * @author Darren White
+ * @author Darren White, Ivan Hernandez
  */
 public class Node implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -169,5 +169,10 @@ public class Node implements Serializable {
 		}
 		
 		return node;
+	}
+	
+	@Override
+	public String toString(){
+		return "Node\nUsername:"+this.userName + "\nDeviceName:"+deviceName +"\nDeviceAddress" + this.deviceAddress + "\nIP:"+getIPAddress();
 	}
 }

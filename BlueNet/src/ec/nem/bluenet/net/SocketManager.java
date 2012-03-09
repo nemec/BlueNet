@@ -6,6 +6,7 @@ import java.util.List;
 import android.content.Context;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.util.Log;
 import ec.nem.bluenet.Message;
 import ec.nem.bluenet.MessageListener;
 import ec.nem.bluenet.Node;
@@ -23,6 +24,7 @@ import ec.nem.bluenet.net.Socket.ReceiveHandler;
  * @author Darren White
  */
 public final class SocketManager {
+	private static final String TAG = "SocketManager";
 	public static final int BLUENET_PORT = 50000;
 	private static SocketManager mInstance;
 	/** Handles input to this layer from a lower layer */
@@ -116,11 +118,14 @@ public final class SocketManager {
 			int port = header.getDestinationPort();
 			if(port == BLUENET_PORT) {
 				Message message = Message.deserialize(header.getData());
+				Log.d(TAG,"Message Reveived on BluePort:"+message+"\nWe have " + messageListeners.size() + " Listeners");
 				for(MessageListener l : messageListeners){
 					l.onMessageReceived(message);
 				}
 			}
 			else {
+				Message message = Message.deserialize(header.getData());
+				Log.d(TAG,"Message Reveived but not going to the UI apparently:" + message);
 				socket = getSocketByPort(port);
 				if(socket != null) {
 					ReceiveHandler rh = socket.getMessageHandler();

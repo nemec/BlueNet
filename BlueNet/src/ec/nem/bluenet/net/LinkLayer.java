@@ -25,6 +25,7 @@ import ec.nem.bluenet.NodeListener;
  * @author Darren White, Matt Mullins
  */
 public class LinkLayer extends Layer {
+	private static final String TAG = "LinkLayer";
 	public static final String NAME = "BlueMesh";
 	public static final java.util.UUID UUID =
 		java.util.UUID.fromString("7b3612de-9166-4262-9f48-1bddf968c423");
@@ -64,6 +65,7 @@ public class LinkLayer extends Layer {
 			if(h != null){
 				android.os.Message m = h.obtainMessage();
 				m.obj = bytes;
+				Log.d(TAG, "Sending a message:" + m + "\nTo:" + node  );
 				h.sendMessage(m);
 //				mCommThread.showProgress(false);
 			}
@@ -90,7 +92,7 @@ public class LinkLayer extends Layer {
 				socket.connect();
 			}
 			catch(IOException e) {
-				Log.e("DEBUG", "connectToNode, hacking: " + e.getMessage());
+				Log.e(TAG, "connectToNode, hacking: " + e.getMessage());
 				// Try a hack for some broken devices (like ones by HTC) instead:
 				Method m = device.getClass().getMethod("createRfcommSocket", new Class[]{int.class});
 				socket = (BluetoothSocket) m.invoke(device, Integer.valueOf(1));
@@ -102,19 +104,19 @@ public class LinkLayer extends Layer {
 			return ct.getHandler();
 		}
 		catch(IOException e) {
-			Log.e("DEBUG", "connectToNode: " + e.getMessage());
+			Log.e(TAG, "connectToNode: " + e.getMessage());
 			return null;
 		}
 		catch(NoSuchMethodException e){
-			Log.e("DEBUG", "connectToNode: " + e.getMessage());
+			Log.e(TAG, "connectToNode: " + e.getMessage());
 			return null;
 		}
 		catch(InvocationTargetException e){
-			Log.e("DEBUG", "connectToNode: " + e.getMessage());
+			Log.e(TAG, "connectToNode: " + e.getMessage());
 			return null;
 		}
 		catch(IllegalAccessException e){
-			Log.e("DEBUG", "connectToNode: " + e.getMessage());
+			Log.e(TAG, "connectToNode: " + e.getMessage());
 			return null;
 		}
 	}
@@ -199,7 +201,7 @@ public class LinkLayer extends Layer {
 			}
 			catch(IOException e) {
 				if(running) {
-					Log.e("DEBUG", e.getMessage());
+					Log.e(TAG, e.getMessage());
 					e.printStackTrace();
 				}
 			}
@@ -233,7 +235,7 @@ public class LinkLayer extends Layer {
 						mSocket.getOutputStream().write((byte[])msg.obj);
 					}
 					catch(IOException e) {
-//						mCommThread.showProgressError(ProgressHandler.SEND_FAILURE);
+						Log.e(TAG,"Exception:" + e);
 						closeConnection();
 					}
 				}
@@ -286,7 +288,7 @@ public class LinkLayer extends Layer {
 				while(true) {
 					int i = is.read();
 					os.write(i);
-					Log.d("TAG", "Connection thread got something..." + i);
+					Log.d(TAG, "Connection thread got something..." + i);
 					
 					if (i == 0x7e) {
 						LinkFrame frame = LinkFrame.fromEncapsulated(os.toByteArray());
@@ -318,11 +320,13 @@ public class LinkLayer extends Layer {
 							// finally, I think we're ready to send s up the chain
 							android.os.Message m = new android.os.Message();
 							m.obj = s;
+							Log.d(TAG, "Got a message:" + s );
 							hSendAbove.sendMessage(m);
 						}
 						
 						os = new ByteArrayOutputStream();
 					} else if (i == -1) {
+						Log.e(TAG, "Got something that wasn't a message:" + i);
 						break;
 					}
 				}

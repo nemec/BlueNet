@@ -9,7 +9,7 @@ import android.util.Log;
  * 
  * A message here is known as a segment.
  * 
- * @author Darren White
+ * @author Darren White, Ivan Hernandez
  */
 
 public class TransportLayer extends Layer {
@@ -25,6 +25,7 @@ public class TransportLayer extends Layer {
 	@Override
 	public void handleMessageFromAbove(Message msg) {
 		// TODO For now, just send it to the next layer:
+		Log.d(TAG, "Sending Message data down:" + msg );
 		sendMessageBelow(msg.obj);
 	}
 
@@ -32,6 +33,7 @@ public class TransportLayer extends Layer {
 	public void handleMessageFromBelow(Message msg) {
 		// TODO For now, just send it to the next layer:
 		Segment s = (Segment) msg.obj;
+		Log.d(TAG, "Sending Message up:" + s );
 		sendMessageAbove(s);
 	}
 

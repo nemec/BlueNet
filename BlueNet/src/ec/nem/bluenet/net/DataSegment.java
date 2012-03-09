@@ -12,4 +12,9 @@ public class DataSegment extends TransportSegment {
 	public void setRawBytes(byte[] rawBytes) {
 		mData = rawBytes;
 	}
+	
+	@Override
+	public String toString(){
+		return mData.toString();
+	}
 }
