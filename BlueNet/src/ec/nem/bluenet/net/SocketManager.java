@@ -117,6 +117,7 @@ public final class SocketManager {
 			UDPHeader header = (UDPHeader) s.transportSegment;
 			int port = header.getDestinationPort();
 			if(port == BLUENET_PORT) {
+				//send it straight to our UI where magic will handle it
 				Message message = Message.deserialize(header.getData());
 				Log.d(TAG,"Message Received on BluePort:"+message+"\nWe have " + messageListeners.size() + " Listeners\n");
 				for(MessageListener l : messageListeners){
@@ -124,6 +125,7 @@ public final class SocketManager {
 				}
 			}
 			else {
+				//Used with Socket.receive()
 				Message message = Message.deserialize(header.getData());
 				Log.d(TAG,"Message Reveived but not going to the UI apparently:" + message);
 				socket = getSocketByPort(port);

@@ -303,7 +303,7 @@ public class BuildNetworkActivity extends Activity implements MessageListener, N
 
 	@Override
 	public void onMessageReceived(Message message) {
-		Log.d(TAG, "A new message has been received: " + message.toString());
+		Log.d(TAG, "A new message has been received: " + message.getText());
 	}
 	
 	public void closeNetworkBuilder(View v){

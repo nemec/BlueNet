@@ -107,9 +107,12 @@ public class BluetoothNodeService extends Service {
 	}
 	
 	public void sendMessage(Node destinationNode, String text){
+		/// \TODO: remove this if we want to send messages to ourselves too (it'd just go to the UI theoretically)
+		if(destinationNode!=getLocalNode()){
 		Message m = new Message("No one.", text, (System.currentTimeMillis() / 1000L));
 		socket.connect(destinationNode, 50000);
 		socket.send(Message.serialize(m));
+		}
 	}
 	
 	public void addNodeListener(NodeListener l){
