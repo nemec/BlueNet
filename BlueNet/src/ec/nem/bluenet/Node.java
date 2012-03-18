@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.Formatter;
 
@@ -173,6 +174,6 @@ public class Node implements Serializable {
 	
 	@Override
 	public String toString(){
-		return "Node\nUsername:"+this.userName + "\nDeviceName:"+deviceName +"\nDeviceAddress" + this.deviceAddress + "\nIP:"+getIPAddress();
+		return  MessageFormat.format("Node Username:{0}, DeviceName:{1} DeviceAddress{2} IP:{3}",this.userName,this.deviceName,this.deviceAddress,getIPAddress());
 	}
 }

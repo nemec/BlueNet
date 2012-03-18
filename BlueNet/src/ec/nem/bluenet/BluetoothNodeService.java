@@ -101,17 +101,33 @@ public class BluetoothNodeService extends Service {
 	}
 	
 	public void broadcastMessage(String text){
+		if(text.startsWith("/"))
+		{
+			if(text.contains("quit")){
+				mCommThread.stopThread();
+			}
+		}
+		else{
 		for(Node n: mCommThread.getAvailableNodes()){
 			sendMessage(n, text);
+		}
 		}
 	}
 	
 	public void sendMessage(Node destinationNode, String text){
+		if(text.startsWith("/"))
+		{
+			if(text.contains("quit")){
+				mCommThread.stopThread();
+			}
+		}
+		else{
 		/// \TODO: remove this if we want to send messages to ourselves too (it'd just go to the UI theoretically)
 		if(destinationNode!=getLocalNode()){
 		Message m = new Message("No one.", text, (System.currentTimeMillis() / 1000L));
 		socket.connect(destinationNode, 50000);
 		socket.send(Message.serialize(m));
+		}
 		}
 	}
 	

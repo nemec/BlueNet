@@ -4,6 +4,7 @@ package ec.nem.bluenet.net;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.*;
 
@@ -89,14 +90,17 @@ public class LinkLayer extends Layer {
 			socket = device.createRfcommSocketToServiceRecord(UUID);
 			
 			try {
+				Log.d(TAG,MessageFormat.format("Attemtpting to connect to {0}:{1}",n.getName(),n.getAddress()));
 				socket.connect();
+				Log.d(TAG,MessageFormat.format("Succeeded in connecting to {0}:{1}",n.getName(),n.getAddress()));
 			}
 			catch(IOException e) {
-				Log.e(TAG, "connectToNode, hacking: " + e.getMessage());
+				Log.e(TAG,MessageFormat.format("Failed to connect to {0}:{1}\nException:{2}",n.getName(),n.getAddress(),e.getMessage()));
 				// Try a hack for some broken devices (like ones by HTC) instead:
 				Method m = device.getClass().getMethod("createRfcommSocket", new Class[]{int.class});
 				socket = (BluetoothSocket) m.invoke(device, Integer.valueOf(1));
 				socket.connect(); // If this fails, then we can't connect.
+				Log.d(TAG,MessageFormat.format("Succeeded in connecting to {0}:{1}",n.getName(),n.getAddress()));
 			}
 
 			ConnectionThread ct = new ConnectionThread(socket);
@@ -104,19 +108,19 @@ public class LinkLayer extends Layer {
 			return ct.getHandler();
 		}
 		catch(IOException e) {
-			Log.e(TAG, "connectToNode: " + e.getMessage());
+			Log.e(TAG, MessageFormat.format("{0},IOException: {1}" , e.toString(), e.getMessage()));
 			return null;
 		}
 		catch(NoSuchMethodException e){
-			Log.e(TAG, "connectToNode: " + e.getMessage());
+			Log.e(TAG, MessageFormat.format("{0},NoSuchMethodException: {1}" , e.toString(), e.getMessage()));
 			return null;
 		}
 		catch(InvocationTargetException e){
-			Log.e(TAG, "connectToNode: " + e.getMessage());
+			Log.e(TAG, MessageFormat.format("{0},InvocationTargetException: {1}" , e.toString(), e.getMessage()));
 			return null;
 		}
 		catch(IllegalAccessException e){
-			Log.e(TAG, "connectToNode: " + e.getMessage());
+			Log.e(TAG, MessageFormat.format("{0},IllegalAccessException: {1}" , e.toString(), e.getMessage()));
 			return null;
 		}
 	}

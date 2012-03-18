@@ -1,5 +1,7 @@
 package ec.nem.bluenet.net;
 
+import java.text.MessageFormat;
+
 public class Segment {
 	public static final int TYPE_UDP = 0;
 //	public static final int TYPE_STCP = 1; 
@@ -38,6 +40,6 @@ public class Segment {
 	
 	@Override
 	public String toString(){
-		return "Segment\nGoing to:"+nextHopMACAddress+"\nWith Data:"+transportSegment; 
+		return  MessageFormat.format("Segment::Going to:{0} With Data:{1}",nextHopMACAddress,transportSegment); 
 	}
 }
