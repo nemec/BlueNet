@@ -101,13 +101,20 @@ public class CommunicationThread extends Thread {
 		mLinkLayer.stopLayer();
 	}
 	
+	/**
+	 * Drops this node off the network and closes communication
+	 */
 	public void stopThread() {
 		while(running){	
-			running=mNetworkLayer.quit();
+			running=!mNetworkLayer.quit();
 		}
 		synchronized(this) {
 			notifyAll();
 		}
+	}
+	
+	public boolean quit(){
+		return mNetworkLayer.quit();
 	}
 	
 	public boolean isRunning() {
