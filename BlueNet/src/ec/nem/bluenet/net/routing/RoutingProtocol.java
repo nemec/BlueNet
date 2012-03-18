@@ -13,7 +13,7 @@ import ec.nem.bluenet.net.routing.RoutingMessage.Type;
 /**
  * A single run of the Routing Protocol
  * 
- * @author mmullins
+ * @author mmullins, and Ivan Hernandez
  */
 public class RoutingProtocol {
 	static String TAG = "RoutingProtocol";
@@ -93,7 +93,20 @@ public class RoutingProtocol {
 			handleNewLsa(lsa);
 			break;
 		}
-			
+		
+		case Quit: {
+			Node n = (Node) msg.obj;
+			//if we're connected we want the network to know that we're not anymore.
+			if (mLinks.get(n) == LinkState.FullyConnected) {
+				mLinks.put(n, LinkState.None);
+				removeNode(n);
+			} else {
+				Log.e(TAG, MessageFormat.format("Received erroneous Quit from {0}",
+						n.getAddress()));
+			}
+			break;
+		}
+		
 		default:
 			Log.e(TAG, MessageFormat.format("Received some message I don't understand: {0}",
 					msg));
@@ -162,6 +175,35 @@ public class RoutingProtocol {
 			mNetworkLayer.sendRoutingMessage(n, msg);
 		}
 	}
+		
+	void removeNode(Node n) {
+		Log.d(TAG, MessageFormat.format("{0} has quit.", 
+				n.getAddress()));
+		
+		LinkStateAdvertisement thisLsa;
+		if (mGraph.containsKey(mNode)) {
+			thisLsa = mGraph.get(mNode);
+			thisLsa.sequence++;
+		} else {
+			thisLsa = new LinkStateAdvertisement();
+			thisLsa.source = mNode;
+			mGraph.put(mNode, thisLsa);
+		}
+		
+		thisLsa.others.remove(n);
+		
+		// Send the new link state announcement to all connected devices
+		for (Node other: thisLsa.others) {
+			Log.d(TAG, MessageFormat.format("Sending updated LSA sequence {0} from {1} to {2}",
+					thisLsa.sequence, thisLsa.source.getAddress(), other.getAddress()));
+			
+			RoutingMessage msg = new RoutingMessage();
+			msg.type = Type.LinkStateAdvertisement;
+			msg.obj = thisLsa;
+			mNetworkLayer.sendRoutingMessage(other, msg);
+		}
+		
+	}
 
 	public void connectTo(Node n) {
 		RoutingMessage newMsg = new RoutingMessage();
@@ -172,8 +214,34 @@ public class RoutingProtocol {
 		mNetworkLayer.sendRoutingMessage(n, newMsg);
 	}
 	
+	/**
+	 * Obtains all nodes that routing knows about
+	 * @return list of all Routing table key nodes
+	 */
 	public List<Node> getAvailableNodes() {
 		return new ArrayList<Node>(mGraph.keySet());
+	}
+	
+	/**
+	 * Tells this node to drop off the network.
+	 * @return whether quitting was successful
+	 */
+	public boolean quit(){
+		RoutingMessage newMsg = new RoutingMessage();
+		newMsg.type = Type.Quit;
+		newMsg.obj = mNode;
+		LinkStateAdvertisement thisLsa;
+		if (mGraph.containsKey(mNode)) {
+			thisLsa = mGraph.get(mNode);
+		} else {
+			Log.d(TAG, "Quitting when we're not even there...");
+			return false;
+		}
+		for(Node n: thisLsa.others)
+		{
+			mNetworkLayer.sendRoutingMessage(n, newMsg);
+		}
+		return true;
 	}
 	
 	/**

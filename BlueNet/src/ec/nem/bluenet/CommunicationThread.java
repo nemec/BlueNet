@@ -102,7 +102,9 @@ public class CommunicationThread extends Thread {
 	}
 	
 	public void stopThread() {
-		running = false;
+		while(running){	
+			running=mNetworkLayer.quit();
+		}
 		synchronized(this) {
 			notifyAll();
 		}

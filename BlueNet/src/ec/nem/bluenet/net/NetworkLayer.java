@@ -98,8 +98,20 @@ public class NetworkLayer extends Layer {
 		super.stopLayer();
 	}
 	
+	/**
+	 * Obtains all nodes that routing knows about
+	 * @return list of all Routing table key nodes
+	 */
 	public List<Node> getAvailableNodes() {
 		return mRoutingProtocol.getAvailableNodes();
+	}
+	
+	/**
+	 * Tells this node to drop off the network.
+	 * @return whether quitting was successful
+	 */
+	public boolean quit(){
+		return mRoutingProtocol.quit();
 	}
 	
 	public void sendRoutingMessage(Node n, RoutingMessage msg) {
@@ -124,7 +136,7 @@ public class NetworkLayer extends Layer {
 		/* Since the Node class is probably serialized without its addressBytes */ 
 	 	/* TODO: this violates encapsulation A LOT, since it depends on how RoutingMessage is 
 	 	* serialized and depends on Node's serialization mechanism */ 
-	 	if(rm.type == RoutingMessage.Type.Hello || rm.type == RoutingMessage.Type.HelloAck) { 
+	 	if(rm.type == RoutingMessage.Type.Hello || rm.type == RoutingMessage.Type.HelloAck || rm.type == RoutingMessage.Type.Quit) { 
 	 		Node n = (Node) rm.obj; 
 	 		try { 
 	 			Node newNode = NodeFactory.factory.fromMacAddress(n.getAddress());
