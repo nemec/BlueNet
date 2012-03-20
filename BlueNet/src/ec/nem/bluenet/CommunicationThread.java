@@ -57,7 +57,7 @@ public class CommunicationThread extends Thread {
 		running = true;
 		
 		mLinkLayer.run();
-		mNetworkLayer.run();
+		mNetworkLayer.connectToAll();
 		
 		while(running) {
 			synchronized(this) {
@@ -81,7 +81,7 @@ public class CommunicationThread extends Thread {
 		running = true;
 		
 		mLinkLayer.run();
-		mNetworkLayer.run(n);
+		mNetworkLayer.connectTo(n);
 		
 		while(running) {
 			synchronized(this) {
@@ -133,7 +133,7 @@ public class CommunicationThread extends Thread {
 	}
 	
 	public void testPairedNodes() {
-		mNetworkLayer.run();
+		mNetworkLayer.connectToAll();
 	}
 	
 	public Node getLocalNode() {

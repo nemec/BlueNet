@@ -1,7 +1,6 @@
 package ec.nem.bluenet.utils;
 
 import android.content.Context;
-import android.util.Log;
 import android.widget.ArrayAdapter;
 
 public class UniqueArrayAdapter<T> extends ArrayAdapter<T> {

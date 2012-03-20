@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
@@ -15,7 +16,6 @@ import ec.nem.bluenet.BluetoothNodeService.LocalBinder;
 import ec.nem.bluenet.Message;
 import ec.nem.bluenet.MessageListener;
 import ec.nem.bluenet.NodeListener;
-import ec.nem.bluenet.net.SocketManager;
 
 public class DemoActivity extends Activity implements MessageListener, NodeListener {
 
@@ -34,6 +34,18 @@ public class DemoActivity extends Activity implements MessageListener, NodeListe
     	bindService(intent, connection, Context.BIND_AUTO_CREATE);
     }
 	
+	@Override
+	public void onDestroy(){
+		super.onDestroy();
+		// MAKE SURE YOU REMOVE YOURSELF FROM THE LISTENER LIST
+		// OTHERWISE YOU WILL LEAK MEMORY
+		if(connectionService != null){
+			connectionService.removeMessageListener(this);
+			connectionService.removeNodeListener(this);
+		}
+	}
+	
+	//TODO:Service leaked 
 	private ServiceConnection connection = new ServiceConnection() {
 
         @Override
@@ -86,7 +98,9 @@ public class DemoActivity extends Activity implements MessageListener, NodeListe
 			
 			@Override
 			public void run() {
+				Log.d("DEMOACTIVITY", text);
 				logAdapter.add(from + ": " + text);
+				logAdapter.notifyDataSetChanged();
 			}
 		});
 	}
@@ -97,6 +111,9 @@ public class DemoActivity extends Activity implements MessageListener, NodeListe
 		if(message.length() > 0){
 			connectionService.broadcastMessage(message);
 			entry.setText("");
+			
+			logAdapter.add("Me: " + message);
+			logAdapter.notifyDataSetChanged();
 		}
 	}
 }

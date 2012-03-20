@@ -1,6 +1,7 @@
 package ec.nem.bluenet.net;
 
 
+import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.*;
 
@@ -35,7 +36,7 @@ public class NetworkLayer extends Layer {
 	/**
 	 * This connects to all the paired devices
 	 */
-	public void run() {
+	public void connectToAll() {
 		for (Node n: mCommThread.getPairedNodes()) {
 			mRoutingProtocol.connectTo(n);
 		}
@@ -44,7 +45,7 @@ public class NetworkLayer extends Layer {
 	/**
 	 * This connects to the specified node
 	 */
-	public void run(Node n) {
+	public void connectTo(Node n) {
 		mRoutingProtocol.connectTo(n);
 	}
 	
@@ -81,9 +82,18 @@ public class NetworkLayer extends Layer {
 			if (!Arrays.equals(destination, myNode.getIPAddress())) {
 				// handle packets that should be transported through this node 
 				Node nextHop = mRoutingTable.getNextHop(destination);
-				s.nextHopMACAddress = nextHop.getAddressBytes();
-				Log.d(TAG, "Forwarding message to:" + nextHop);
-				sendMessageBelow(s);
+
+				if(nextHop == null){
+					Log.w(TAG,
+						MessageFormat.format(
+								"Could not forward message to {0}.",
+								Segment.getMacAddressAsString(destination)));
+				}
+				else{
+					s.nextHopMACAddress = nextHop.getAddressBytes();
+					Log.d(TAG, "Forwarding message to:" + nextHop);
+					sendMessageBelow(s);
+				}
 			}
 			else {
 				// otherwise send to Transport Layer

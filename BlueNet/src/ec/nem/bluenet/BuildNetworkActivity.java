@@ -206,10 +206,17 @@ public class BuildNetworkActivity extends Activity implements MessageListener, N
 
             // Get the device MAC address, which is the last 17 chars in the View
             String info = ((TextView) v).getText().toString();
-            //String address = info.substring(info.length() - 17);
+            String address = info.substring(info.length() - 17);
 
-            // \TODO: Join group here.
-            Toast.makeText(BuildNetworkActivity.this, "Connected to " + info, Toast.LENGTH_SHORT).show();
+            if(!connectionService.connectTo(address)){
+            	Toast.makeText(BuildNetworkActivity.this, 
+            			"Could not connect to " + info, 
+            			Toast.LENGTH_SHORT).show();
+            }
+            else{
+            	Toast.makeText(BuildNetworkActivity.this, 
+            			"Connected to " + info, Toast.LENGTH_SHORT).show();
+            }
         }
     };
     

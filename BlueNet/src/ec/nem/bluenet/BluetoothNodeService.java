@@ -1,5 +1,6 @@
 package ec.nem.bluenet;
 
+import java.text.ParseException;
 import java.util.List;
 
 import android.app.Service;
@@ -65,7 +66,7 @@ public class BluetoothNodeService extends Service {
 	 * Kills the Communication thread for routing
 	 * \TODO: place leaving network code here for leaving network
 	 */
-    public void stopCommThread() {
+    private void stopCommThread() {
     	Log.d(TAG, "Communication thread is stopping...");
     	if(mCommThread.isRunning()) {
     		mCommThread.stopThread();
@@ -98,6 +99,16 @@ public class BluetoothNodeService extends Service {
 	
 	public int getNetworkSize(){
 		return mCommThread.getAvailableNodes().size();
+	}
+	
+	public boolean connectTo(String address){
+		try {
+			Node n = new Node(address);
+			mCommThread.run(n);
+		} catch (ParseException e) {
+			return false;
+		}
+		return true;
 	}
 	
 	public void broadcastMessage(String text){
