@@ -42,11 +42,11 @@ public class TransportLayer extends Layer {
 		super.stopLayer();
 	}
 	
-	private int estimateRTT(int estRTT, int sampleRTT) {
+	/*private int estimateRTT(int estRTT, int sampleRTT) {
 		return (int) ((0.875 * estRTT) + (0.125 * sampleRTT) + 0.5);
 	}
 	
 	private int estimateDeviance(int devRTT, int sampleRTT, int estRTT) {
 		return (int) ((0.75 * devRTT) + (0.25 * Math.abs(sampleRTT - estRTT)) + 0.5);
-	}
+	}*/
 }

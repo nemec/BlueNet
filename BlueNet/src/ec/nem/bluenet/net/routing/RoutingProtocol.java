@@ -293,7 +293,7 @@ public class RoutingProtocol {
 	 * Implements Dijkstra's algorithm to calculate the routing table
 	 */
 	void recomputeRoutingTable() {
-		LinkStateAdvertisement thisLsa = mGraph.get(mNode);
+		//LinkStateAdvertisement thisLsa = mGraph.get(mNode);
 		Map<Node, GraphNode> finalGraph = new HashMap<Node, GraphNode>();
 		PriorityQueue<GraphNode> queue = new PriorityQueue<GraphNode>();
 		

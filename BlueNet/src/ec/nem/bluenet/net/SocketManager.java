@@ -9,7 +9,6 @@ import android.os.HandlerThread;
 import android.util.Log;
 import ec.nem.bluenet.Message;
 import ec.nem.bluenet.MessageListener;
-import ec.nem.bluenet.Node;
 import ec.nem.bluenet.net.Socket.ReceiveHandler;
 
 /**

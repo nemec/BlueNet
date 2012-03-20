@@ -4,11 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.TextView;
-import ec.nem.bluenet.BluetoothNodeService;
 import ec.nem.bluenet.BuildNetworkActivity;
 import ec.nem.bluenet.R;
-import ec.nem.bluenet.BluetoothNodeService.LocalBinder;
 
 public class BlueNetLibApp extends Activity {
 	

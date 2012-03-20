@@ -2,9 +2,12 @@ package ec.nem.bluenet.net;
 
 import java.util.*;
 
+import android.util.Log;
+
 import ec.nem.bluenet.*;
 
 public class RoutingTable {
+	public static final String TAG = "RoutingTable";
 	List<Route> mEntries = new LinkedList<Route>();
 	
 	public synchronized void add(Route route) {
@@ -28,6 +31,7 @@ public class RoutingTable {
 		
 		/* protect against NullPointerException, in the case that there is no next hop */
 		if (winningRoute == null) {
+			Log.e(TAG, "Next hop is not contained in routing table.");
 			return null;
 		}
 		
