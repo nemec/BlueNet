@@ -98,7 +98,7 @@ public class RoutingProtocol {
 			Node n = (Node) msg.obj;
 			//if we're connected we want the network to know that we're not anymore.
 			if (mLinks.get(n) == LinkState.FullyConnected) {
-				mLinks.put(n, LinkState.None);
+				mLinks.remove(n);
 				removeNode(n);
 			} else {
 				Log.e(TAG, MessageFormat.format("Received erroneous Quit from {0}",
@@ -237,6 +237,7 @@ public class RoutingProtocol {
 			Log.d(TAG, "Quitting when we're not even there...");
 			return false;
 		}
+		Log.d(TAG, "Quitting!");
 		for(Node n: thisLsa.others)
 		{
 			mNetworkLayer.sendRoutingMessage(n, newMsg);
