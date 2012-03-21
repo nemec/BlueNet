@@ -159,8 +159,8 @@ public class CommunicationThread extends Thread {
 	/*
 	 * Register a message listener. 
 	 */
-	public void addMessageListener(MessageListener l){
-		mSocketManager.addMessageListener(l);
+	public boolean addMessageListener(MessageListener l){
+		return mSocketManager.addMessageListener(l);
 	}
 
 	/*
