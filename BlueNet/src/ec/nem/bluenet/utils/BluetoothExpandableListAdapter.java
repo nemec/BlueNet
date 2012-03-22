@@ -3,8 +3,6 @@ package ec.nem.bluenet.utils;
 import java.util.ArrayList;
 import java.util.List;
 
-import ec.nem.bluenet.NodeListener;
-
 import android.content.Context;
 import android.view.Gravity;
 import android.view.View;
@@ -13,7 +11,7 @@ import android.widget.AbsListView;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
-public class BluetoothExpandableListAdapter extends BaseExpandableListAdapter implements NodeListener {
+public class BluetoothExpandableListAdapter extends BaseExpandableListAdapter {
 
 	Context context;
 	List<Child> connectedNodes;
@@ -53,8 +51,6 @@ public class BluetoothExpandableListAdapter extends BaseExpandableListAdapter im
 		title.setLayoutParams(lp);
 		title.setPadding(36, 0, 0, 0);
 		title.setGravity(Gravity.CENTER_VERTICAL | Gravity.LEFT);
-
-		onNodeEnter(null);
 	}
 	
 	@Override
@@ -110,18 +106,17 @@ public class BluetoothExpandableListAdapter extends BaseExpandableListAdapter im
 		return false;
 	}
 
-	@Override
-	public void onNodeEnter(String node) {
+	public void addChild(String node) {
 		if(node !=  null){
 			connectedNodes.add(new Child(context, node, node));
-			/*title.setText("Connected to network: " +
+			title.setText("Connected to network: " +
 					connectedNodes.get(0).getName() +
-					"\nClick to view network.");*/
+					"\nClick to view network.");
+			notifyDataSetChanged();
 		}
 	}
 
-	@Override
-	public void onNodeExit(String node) {
+	public void removeChild(String node) {
 		for(int x = 0; x < connectedNodes.size(); x++){
 			if(connectedNodes.get(x).getName() == node){
 				connectedNodes.remove(x);
@@ -129,8 +124,9 @@ public class BluetoothExpandableListAdapter extends BaseExpandableListAdapter im
 			}
 		}
 		if(connectedNodes.size() == 0){
-			//title.setText("No connected devices.");
+			title.setText("No connected devices.");
 		}
+		notifyDataSetChanged();
 	}
 
 }
