@@ -1,13 +1,18 @@
 package ec.nem.bluenet;
 
+import ec.nem.bluenet.BluetoothNodeService.LocalBinder;
 import ec.nem.bluenet.net.Layer;
 import ec.nem.bluenet.net.LinkLayer;
 import ec.nem.bluenet.net.NetworkLayer;
 import ec.nem.bluenet.net.SocketManager;
 import ec.nem.bluenet.net.TransportLayer;
 
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Handler;
+import android.os.IBinder;
 import android.util.Log;
 import java.util.*;
 
@@ -19,6 +24,7 @@ public class CommunicationThread extends Thread {
 	private final String TAG = "CommunicationThread";
 	
 	private boolean running;
+	private Context context;
 	
 	private SocketManager mSocketManager;
 	private Layer mTransportLayer;
@@ -26,10 +32,14 @@ public class CommunicationThread extends Thread {
 	private LinkLayer mLinkLayer;
 
 	private List<NodeListener> nodeListeners;
+	private long timeout;  // Milliseconds to wait without being notified until quit.
 	
-	public CommunicationThread(Context context) {
+	public CommunicationThread(Context context, long timeout) {
 		Log.d(TAG, "Initializing Communication Thread");
 		setPriority(Thread.MIN_PRIORITY);
+		
+		this.context = context;
+		this.timeout = timeout;
 		
 		nodeListeners = new ArrayList<NodeListener>();
 		
@@ -52,62 +62,66 @@ public class CommunicationThread extends Thread {
 		Log.d(TAG, "Communication Thread Initialized");
 	}
 	
+	/**
+	 * Connects to all nodes in the network.
+	 */
+	public void connectToAll(){
+		mNetworkLayer.connectToAll();
+	}
+	
+	/**
+	 * Connect to a specific node in the network.
+	 * @param n The node to connect to.
+	 */
+	public void connectTo(Node n){
+		mNetworkLayer.connectTo(n);
+	}
+	
+	/**
+	 * Begin the Link Layer and then wait for a timeout.
+	 * If the thread is woken up before the timeout ends,
+	 * it sleeps again for another `timeout` milliseconds.
+	 */
 	@Override
 	public void run() {
 		running = true;
 		
 		mLinkLayer.run();
-		mNetworkLayer.connectToAll();
+		connectToAll();
 		
-		while(running) {
+		long time;
+		do{
+			time = System.currentTimeMillis();
 			synchronized(this) {
 				try {
-					// Now just wait until stopThread() is called.
-					wait();
+					// Wait for timeout (pass in 0 for no timeout)
+					wait(timeout);
+					Log.d(TAG, String.format(
+							"Current wait time: %dms\nTimeout: %dms",
+							System.currentTimeMillis() - time,
+							timeout));
 				}
 				catch(InterruptedException e) {
 					e.printStackTrace();
 				}
 			}
-		}
+		} while(running && System.currentTimeMillis() - time < timeout);
 		
 		mSocketManager.stopManager();
 		mTransportLayer.stopLayer();
 		mNetworkLayer.stopLayer();
 		mLinkLayer.stopLayer();
-	}
-	
-	public void run(Node n) {
-		running = true;
 		
-		mLinkLayer.run();
-		mNetworkLayer.connectTo(n);
-		
-		while(running) {
-			synchronized(this) {
-				try {
-					// Now just wait until stopThread() is called.
-					wait();
-				}
-				catch(InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		
-		mSocketManager.stopManager();
-		mTransportLayer.stopLayer();
-		mNetworkLayer.stopLayer();
-		mLinkLayer.stopLayer();
+		Log.w(TAG, "Service timed out... quitting.");
+		Intent intent = new Intent(context, BluetoothNodeService.class);
+		Log.w(TAG, String.format("Service stopped: %b", context.stopService(intent)));
 	}
 	
 	/**
 	 * Drops this node off the network and closes communication
 	 */
 	public void stopThread() {
-		while(running){	
-			running=!quit();
-		}
+		quit();
 		synchronized(this) {
 			notifyAll();
 		}
@@ -169,23 +183,4 @@ public class CommunicationThread extends Thread {
 	public boolean removeMessageListener(MessageListener l){
 		return mSocketManager.removeMessageListener(l);
 	}
-	
-//	public void setProgressHandler(ProgressHandler progress) {
-//    	mProgressHandler = progress;
-//    }
-//	
-//	public void showProgress(boolean visible) {
-//		if(mProgressHandler != null) {
-//			if(visible)
-//				mProgressHandler.obtainMessage(ProgressHandler.SHOW).sendToTarget();
-//			else
-//				mProgressHandler.obtainMessage(ProgressHandler.HIDE).sendToTarget();
-//		}
-//	}
-//	
-//	public void showProgressError(int errorCode) {
-//		if(mProgressHandler != null) {
-//			mProgressHandler.obtainMessage(errorCode).sendToTarget();
-//		}
-//	}
 }

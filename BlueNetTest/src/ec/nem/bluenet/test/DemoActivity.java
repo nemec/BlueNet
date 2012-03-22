@@ -6,10 +6,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 import ec.nem.bluenet.BluetoothNodeService;
 import ec.nem.bluenet.BluetoothNodeService.LocalBinder;
@@ -22,6 +23,7 @@ public class DemoActivity extends Activity implements MessageListener, NodeListe
 	BluetoothNodeService connectionService;
 	boolean boundToService = false;
 	ArrayAdapter<String> logAdapter;
+	Handler uiHandler;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -29,6 +31,10 @@ public class DemoActivity extends Activity implements MessageListener, NodeListe
         setContentView(R.layout.demo);
         
         logAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
+        ListView l = (ListView)findViewById(R.id.chat_log);
+        l.setAdapter(logAdapter);
+        
+        uiHandler = new Handler();
         
         Intent intent = new Intent(this, BluetoothNodeService.class);
     	bindService(intent, connection, Context.BIND_AUTO_CREATE);
@@ -43,9 +49,9 @@ public class DemoActivity extends Activity implements MessageListener, NodeListe
 			connectionService.removeMessageListener(this);
 			connectionService.removeNodeListener(this);
 		}
+		unbindService(connection);
 	}
 	
-	//TODO:Service leaked 
 	private ServiceConnection connection = new ServiceConnection() {
 
         @Override
@@ -68,11 +74,11 @@ public class DemoActivity extends Activity implements MessageListener, NodeListe
 	@Override
 	public void onNodeEnter(String node) {
 		final String txt = node;
-		runOnUiThread(new Runnable() {
-			
+		uiHandler.post(new Runnable() {
 			@Override
 			public void run() {
 				logAdapter.add("Node " + txt + " has joined the chat.");
+				logAdapter.notifyDataSetChanged();
 			}
 		});
 	}
@@ -80,11 +86,11 @@ public class DemoActivity extends Activity implements MessageListener, NodeListe
 	@Override
 	public void onNodeExit(String node) {
 		final String txt = node;
-		runOnUiThread(new Runnable() {
-			
+		uiHandler.post(new Runnable() {
 			@Override
 			public void run() {
 				logAdapter.add("Node " + txt + " has left the chat.");
+				logAdapter.notifyDataSetChanged();
 			}
 		});
 	}
@@ -94,11 +100,9 @@ public class DemoActivity extends Activity implements MessageListener, NodeListe
 		final String from = message.getTransmitterAddress();
 		final String text = message.getText();
 		
-		runOnUiThread(new Runnable() {
-			
+		uiHandler.post(new Runnable() {
 			@Override
 			public void run() {
-				Log.d("DEMOACTIVITY", text);
 				logAdapter.add(from + ": " + text);
 				logAdapter.notifyDataSetChanged();
 			}

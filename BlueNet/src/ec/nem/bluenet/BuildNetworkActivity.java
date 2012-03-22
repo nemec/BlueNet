@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
@@ -30,7 +31,7 @@ import ec.nem.bluenet.BluetoothNodeService.LocalBinder;
 import ec.nem.bluenet.utils.BluetoothExpandableListAdapter;
 import ec.nem.bluenet.utils.UniqueArrayAdapter;
 
-public class BuildNetworkActivity extends Activity implements MessageListener, NodeListener {
+public class BuildNetworkActivity extends Activity implements NodeListener {
 
 	private static final String TAG = "BuildNetworkActivity";
 	public static String EXTRA_DEVICE_ADDRESS = "device_address";
@@ -44,6 +45,8 @@ public class BuildNetworkActivity extends Activity implements MessageListener, N
 	private ArrayAdapter<String> pairedDevicesArrayAdapter;
     private ArrayAdapter<String> newDevicesArrayAdapter;
     private BluetoothExpandableListAdapter currentNetworkListAdapter;
+    
+    private Handler uiHandler;
     
     private int minimumNetworkSize;
     
@@ -59,8 +62,12 @@ public class BuildNetworkActivity extends Activity implements MessageListener, N
 		super.onCreate(savedInstance);
 		minimumNetworkSize = getIntent().getIntExtra(EXTRA_MINIMUM_NETWORK_SIZE, 2);
 		setContentView(R.layout.buildnetwork);
+		
 		btAdapter = BluetoothAdapter.getDefaultAdapter();
 		currentNetworkListAdapter = new BluetoothExpandableListAdapter(this);
+		
+		uiHandler = new Handler();
+		
 		// Set result CANCELED in case the user backs out
 		setResult(Activity.RESULT_CANCELED);
 	}
@@ -99,6 +106,7 @@ public class BuildNetworkActivity extends Activity implements MessageListener, N
 			}
 		}
 		else{
+			// Display an error and quit because we don't have a Bluetooth Adapter
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setMessage("Error: No Bluetooth Adapter available on this device.")
 			       .setCancelable(false)
@@ -182,10 +190,6 @@ public class BuildNetworkActivity extends Activity implements MessageListener, N
 	private void doDiscovery() {
         Log.d(TAG, "doDiscovery()");
 
-        // Indicate scanning in the title
-        setProgressBarIndeterminateVisibility(true);
-        setTitle(R.string.scanning);
-
         // Turn on sub-title for new devices
         findViewById(R.id.title_new_devices).setVisibility(View.VISIBLE);
 
@@ -220,7 +224,7 @@ public class BuildNetworkActivity extends Activity implements MessageListener, N
         }
     };
     
- // The BroadcastReceiver that listens for discovered devices and
+    // The BroadcastReceiver that listens for discovered devices and
     // changes the title when discovery is finished
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
@@ -235,10 +239,8 @@ public class BuildNetworkActivity extends Activity implements MessageListener, N
                 if (device.getBondState() != BluetoothDevice.BOND_BONDED) {
                     newDevicesArrayAdapter.add(device.getName() + "\n" + device.getAddress());
                 }
-            // When discovery is finished, change the Activity title
+            // When discovery is finished
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
-                setProgressBarIndeterminateVisibility(false);
-                setTitle(R.string.select_device);
                 if (newDevicesArrayAdapter.getCount() == 0) {
                     String noDevices = getResources().getText(R.string.none_found).toString();
                     newDevicesArrayAdapter.add(noDevices);
@@ -257,15 +259,15 @@ public class BuildNetworkActivity extends Activity implements MessageListener, N
             // We've bound to LocalService, cast the IBinder and get LocalService instance
             LocalBinder binder = (LocalBinder) service;
             connectionService = binder.getService();
-            connectionService.addMessageListener(BuildNetworkActivity.this);
             connectionService.addNodeListener(BuildNetworkActivity.this);
-            connectionService.addNodeListener(currentNetworkListAdapter);
             boundToService = true;
         }
 
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
             boundToService = false;
+            connectionService.removeNodeListener(BuildNetworkActivity.this);
+            connectionService = null;
         }
     };
 	
@@ -278,12 +280,19 @@ public class BuildNetworkActivity extends Activity implements MessageListener, N
 	}
 
 	@Override
-	public void onNodeEnter(String node) {
+	public void onNodeEnter(final String node) {
 		Log.d(TAG, "New node in network.");
-		// \TODO: Once network reaches correct size, enable 
-		if(connectionService.getNetworkSize() >= minimumNetworkSize){
-			runOnUiThread(new Runnable() {
-				
+		
+		uiHandler.post(new Runnable() {
+			@Override
+			public void run() {
+				currentNetworkListAdapter.addChild(node);
+			}
+		});
+		
+		if(connectionService != null &&
+				connectionService.getNetworkSize() >= minimumNetworkSize){
+			uiHandler.post(new Runnable() {
 				@Override
 				public void run() {
 					Button b = (Button)findViewById(R.id.begin_game_button);
@@ -296,21 +305,16 @@ public class BuildNetworkActivity extends Activity implements MessageListener, N
 	@Override
 	public void onNodeExit(String node) {
 		Log.d(TAG, "A node left the network.");
-		if(connectionService.getNetworkSize() < minimumNetworkSize){
-			runOnUiThread(new Runnable() {
-				
+		/*if(connectionService != null &&
+				connectionService.getNetworkSize() < minimumNetworkSize){
+			uiHandler.post(new Runnable() {
 				@Override
 				public void run() {
 					Button b = (Button)findViewById(R.id.begin_game_button);
 					b.setEnabled(false);	
 				}
 			});
-		}
-	}
-
-	@Override
-	public void onMessageReceived(Message message) {
-		Log.d(TAG, "A new message has been received: " + message.getText());
+		}*/
 	}
 	
 	public void closeNetworkBuilder(View v){
