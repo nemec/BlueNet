@@ -142,8 +142,8 @@ public final class SocketManager {
 		}
 	}
 	
-	public void addMessageListener(MessageListener l){
-		messageListeners.add(l);
+	public boolean addMessageListener(MessageListener l){
+		return messageListeners.add(l);
 	}
 
 	public boolean removeMessageListener(MessageListener l){
