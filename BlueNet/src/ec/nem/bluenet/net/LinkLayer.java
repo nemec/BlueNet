@@ -71,7 +71,7 @@ public class LinkLayer extends Layer {
 //				mCommThread.showProgress(false);
 			}
 		} catch (Exception e) {
-			// \TODO: Really? Ignore all exceptions? We should fix this. 
+			/// TODO: Really? Ignore all exceptions? We should fix this. 
 			e.printStackTrace();
 //			mCommThread.showProgress(false);
 		}

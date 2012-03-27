@@ -62,7 +62,7 @@ public class NetworkLayer extends Layer {
 			sendMessageBelow(s);
 		}
 		else {
-			///\TODO: handle route non-existence 
+			///TODO: handle route non-existence 
 //			mCommThread.showProgressError(ProgressHandler.ROUTE_FAILURE);
 			Log.e(TAG, "Route doesn't exist" + s );
 		}

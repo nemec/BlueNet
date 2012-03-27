@@ -328,7 +328,7 @@ public class RoutingProtocol {
 						predecessor = gn.predecessor;
 					}
 					/**
-					 * \TODO: when we want to change the connection graph 
+					 * TODO: when we want to change the connection graph 
 					 * 			we need to make gn.distance+1 to + magic formula 
 					 * 			taking in battery if we can get to the nodes some 
 					 * 			other manner (may be costly)
