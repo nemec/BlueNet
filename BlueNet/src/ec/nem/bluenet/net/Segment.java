@@ -1,5 +1,6 @@
 package ec.nem.bluenet.net;
 
+import java.io.ByteArrayOutputStream;
 import java.text.MessageFormat;
 
 public class Segment {
@@ -59,5 +60,31 @@ public class Segment {
 				"Segment::Going to:{0} With Data:{1}",
 				getMacAddressAsString(nextHopMACAddress),
 				transportSegment); 
+	}
+
+	public static Segment deserialize(byte[] data) {
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		Segment s = new Segment(Segment.TYPE_UDP);
+		// pull out IP header
+		
+		os.write(data, 0, 8);
+		s.IPHeader.headerFields = os.toByteArray();
+
+		// pull out source IP
+		os.reset();
+		os.write(data, 8, 16);
+		s.IPHeader.sourceAddress = os.toByteArray();
+
+		// pull out destination IP
+		os.reset();
+		os.write(data, 24, 16);
+		s.IPHeader.destinationAddress = os
+				.toByteArray();
+
+		// rest of the data
+		os.reset();
+		os.write(data, 40, data.length - 40);
+		s.transportSegment.setRawBytes(os.toByteArray());
+		return s;
 	}
 }
