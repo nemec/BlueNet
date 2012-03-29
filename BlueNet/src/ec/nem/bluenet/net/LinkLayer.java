@@ -71,9 +71,8 @@ public class LinkLayer extends Layer {
 				// mCommThread.showProgress(false);
 			}
 		} catch (Exception e) {
-			/// TODO: Really? Ignore all exceptions? We should fix this.
-			e.printStackTrace();
-			// mCommThread.showProgress(false);
+			/// TODO later this can be wtf it shuoldn't happen
+			Log.e(TAG, "Message from above killed us", e);
 		}
 	}
 
@@ -174,6 +173,7 @@ public class LinkLayer extends Layer {
 					out.add(n);
 				}
 			} catch (ParseException ex) {
+				Log.e(TAG,ex.getMessage());
 				// TODO: handle errors, but if Android gives us a bad Bluetooth
 				// address, I'm not sure there's a whole lot I can do about it.
 			}
@@ -300,8 +300,6 @@ public class LinkLayer extends Layer {
 		}
 
 		public void run() {
-			// TODO: this is probably really slow ... I should do something
-			// so that I don't have to read byte-by-byte
 			try {
 				ByteArrayOutputStream os = new ByteArrayOutputStream();
 				InputStream is = mSocket.getInputStream();
@@ -317,7 +315,6 @@ public class LinkLayer extends Layer {
 							LinkFrame frame = LinkFrame.fromEncapsulated(os.toByteArray());
 							// Make sure it at least has an IP header on it
 							if (frame.bytesRead >= 40 && frame.protocol == LinkFrame.PROTOCOL_IP6) {
-								// TODO: determine the type at runtime 
 								Segment s = Segment.deserialize(frame.data);
 
 								// finally, I think we're ready to send s up the

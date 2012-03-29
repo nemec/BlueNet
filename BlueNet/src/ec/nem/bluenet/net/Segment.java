@@ -64,6 +64,7 @@ public class Segment {
 
 	public static Segment deserialize(byte[] data) {
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		//we only support udp
 		Segment s = new Segment(Segment.TYPE_UDP);
 		// pull out IP header
 		

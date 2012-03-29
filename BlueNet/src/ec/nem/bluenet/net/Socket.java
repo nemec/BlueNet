@@ -6,7 +6,7 @@ import ec.nem.bluenet.Node;
 
 /**
  * This socket interfaces with our network structure 
- * TODO: This needs to be heavily tested.
+ * TODO: This needs to be heavily tested. i.e. unit tests
  * @author Ivan Hernandez
  *
  */

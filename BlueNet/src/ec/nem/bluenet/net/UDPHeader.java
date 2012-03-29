@@ -6,26 +6,13 @@ public class UDPHeader extends TransportSegment {
 	private byte[] sourcePort = new byte[2];
 	private byte[] destinationPort = new byte[2];
 	private byte[] length = new byte[2];
-	private byte[] checksum = new byte[2];
+	private final byte[] checksum = new byte[]{0,0};
 	private byte[] data = null;
 	
 	public UDPHeader() {
 		setSourcePort(0);
 		setDestinationPort(0);
 		setLength(0);
-	}
-	
-	/**
-	 * Computed as the 16-bit one's complement of the one's complement sum of a pseudo 
-	 * header of information from the IP header, the UDP header, and the data, padded as 
-	 * needed with zero bytes at the end to make a multiple of two bytes. 
-	 * If the checksum is cleared to zero, then checksuming is disabled. 
-	 * If the computed checksum is zero, then this field must be set to 0xFFFF.
-	 * 
-	 * @return the checksum
-	 */
-	public byte[] getChecksum() {
-		return checksum;
 	}
 	
 	/**
@@ -67,21 +54,6 @@ public class UDPHeader extends TransportSegment {
 	
 	public byte[] getData() {
 		return this.data;
-	}
-	
-	/**
-	 * Computed as the 16-bit one's complement of the one's complement sum of a pseudo 
-	 * header of information from the IP header, the UDP header, and the data, padded as 
-	 * needed with zero bytes at the end to make a multiple of two bytes. 
-	 * If the checksum is cleared to zero, then checksuming is disabled. 
-	 * If the computed checksum is zero, then this field must be set to 0xFFFF.
-	 * 
-	 */
-	private void calculateChecksum() {
-		checksum[0] = 0;
-		checksum[1] = 0;
-		
-		// TODO:  Actually calculate the checksum?
 	}
 	
 	/**
@@ -127,7 +99,6 @@ public class UDPHeader extends TransportSegment {
 	public void setData(byte[] data) {
 		this.data = data;
 		setLength(data.length + 8);
-		calculateChecksum();
 	}
 	
 	public byte[] getRawBytes() {

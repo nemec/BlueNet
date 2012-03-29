@@ -64,7 +64,6 @@ public class BluetoothNodeService extends Service {
 
 	/*
 	 * Kills the Communication thread for routing
-	 * \TODO: place leaving network code here for leaving network
 	 */
     protected void stopCommThread() {
     	Log.d(TAG, "Communication thread is stopping...");

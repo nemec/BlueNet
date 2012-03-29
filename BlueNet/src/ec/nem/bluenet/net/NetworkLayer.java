@@ -53,7 +53,6 @@ public class NetworkLayer extends Layer {
 	public void handleMessageFromAbove(Message msg) {
 		Segment s = (Segment) msg.obj;
 		
-		// TODO: This doesn't handle the case where there isn't a route
 		byte[] destination = s.IPHeader.destinationAddress;
 		Node nextHop = mRoutingTable.getNextHop(destination);
 		if(nextHop != null) {

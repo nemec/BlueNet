@@ -9,6 +9,9 @@ import java.io.Serializable;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.Formatter;
+import java.util.IllegalFormatException;
+
+import android.util.Log;
 
 /**
  * Represents a user on the mesh.
@@ -16,6 +19,7 @@ import java.util.Formatter;
  * @author Darren White, Ivan Hernandez
  */
 public class Node implements Serializable {
+	private final static String TAG = "Node";
 	private static final long serialVersionUID = 1L;
 	
 	/** A human readable name for the user */
@@ -122,20 +126,16 @@ public class Node implements Serializable {
 		// keep the string around for old-times' sake
 		deviceAddress = addr;
 	}
-	
-	public synchronized final void setAddressBytes(byte[] bytes) {
-		// TODO: handle errors if it's not 6 bytes
-		deviceAddress = addressFromBytes(bytes);
-		deviceAddressBytes = bytes;
-	}
-	
+
 	public static String addressFromBytes(byte[] bytes) {
-		String deviceAddress;
-		
+		String deviceAddress = null;
+		try{
 		Formatter f = new Formatter();
 		deviceAddress = f.format("%02X:%02X:%02X:%02X:%02X:%02X", bytes[0],
 				bytes[1], bytes[2], bytes[3], bytes[4], bytes[5]).toString();
-		
+		}catch(IllegalFormatException e){
+			Log.e(TAG, e.getMessage());
+		}
 		return deviceAddress;
 	}
 	

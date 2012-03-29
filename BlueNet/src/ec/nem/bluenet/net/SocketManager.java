@@ -112,7 +112,7 @@ public final class SocketManager {
 		Segment s = (Segment) msg.obj;
 		final int type = s.getType();
 		if(type == Segment.TYPE_UDP) {
-			/// Handles UPD packets TODO: this can probably be deleted down to the else
+			/// Handles UPD packets
 			UDPHeader header = (UDPHeader) s.transportSegment;
 			int port = header.getDestinationPort();
 			if(port == BLUENET_PORT) {

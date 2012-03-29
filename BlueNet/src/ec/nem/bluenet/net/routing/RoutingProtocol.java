@@ -328,10 +328,9 @@ public class RoutingProtocol {
 						predecessor = gn.predecessor;
 					}
 					/**
-					 * TODO: when we want to change the connection graph 
-					 * 			we need to make gn.distance+1 to + magic formula 
-					 * 			taking in battery if we can get to the nodes some 
-					 * 			other manner (may be costly)
+					 * TODO: possibly take into account current structure to
+					 * 		rearrange nodes so everyone will fit but other than that
+					 * 		we're good
 					 */
 					GraphNode ngn = new GraphNode(n, gn.distance + 1, predecessor);
 					queue.add(ngn);
