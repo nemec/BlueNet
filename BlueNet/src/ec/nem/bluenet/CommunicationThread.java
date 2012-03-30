@@ -32,7 +32,7 @@ public class CommunicationThread extends Thread {
 	private LinkLayer mLinkLayer;
 
 	private List<NodeListener> nodeListeners;
-	private long timeout;  // Milliseconds to wait without being notified until quit.
+	private long timeout;  ///< Milliseconds to wait without being notified until quit.
 	
 	public CommunicationThread(Context context, long timeout) {
 		Log.d(TAG, "Initializing Communication Thread");

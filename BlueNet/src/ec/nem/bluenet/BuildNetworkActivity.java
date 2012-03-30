@@ -261,10 +261,12 @@ public class BuildNetworkActivity extends Activity implements NodeListener {
             connectionService = binder.getService();
             connectionService.addNodeListener(BuildNetworkActivity.this);
             boundToService = true;
+            Toast.makeText(connectionService, "Service Connected...", Toast.LENGTH_LONG).show();
         }
 
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
+        	Toast.makeText(connectionService, "Service disconnected...", Toast.LENGTH_LONG).show();
             boundToService = false;
             connectionService.removeNodeListener(BuildNetworkActivity.this);
             connectionService = null;
@@ -281,7 +283,7 @@ public class BuildNetworkActivity extends Activity implements NodeListener {
 
 	@Override
 	public void onNodeEnter(final String node) {
-		Log.d(TAG, "New node in network.");
+		Log.d(TAG, "We have joined the network.");
 		
 		uiHandler.post(new Runnable() {
 			@Override
@@ -304,7 +306,7 @@ public class BuildNetworkActivity extends Activity implements NodeListener {
 
 	@Override
 	public void onNodeExit(String node) {
-		Log.d(TAG, "A node left the network.");
+		Log.d(TAG, "We have left the network.");
 		/*if(connectionService != null &&
 				connectionService.getNetworkSize() < minimumNetworkSize){
 			uiHandler.post(new Runnable() {
