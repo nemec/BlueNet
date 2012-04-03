@@ -42,7 +42,7 @@ public class BluetoothNodeService extends Service {
 			Log.d(TAG, "Tried to start comm thread again oops");
 		}
 		if(socket==null){
-			SocketManager sm = SocketManager.getInstance(this);
+			SocketManager sm = SocketManager.getInstance();
 			socket = sm.requestSocket(Segment.TYPE_UDP);
 			socket.bind(SocketManager.BLUENET_PORT);
 		}
@@ -171,7 +171,7 @@ public class BluetoothNodeService extends Service {
 	public void addMessageListener(MessageListener l){
 		resetTimeout();
 		/// This would break if we don't have the SocketManager in existence
-		SocketManager.getInstance(this.getApplicationContext()).addMessageListener(l);
+		SocketManager.getInstance().addMessageListener(l);
 	}
 
 	public boolean removeMessageListener(MessageListener l){

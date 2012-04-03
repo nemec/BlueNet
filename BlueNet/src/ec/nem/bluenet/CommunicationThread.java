@@ -43,7 +43,7 @@ public class CommunicationThread extends Thread {
 		
 		nodeListeners = new ArrayList<NodeListener>();
 		
-		mSocketManager = SocketManager.getInstance(context);
+		mSocketManager = SocketManager.getInstance();
 		
 		mTransportLayer = new TransportLayer();
 		mLinkLayer = new LinkLayer(this);
@@ -60,6 +60,10 @@ public class CommunicationThread extends Thread {
 		
 		mLinkLayer.setAboveTargetHandler(mNetworkLayer.getBelowHandler());
 		Log.d(TAG, "Communication Thread Initialized");
+	}
+	
+	public Context getContext(){
+		return context;
 	}
 	
 	/**

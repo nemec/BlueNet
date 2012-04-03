@@ -37,7 +37,7 @@ public final class SocketManager {
 	private List<MessageListener> messageListeners;
 	private ArrayList<Socket> mSockets;
 	
-	private SocketManager(Context context) {
+	private SocketManager() {
 		messageListeners = new ArrayList<MessageListener>();
 		mSockets = new ArrayList<Socket>();
 		upThread = new HandlerThread("SocketManager Receive Thread");
@@ -54,9 +54,9 @@ public final class SocketManager {
 	/*
 	 * This is the singleton for the class.
 	 */
-	public static SocketManager getInstance(Context context) {
+	public static SocketManager getInstance() {
 		if(mInstance == null) {
-			mInstance = new SocketManager(context);
+			mInstance = new SocketManager();
 		}
 		return mInstance;
 	}

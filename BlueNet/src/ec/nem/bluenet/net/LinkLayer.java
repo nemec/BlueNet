@@ -249,7 +249,7 @@ public class LinkLayer extends Layer {
 					try {
 						mSocket.getOutputStream().write((byte[]) msg.obj);
 					} catch (IOException e) {
-						Log.e(TAG, "Exception:" + e);
+						Log.d(TAG, mRemoteAddress + " has left the network.");
 						closeConnection();
 					}
 				}
