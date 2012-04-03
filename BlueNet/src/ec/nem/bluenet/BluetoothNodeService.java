@@ -18,25 +18,37 @@ public class BluetoothNodeService extends Service {
 	private static final String TAG = "BluetoothNodeService";
 
 	/** Thread that owns the networking stack */
-	private CommunicationThread mCommThread;
+	private static CommunicationThread mCommThread;
+	/** Timeout to determine how many seconds to wait before the service crashes. Set to 0 for no timeout*/
 	private int commThreadTimeout = 1000 * 20;
 
 	/** Exposes the service to clients. */
 	private final IBinder binder = new LocalBinder();
 	
-	private Socket socket;
+	/** The socket representing our Bluetooth socket. */
+	private static Socket socket;
 
+	/** Provides access to the local bluetooth adapter*/
 	BluetoothAdapter adapter;
+	
 	@Override
 	public void onCreate() {
 		super.onCreate();
 		Toast.makeText(this, "Service started...", Toast.LENGTH_LONG).show();
-
-		mCommThread = new CommunicationThread(this.getApplicationContext(), commThreadTimeout);
-		
-		SocketManager sm = SocketManager.getInstance(this);
-        socket = sm.requestSocket(Segment.TYPE_UDP);
-        socket.bind(SocketManager.BLUENET_PORT);
+		if(mCommThread==null){
+			mCommThread = new CommunicationThread(this.getApplicationContext(),	commThreadTimeout);
+		}
+		else{
+			Log.d(TAG, "Tried to start comm thread again oops");
+		}
+		if(socket==null){
+			SocketManager sm = SocketManager.getInstance(this);
+			socket = sm.requestSocket(Segment.TYPE_UDP);
+			socket.bind(SocketManager.BLUENET_PORT);
+		}
+		else{
+			Log.d(TAG, "Tried to rebind to our own socket again...");
+		}
 	}
 
 	@Override
@@ -64,7 +76,6 @@ public class BluetoothNodeService extends Service {
 
 	/*
 	 * Kills the Communication thread for routing
-	 * \TODO: place leaving network code here for leaving network
 	 */
     protected void stopCommThread() {
     	Log.d(TAG, "Communication thread is stopping...");

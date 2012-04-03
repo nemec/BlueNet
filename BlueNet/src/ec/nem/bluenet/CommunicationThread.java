@@ -32,7 +32,7 @@ public class CommunicationThread extends Thread {
 	private LinkLayer mLinkLayer;
 
 	private List<NodeListener> nodeListeners;
-	private long timeout;  // Milliseconds to wait without being notified until quit.
+	private long timeout;  ///< Milliseconds to wait without being notified until quit.
 	
 	public CommunicationThread(Context context, long timeout) {
 		Log.d(TAG, "Initializing Communication Thread");
@@ -72,6 +72,7 @@ public class CommunicationThread extends Thread {
 	/**
 	 * Connect to a specific node in the network.
 	 * @param n The node to connect to.
+	 * TODO make sure that a node connects if it is possible i.e. if two nodes have a pairing and one is full push it to the other.
 	 */
 	public void connectTo(Node n){
 		mNetworkLayer.connectTo(n);

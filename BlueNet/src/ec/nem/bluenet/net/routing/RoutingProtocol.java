@@ -21,15 +21,18 @@ public class RoutingProtocol {
 	/* static public ConcurrentHashMap<String, RoutingProtocol> devices =
 		new ConcurrentHashMap<String, RoutingProtocol>();
 	*/
-	
+	/// The node representing us
 	Node mNode;
+	///Our network layer that we use to send messages
 	NetworkLayer mNetworkLayer;
 
+	///Constructs a routing table with our local node and Network Layer Access
 	public RoutingProtocol(Node node, NetworkLayer networkLayer) {
 		mNode = node;
 		mNetworkLayer = networkLayer;
 	}
 	
+	///Possible states for nodes on the network to be in.
 	enum LinkState {
 		None,
 		HelloSent,
@@ -37,18 +40,20 @@ public class RoutingProtocol {
 		FullyConnected
 	};
 	
+	
 	HashMap<Node, LinkState> mLinks = new HashMap<Node, LinkState>();
+	///Nodes that we can send messages to as well as the route to get to that node.
 	HashMap<Node, LinkStateAdvertisement> mGraph = new HashMap<Node, LinkStateAdvertisement>();
 	
 	public void receiveMessage(RoutingMessage msg) {
 		switch (msg.type) {
 		case Hello: {
 			Node n = (Node) msg.obj;
-			Log.d(TAG, MessageFormat.format("Received Hello packet from {0}",
-					n.getAddress()));
-			if (!mLinks.containsKey(n) || mLinks.get(n) == LinkState.None) {
-				Log.d(TAG, MessageFormat.format("Sending Hello packet to {0}",
-						n.getAddress()));
+			Log.d(TAG, MessageFormat.format("Received Hello packet from {0}", n.getAddress()));
+			
+			LinkState state = mLinks.get(n);
+			if (state==null || state == LinkState.None) {
+				Log.d(TAG, MessageFormat.format("Sending Hello packet to {0}", n.getAddress()));
 				
 				RoutingMessage newMsg = new RoutingMessage();
 				newMsg.type = Type.Hello;
@@ -56,34 +61,32 @@ public class RoutingProtocol {
 				
 				mLinks.put(n, LinkState.HelloSent);
 				mNetworkLayer.sendRoutingMessage(n, newMsg);
-			} else if (mLinks.get(n) == LinkState.HelloSent) {
+			} else if (state == LinkState.HelloSent) {
 				mLinks.put(n, LinkState.FullyConnected);
 					
-				Log.d(TAG, MessageFormat.format("Sending HelloAck to {0}",
-						n.getAddress()));
+				Log.d(TAG, MessageFormat.format("Sending HelloAck to {0}",	n.getAddress()));
 				
 				RoutingMessage newMsg = new RoutingMessage();
 				newMsg.type = Type.HelloAck;
 				newMsg.obj = mNode;
-
 				mNetworkLayer.sendRoutingMessage(n, newMsg);
 
 				handshakeFinished(n);
 			} else {
-				Log.e(TAG, MessageFormat.format("Received erroneous Hello from {0}",
-						n.getAddress()));
+				Log.e(TAG, MessageFormat.format("Received erroneous Hello from {0}. Current state:{1}", n.getAddress(), state));
 			}
 			break;
 		}
 			
 		case HelloAck: {
 			Node n = (Node) msg.obj;
-			if (mLinks.get(n) == LinkState.HelloSent) {
+			//does same in hello if we sent a hello so that we can do things more quickly
+			LinkState state = mLinks.get(n);
+			if (state == LinkState.HelloSent) {
 				mLinks.put(n, LinkState.FullyConnected);
 				handshakeFinished(n);
 			} else {
-				Log.e(TAG, MessageFormat.format("Received erroneous HelloAck from {0}",
-						n.getAddress()));
+				Log.e(TAG, MessageFormat.format("Received erroneous HelloAck from {0}. Current state:{1}", n.getAddress(), state));
 			}
 			break;
 		}
@@ -97,19 +100,19 @@ public class RoutingProtocol {
 		case Quit: {
 			Node n = (Node) msg.obj;
 			//if we're connected we want the network to know that we're not anymore.
-			if (mLinks.get(n) == LinkState.FullyConnected) {
+			LinkState state = mLinks.get(n);
+			if (state == LinkState.FullyConnected) {
 				mLinks.remove(n);
+				
 				removeNode(n);
 			} else {
-				Log.e(TAG, MessageFormat.format("Received erroneous Quit from {0}",
-						n.getAddress()));
+				Log.e(TAG, MessageFormat.format("Received erroneous Quit from {0}. Current state:{1}", n.getAddress(), state));
 			}
 			break;
 		}
 		
 		default:
-			Log.e(TAG, MessageFormat.format("Received some message I don't understand: {0}",
-					msg));
+			Log.e(TAG, MessageFormat.format("Received some message I don't understand: {0}", msg));
 		}
 	}
 	
@@ -138,8 +141,7 @@ public class RoutingProtocol {
 	}
 	
 	void handshakeFinished(Node n) {
-		Log.d(TAG, MessageFormat.format("Finished handshake with {0}", 
-				n.getAddress()));
+		Log.d(TAG, MessageFormat.format("Finished handshake with {0}", n.getAddress()));
 		
 		LinkStateAdvertisement thisLsa;
 		if (mGraph.containsKey(mNode)) {
@@ -153,32 +155,42 @@ public class RoutingProtocol {
 		
 		thisLsa.others.add(n);
 		
-		// Send the new link state announcement to all connected devices
-		for (Node other: thisLsa.others) {
-			Log.d(TAG, MessageFormat.format("Sending updated LSA sequence {0} from {1} to {2}",
-					thisLsa.sequence, thisLsa.source.getAddress(), other.getAddress()));
-			
-			RoutingMessage msg = new RoutingMessage();
-			msg.type = Type.LinkStateAdvertisement;
-			msg.obj = thisLsa;
-			mNetworkLayer.sendRoutingMessage(other, msg);
-		}
+		SendLSA(thisLsa);
 		
 		// Send the entire link state database to the new node
-		for (Node origin: mGraph.keySet()) {
+		for (Node origin : mGraph.keySet()) {
 			// Ignore the LSA received directly from the connecting node
-			if (n == origin) continue;
-			
+			if (n == origin)
+				continue;
+
 			RoutingMessage msg = new RoutingMessage();
 			msg.type = Type.LinkStateAdvertisement;
 			msg.obj = mGraph.get(origin);
 			mNetworkLayer.sendRoutingMessage(n, msg);
 		}
 	}
-		
+
+	/**
+	 * Sends the Link State Advertisement to all connected nodes. 
+	 * @param lsa The Link State Advertisement to send to 
+	 */
+	private void SendLSA(LinkStateAdvertisement lsa) {
+		// Send the new link state announcement to all connected devices
+		for (Node other : lsa.others) {
+			Log.d(TAG, MessageFormat.format(
+					"Sending updated LSA sequence {0} from {1} to {2}",
+					lsa.sequence, lsa.source.getAddress(),
+					other.getAddress()));
+
+			RoutingMessage msg = new RoutingMessage();
+			msg.type = Type.LinkStateAdvertisement;
+			msg.obj = lsa;
+			mNetworkLayer.sendRoutingMessage(other, msg);
+		}
+	}
+
 	void removeNode(Node n) {
-		Log.d(TAG, MessageFormat.format("{0} has quit.", 
-				n.getAddress()));
+		Log.d(TAG, MessageFormat.format("{0} has quit.", n.getAddress()));
 		
 		LinkStateAdvertisement thisLsa;
 		if (mGraph.containsKey(mNode)) {
@@ -192,16 +204,7 @@ public class RoutingProtocol {
 		
 		thisLsa.others.remove(n);
 		
-		// Send the new link state announcement to all connected devices
-		for (Node other: thisLsa.others) {
-			Log.d(TAG, MessageFormat.format("Sending updated LSA sequence {0} from {1} to {2}",
-					thisLsa.sequence, thisLsa.source.getAddress(), other.getAddress()));
-			
-			RoutingMessage msg = new RoutingMessage();
-			msg.type = Type.LinkStateAdvertisement;
-			msg.obj = thisLsa;
-			mNetworkLayer.sendRoutingMessage(other, msg);
-		}
+		SendLSA(thisLsa);
 		
 	}
 
@@ -328,10 +331,9 @@ public class RoutingProtocol {
 						predecessor = gn.predecessor;
 					}
 					/**
-					 * \TODO: when we want to change the connection graph 
-					 * 			we need to make gn.distance+1 to + magic formula 
-					 * 			taking in battery if we can get to the nodes some 
-					 * 			other manner (may be costly)
+					 * TODO: possibly take into account current structure to
+					 * 		rearrange nodes so everyone will fit but other than that
+					 * 		we're good
 					 */
 					GraphNode ngn = new GraphNode(n, gn.distance + 1, predecessor);
 					queue.add(ngn);
@@ -342,10 +344,21 @@ public class RoutingProtocol {
 		}
 		
 		Log.d(TAG, "Routing table computation complete!");
+		PrintRoutingTable(finalGraph);
 		mRoutingTable = finalGraph;
 	}
 	
+
 	public Map<Node, GraphNode> getRoutingTable() {
 		return mRoutingTable;
+	}
+	
+	/**
+	 * Saves the routing table passed in to a text file named by timestamp
+	 * @param rt The Routing table to print
+	 */
+	private void PrintRoutingTable(Map<Node, GraphNode> rt) {
+		// TODO Auto-generated method stub
+		
 	}
 }
