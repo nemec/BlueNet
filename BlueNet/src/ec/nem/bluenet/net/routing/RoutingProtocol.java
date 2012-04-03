@@ -2,6 +2,8 @@ package ec.nem.bluenet.net.routing;
 
 
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.*;
 
@@ -16,6 +18,9 @@ import ec.nem.bluenet.net.routing.RoutingMessage.Type;
  * @author mmullins, and Ivan Hernandez
  */
 public class RoutingProtocol {
+	///Graph drawing header
+	static final String PrintGraphHeader = "digraph \"Routes\" {\n\tgraph [ fontsize=12,\n\t\tlabel=\"\n\n\n\nRouting Graph View\nBulueNet, 2012\" ];\n\tnode [ shape = polygon,\n\t\tsides=4,\n\t\tdistortion=\"0.0\",\n\t\torientation=\"0.0\",\n\t\tskew=\"0.0\",\n\t\tcolor=white,\n\t\tstyle=filled ];";
+	
 	static String TAG = "RoutingProtocol";
 	
 	/* static public ConcurrentHashMap<String, RoutingProtocol> devices =
@@ -25,7 +30,7 @@ public class RoutingProtocol {
 	Node mNode;
 	///Our network layer that we use to send messages
 	NetworkLayer mNetworkLayer;
-
+	
 	///Constructs a routing table with our local node and Network Layer Access
 	public RoutingProtocol(Node node, NetworkLayer networkLayer) {
 		mNode = node;
@@ -40,10 +45,12 @@ public class RoutingProtocol {
 		FullyConnected
 	};
 	
-	
+	///State of the nodes in the graph
 	HashMap<Node, LinkState> mLinks = new HashMap<Node, LinkState>();
-	///Nodes that we can send messages to as well as the route to get to that node.
+	///List of known link state advertisements
 	HashMap<Node, LinkStateAdvertisement> mGraph = new HashMap<Node, LinkStateAdvertisement>();
+	///The actual Routing Table
+	Map<Node, GraphNode> mRoutingTable;
 	
 	public void receiveMessage(RoutingMessage msg) {
 		switch (msg.type) {
@@ -253,14 +260,18 @@ public class RoutingProtocol {
 	 * @author mmullins, Ivan Hernandez
 	 */
 	public class GraphNode implements Comparable<GraphNode> {
+		///Current node
 		public Node node;
+		///Distance Between nodes
 		public int distance;
-		public Node predecessor;
+		///The node we are connected to
+		public Node pairedNode;
 	
+		///Initializes a Graph node with starting node and the node it is paired with as well as the distance between nodes.
 		public GraphNode(Node n, int d, Node p) {
 			node = n;
 			distance = d;
-			predecessor = p;
+			pairedNode = p;
 		}
 		
 		/**
@@ -270,7 +281,7 @@ public class RoutingProtocol {
 		public int compareTo(GraphNode o) {
 			if (distance == o.distance) {
 				int compNode = node.getAddress().compareTo(o.node.getAddress());
-				int compPred = predecessor.getAddress().compareTo(o.node.getAddress());
+				int compPred = pairedNode.getAddress().compareTo(o.node.getAddress());
 				
 				if (compNode != 0) {
 					return compNode;
@@ -290,8 +301,6 @@ public class RoutingProtocol {
 		}
 	}
 	
-	Map<Node, GraphNode> mRoutingTable;
-
 	/**
 	 * Implements Dijkstra's algorithm to calculate the routing table
 	 */
@@ -328,7 +337,7 @@ public class RoutingProtocol {
 						predecessor = n;
 					} else {
 						/* Otherwise, let's take the same predecessor from the node that got us here */
-						predecessor = gn.predecessor;
+						predecessor = gn.pairedNode;
 					}
 					/**
 					 * TODO: possibly take into account current structure to
@@ -358,7 +367,55 @@ public class RoutingProtocol {
 	 * @param rt The Routing table to print
 	 */
 	private void PrintRoutingTable(Map<Node, GraphNode> rt) {
-		// TODO Auto-generated method stub
+		String logfile = "/sdcard/BlueNet/logs/table" + System.currentTimeMillis() + ".txt";
 		
+		try {
+			// open file to write in our dir and timestamp
+			FileWriter f = new FileWriter(logfile);
+			
+			//write dotty header
+			f.write(PrintGraphHeader);
+			
+			for(Node n:rt.keySet()){
+				// print out the graph Nodes and status
+				f.write("\"" + n.toString() + "\"" +
+							" [sides=9, distortion=\""+ 0.936354 + "\"," +
+								" orientation=28, skew=\"" + -0.126818 + "\",");
+								// print states for each node.
+				LinkState state = mLinks.get(n);
+				if (state != null) {
+					switch (state) {
+					case None:
+						f.write("color=salmon2"); 
+						break;
+					case HelloSent:
+						f.write("color=yellow"); 
+						break;
+					case HandshakeCompleted:
+						f.write("color=blue"); 
+						break;
+					case FullyConnected:
+						f.write("color=green"); 
+						break;
+					default:
+						f.write("color=red"); 
+						break;
+					}
+				}
+				f.write("];\n\t\t");
+			}
+			for(GraphNode n:rt.values()){
+				//Write out connections
+				f.write("\"" + n.node.toString() + "\" -> \'" + n.pairedNode + "\";" );
+			}
+			
+			//write closing braces
+			f.write("\n}");
+			
+			// close the file
+			f.close();
+		} catch (IOException e) {
+			Log.e(TAG, logfile + " not found.");
+		}
 	}
 }

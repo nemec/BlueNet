@@ -34,9 +34,9 @@ public class BluetoothNodeService extends Service {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		Toast.makeText(this, "Service started...", Toast.LENGTH_LONG).show();
 		if(mCommThread==null){
 			mCommThread = new CommunicationThread(this.getApplicationContext(),	commThreadTimeout);
+			Toast.makeText(this, "Service started...", Toast.LENGTH_LONG).show();
 		}
 		else{
 			Log.d(TAG, "Tried to start comm thread again oops");
