@@ -55,12 +55,14 @@ public class BluetoothNodeService extends Service {
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		Log.d(TAG, "Received start id " + startId + ": " + intent);
 
-		mCommThread.setDaemon(true);
+		Log.d(TAG, "Thread state when calling startService: " + mCommThread.getState().name());
 		if(mCommThread.getState() == Thread.State.NEW) {
+			mCommThread.setDaemon(true);
 			mCommThread.start();
 		}
 		else if(mCommThread.getState() == Thread.State.TERMINATED) {
 			mCommThread = new CommunicationThread(this.getApplicationContext(), commThreadTimeout);
+			mCommThread.setDaemon(true);
 			mCommThread.start();
 		}
 		return START_STICKY;
