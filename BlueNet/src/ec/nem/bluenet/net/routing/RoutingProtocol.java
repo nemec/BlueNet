@@ -213,6 +213,9 @@ public class RoutingProtocol {
 		}
 		
 		thisLsa.others.remove(n);
+		mGraph.remove(n);
+		mLinks.remove(n);
+		recomputeRoutingTable();
 		
 		SendLSA(thisLsa);
 		
@@ -394,7 +397,7 @@ public class RoutingProtocol {
 
 				for (Node n : rt.keySet()) {
 					// print out the graph Nodes and status
-					f.write("\"" + n.getAddress() + "\""
+					f.write("\"" + n + "\""
 							+ " [sides=" + 9 + ", distortion=\"" + 0.936354 + "\","
 							+ " orientation=28, skew=\"" + -0.126818 + "\"");
 					// print states for each node.
@@ -422,8 +425,8 @@ public class RoutingProtocol {
 				}
 				for (GraphNode n : rt.values()) {
 					// Write out connections
-					f.write("\"" + n.node.getAddress() + "\" -> \""
-							+ n.nextHop.getAddress() + "\";\n\t\t");
+					f.write("\"" + n.node + "\" -> \""
+							+ n.nextHop + "\";\n\t\t");
 				}
 
 				// write closing braces
