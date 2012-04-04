@@ -165,7 +165,7 @@ public class NetworkLayer extends Layer {
 
 			for (Node n : protocolTable.keySet()) {
 				// TODO If we want to change the distance in the graph this is where we do it.
-				routingTable.add(new Route(n.getIPAddress(), (short) 128, protocolTable.get(n).pairedNode));
+				routingTable.add(new Route(n.getIPAddress(), (short) 128, protocolTable.get(n).nextHop));
 			}
 
 			mRoutingTable = routingTable;

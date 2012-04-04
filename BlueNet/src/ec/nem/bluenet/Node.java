@@ -174,6 +174,6 @@ public class Node implements Serializable {
 	
 	@Override
 	public String toString(){
-		return  MessageFormat.format("Node Username:{0}, DeviceName:{1}, DeviceAddress:{2}, IP:{3}",this.userName,this.deviceName,this.deviceAddress,getIPAddress());
+		return  MessageFormat.format("Node Username:{0}, DeviceName:{1}, DeviceAddress{2}, IP:{3}",this.userName,this.deviceName,this.deviceAddress,addressFromBytes(getIPAddress()));
 	}
 }

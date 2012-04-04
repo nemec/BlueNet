@@ -20,7 +20,7 @@ public class BluetoothNodeService extends Service {
 	/** Thread that owns the networking stack */
 	private static CommunicationThread mCommThread;
 	/** Timeout to determine how many seconds to wait before the service crashes. Set to 0 for no timeout*/
-	private int commThreadTimeout = 1000 * 20;
+	private int commThreadTimeout = 1000 * 60 * 10;
 
 	/** Exposes the service to clients. */
 	private final IBinder binder = new LocalBinder();

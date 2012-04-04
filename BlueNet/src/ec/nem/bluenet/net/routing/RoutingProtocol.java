@@ -2,11 +2,13 @@ package ec.nem.bluenet.net.routing;
 
 
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.*;
 
+import android.os.Environment;
 import android.util.Log;
 import ec.nem.bluenet.Node;
 import ec.nem.bluenet.net.NetworkLayer;
@@ -19,7 +21,7 @@ import ec.nem.bluenet.net.routing.RoutingMessage.Type;
  */
 public class RoutingProtocol {
 	///Graph drawing header
-	static final String PrintGraphHeader = "digraph \"Routes\" {\n\tgraph [ fontsize=12,\n\t\tlabel=\"\n\n\n\nRouting Graph View\nBulueNet, 2012\" ];\n\tnode [ shape = polygon,\n\t\tsides=4,\n\t\tdistortion=\"0.0\",\n\t\torientation=\"0.0\",\n\t\tskew=\"0.0\",\n\t\tcolor=white,\n\t\tstyle=filled ];";
+	static final String PrintGraphHeader = "digraph \"Routes\" {\n\tgraph [ fontsize=12,\n\t\tlabel=\"\\n\\n\\n\\nRouting Graph View\\nBulueNet, 2012\" ];\n\tnode [ shape = polygon,\n\t\tsides=4,\n\t\tdistortion=\"0.0\",\n\t\torientation=\"0.0\",\n\t\tskew=\"0.0\",\n\t\tcolor=white,\n\t\tstyle=filled ];\n\t\t";
 	
 	static String TAG = "RoutingProtocol";
 	
@@ -194,6 +196,7 @@ public class RoutingProtocol {
 			msg.obj = lsa;
 			mNetworkLayer.sendRoutingMessage(other, msg);
 		}
+		PrintRoutingTable(mRoutingTable);
 	}
 
 	void removeNode(Node n) {
@@ -265,13 +268,13 @@ public class RoutingProtocol {
 		///Distance Between nodes
 		public int distance;
 		///The node we are connected to
-		public Node pairedNode;
+		public Node nextHop;
 	
 		///Initializes a Graph node with starting node and the node it is paired with as well as the distance between nodes.
 		public GraphNode(Node n, int d, Node p) {
 			node = n;
 			distance = d;
-			pairedNode = p;
+			nextHop = p;
 		}
 		
 		/**
@@ -281,7 +284,7 @@ public class RoutingProtocol {
 		public int compareTo(GraphNode o) {
 			if (distance == o.distance) {
 				int compNode = node.getAddress().compareTo(o.node.getAddress());
-				int compPred = pairedNode.getAddress().compareTo(o.node.getAddress());
+				int compPred = nextHop.getAddress().compareTo(o.node.getAddress());
 				
 				if (compNode != 0) {
 					return compNode;
@@ -330,21 +333,21 @@ public class RoutingProtocol {
 				 */
 				if (mGraph.containsKey(n) && mGraph.get(n).others.contains(gn.node)) {
 					/* Find the next hop for the routing table */
-					Node predecessor;
+					Node nextHop;
 					if (gn.node == mNode) {
 						/* If the node that got us here is this node, then we
 						 * want to actually set the predecessor */
-						predecessor = n;
+						nextHop = n;
 					} else {
 						/* Otherwise, let's take the same predecessor from the node that got us here */
-						predecessor = gn.pairedNode;
+						nextHop = gn.nextHop;
 					}
 					/**
 					 * TODO: possibly take into account current structure to
 					 * 		rearrange nodes so everyone will fit but other than that
 					 * 		we're good
 					 */
-					GraphNode ngn = new GraphNode(n, gn.distance + 1, predecessor);
+					GraphNode ngn = new GraphNode(n, gn.distance + 1, nextHop);
 					queue.add(ngn);
 				} else {
 					Log.d(TAG, MessageFormat.format("Skipping node {0}", n.getAddress()));
@@ -367,55 +370,71 @@ public class RoutingProtocol {
 	 * @param rt The Routing table to print
 	 */
 	private void PrintRoutingTable(Map<Node, GraphNode> rt) {
-		String logfile = "/sdcard/BlueNet/logs/table" + System.currentTimeMillis() + ".txt";
+		String logfile = "sdcard/BlueNet/logs/NextHop" + System.currentTimeMillis() + ".txt";
 		
-		try {
-			// open file to write in our dir and timestamp
-			FileWriter f = new FileWriter(logfile);
-			
-			//write dotty header
-			f.write(PrintGraphHeader);
-			
-			for(Node n:rt.keySet()){
-				// print out the graph Nodes and status
-				f.write("\"" + n.toString() + "\"" +
-							" [sides=9, distortion=\""+ 0.936354 + "\"," +
-								" orientation=28, skew=\"" + -0.126818 + "\",");
-								// print states for each node.
-				LinkState state = mLinks.get(n);
-				if (state != null) {
-					switch (state) {
-					case None:
-						f.write("color=salmon2"); 
-						break;
-					case HelloSent:
-						f.write("color=yellow"); 
-						break;
-					case HandshakeCompleted:
-						f.write("color=blue"); 
-						break;
-					case FullyConnected:
-						f.write("color=green"); 
-						break;
-					default:
-						f.write("color=red"); 
-						break;
-					}
+		if(!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) 
+        {
+           Log.d(TAG, "Sdcard was not mounted !!" ); 
+		} else {
+			try {
+				// open file to write in our dir and timestamp
+				File file;
+				File root = Environment.getExternalStorageDirectory();
+				FileWriter f = null;
+
+				file = new File(root, logfile);
+				if (!file.exists()) {
+					file.createNewFile();
+					Log.d(TAG, "Log File "+file.getName()+" created.");
 				}
-				f.write("];\n\t\t");
-			}
-			for(GraphNode n:rt.values()){
-				//Write out connections
-				f.write("\"" + n.node.toString() + "\" -> \'" + n.pairedNode + "\";" );
-			}
-			
-			//write closing braces
-			f.write("\n}");
-			
-			// close the file
-			f.close();
-		} catch (IOException e) {
-			Log.e(TAG, logfile + " not found.");
+				f = new FileWriter(file);
+				
+				// write dotty header
+				f.write(PrintGraphHeader);
+
+				for (Node n : rt.keySet()) {
+					// print out the graph Nodes and status
+					f.write("\"" + n.getAddress() + "\""
+							+ " [sides=" + 9 + ", distortion=\"" + 0.936354 + "\","
+							+ " orientation=28, skew=\"" + -0.126818 + "\"");
+					// print states for each node.
+					LinkState state = mLinks.get(n);
+					if (state != null) {
+						switch (state) {
+						case None:
+							f.write(", color=salmon2");
+							break;
+						case HelloSent:
+							f.write(", color=yellow");
+							break;
+						case HandshakeCompleted:
+							f.write(", color=blue");
+							break;
+						case FullyConnected:
+							f.write(", color=green");
+							break;
+						default:
+							f.write(", color=red");
+							break;
+						}
+					}
+					f.write("];\n\t\t");
+				}
+				for (GraphNode n : rt.values()) {
+					// Write out connections
+					f.write("\"" + n.node.getAddress() + "\" -> \""
+							+ n.nextHop.getAddress() + "\";\n\t\t");
+				}
+
+				// write closing braces
+				f.write("\n}");
+
+				// close the file
+				f.close();
+			} catch (IOException e) {
+				Log.e(TAG,
+						logfile + " could not be written.\n" + e.getMessage());
+			} 
 		}
 	}
 }
