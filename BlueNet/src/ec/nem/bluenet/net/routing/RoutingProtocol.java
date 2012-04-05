@@ -437,7 +437,9 @@ public class RoutingProtocol {
 						}
 					}
 					else{
-						f.write(", fillcolor=salmon2");
+						if(n!=mNode){
+							f.write(", fillcolor=salmon2");
+						}
 					}
 					f.write("];\n\t\t");
 				}
@@ -520,7 +522,9 @@ public class RoutingProtocol {
 						}
 					}
 					else{
-						f.write(", fillcolor=salmon2");
+						if(n!=mNode){
+							f.write(", fillcolor=salmon2");
+						}
 					}
 					f.write("];\n\t\t");
 				}
