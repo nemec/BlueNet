@@ -384,7 +384,7 @@ public class RoutingProtocol {
 		if(rt == null){
 			return;
 		}
-		String logfile = "NextHop" + mNode.getAddress() + System.currentTimeMillis() + ".gv";
+		String logfile = "NextHop" + mNode.getAddress().replace(':', '-') + System.currentTimeMillis() + ".gv";
 		String logpath = "BlueNet/logs/";
 		
 		if(!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) 
@@ -469,7 +469,7 @@ public class RoutingProtocol {
 		if(lsas == null){
 			return;
 		}
-		String logfile = "LSA" + mNode.getAddress() + System.currentTimeMillis() + ".gv";
+		String logfile = "LSA" + mNode.getAddress().replace(':', '-') + System.currentTimeMillis() + ".gv";
 		String logpath = "BlueNet/logs/";
 		
 		if(!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) 

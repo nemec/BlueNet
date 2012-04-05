@@ -1,5 +1,7 @@
 package ec.nem.bluenet.test;
 
+import java.util.ArrayList;
+
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -20,6 +22,7 @@ import ec.nem.bluenet.NodeListener;
 
 public class DemoActivity extends Activity implements MessageListener, NodeListener {
 
+	public static final String MESSAGES_KEY = "messages";
 	BluetoothNodeService connectionService;
 	boolean boundToService = false;
 	ArrayAdapter<String> logAdapter;
@@ -33,6 +36,13 @@ public class DemoActivity extends Activity implements MessageListener, NodeListe
         logAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
         ListView l = (ListView)findViewById(R.id.chat_log);
         l.setAdapter(logAdapter);
+        
+        if(savedInstanceState != null){
+        	ArrayList<String> messages = savedInstanceState.getStringArrayList(MESSAGES_KEY);
+        	for(String s: messages){
+        		logAdapter.add(s);
+        	}
+        }
         
         uiHandler = new Handler();
         
@@ -50,6 +60,15 @@ public class DemoActivity extends Activity implements MessageListener, NodeListe
 			connectionService.removeNodeListener(this);
 		}
 		unbindService(connection);
+	}
+	
+	@Override
+	public void onSaveInstanceState(Bundle b){
+		ArrayList<String> backup = new ArrayList<String>();
+		for(int x = 0; x < logAdapter.getCount(); x++){
+			backup.add(logAdapter.getItem(x));
+		}
+		b.putStringArrayList(MESSAGES_KEY, backup);
 	}
 	
 	private ServiceConnection connection = new ServiceConnection() {
