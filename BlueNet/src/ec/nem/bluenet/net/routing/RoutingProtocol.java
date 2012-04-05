@@ -528,9 +528,40 @@ public class RoutingProtocol {
 					}
 					f.write("];\n\t\t");
 				}
+				
 				for (LinkStateAdvertisement lsa : lsas.values()) {
 					// Write out connections
 					for (Node n : lsa.others) {
+						// print out the graph Nodes and status
+						f.write("\"" + n + "\"" + " [ skew=\"" + -0.126818
+								+ "\"");
+						// print states for each node.
+						LinkState state = mLinks.get(n);
+						if (state != null) {
+							switch (state) {
+							case None:
+								f.write(", fillcolor=salmon2");
+								break;
+							case HelloSent:
+								f.write(", fillcolor=yellow");
+								break;
+							case HandshakeCompleted:
+								f.write(", fillcolor=blue");
+								break;
+							case FullyConnected:
+								f.write(", fillcolor=green");
+								break;
+							default:
+								f.write(", fillcolor=red");
+								break;
+							}
+						} else {
+							if (n != mNode) {
+								f.write(", fillcolor=salmon2");
+							}
+						}
+						f.write("];\n\t\t");
+						
 						f.write("\"" + lsa.source + "\" -> \""+ n + "\";\n\t\t");
 					}
 				}
