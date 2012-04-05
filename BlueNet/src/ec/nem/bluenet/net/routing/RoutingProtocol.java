@@ -200,6 +200,10 @@ public class RoutingProtocol {
 		PrintLSA(mGraph);
 	}
 
+	/**
+	 * Removes the node from the network  
+	 * @param n The node to be removed
+	 */
 	void removeNode(Node n) {
 		Log.d(TAG, MessageFormat.format("{0} has quit.", n.getAddress()));
 		
@@ -219,9 +223,12 @@ public class RoutingProtocol {
 		recomputeRoutingTable();
 		
 		SendLSA(thisLsa);
-		
 	}
 
+	/**
+	 * Connects this device to the specified node
+	 * @param n Node to which to connect. 
+	 */
 	public void connectTo(Node n) {
 		RoutingMessage newMsg = new RoutingMessage();
 		newMsg.type = Type.Hello;
@@ -444,7 +451,7 @@ public class RoutingProtocol {
 	}
 	
 	/**
-	 * Saves the routing table passed in to a text file named by timestamp
+	 * Saves the Link State Advertisement list passed in to a text file named by timestamp
 	 * @param rt The Routing table to print
 	 */
 	private void PrintLSA(HashMap<Node, LinkStateAdvertisement> lsas) {
