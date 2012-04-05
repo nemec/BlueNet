@@ -381,24 +381,31 @@ public class RoutingProtocol {
 	 * @param rt The Routing table to print
 	 */
 	private void PrintRoutingTable(Map<Node, GraphNode> rt) {
-		String logfile = "BlueNet/logs/NextHop" + System.currentTimeMillis() + ".gv";
+		if(rt == null){
+			return;
+		}
+		String logfile = "NextHop" + mNode.getAddress() + System.currentTimeMillis() + ".gv";
+		String logpath = "BlueNet/logs/";
 		
 		if(!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) 
         {
            Log.d(TAG, "Sdcard was not mounted !!" ); 
 		} else {
+			File file = null;
+			File root = Environment.getExternalStorageDirectory();
+			FileWriter f = null;
 			try {
 				// open file to write in our dir and timestamp
-				File file;
-				File root = Environment.getExternalStorageDirectory();
-				FileWriter f = null;
 
-				file = new File(root, logfile);
+				file = new File(root, logpath);
 				if (!file.exists()) {
 					file.mkdirs();
-					file.createNewFile();
-					Log.d(TAG, "Log File "+file.getName()+" created.");
 				}
+				file = new File(root, logpath + logfile);
+//				if (!file.exists()) {
+//					file.createNewFile();
+//					Log.d(TAG, "Log File "+file.getName()+" created.");
+//				}
 				f = new FileWriter(file);
 				
 				// write dotty header
@@ -430,12 +437,15 @@ public class RoutingProtocol {
 							break;
 						}
 					}
+					else{
+						f.write(", color=salmon2");
+					}
 					f.write("];\n\t\t");
 				}
 				for (GraphNode n : rt.values()) {
 					// Write out connections
-					f.write("\"" + n.node + "\" -> \""
-							+ n.nextHop + "\";\n\t\t");
+					f.write("\"" + n.nextHop + "\" -> \""
+							+ n.node + "\";\n\t\t");
 				}
 
 				// write closing braces
@@ -445,7 +455,7 @@ public class RoutingProtocol {
 				f.close();
 			} catch (IOException e) {
 				Log.e(TAG,
-						logfile + " could not be written.\n" + e.getMessage());
+						file.getAbsolutePath() + " could not be written.\n" + e.getMessage());
 			} 
 		}
 	}
@@ -455,24 +465,31 @@ public class RoutingProtocol {
 	 * @param rt The Routing table to print
 	 */
 	private void PrintLSA(HashMap<Node, LinkStateAdvertisement> lsas) {
-		String logfile = "BlueNet/logs/LSA" + System.currentTimeMillis() + ".gv";
+		if(lsas == null){
+			return;
+		}
+		String logfile = "LSA" + mNode.getAddress() + System.currentTimeMillis() + ".gv";
+		String logpath = "BlueNet/logs/";
 		
 		if(!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) 
         {
            Log.d(TAG, "Sdcard was not mounted !!" ); 
 		} else {
+			File file = null;
+			File root = Environment.getExternalStorageDirectory();
+			FileWriter f = null;
 			try {
 				// open file to write in our dir and timestamp
-				File file;
-				File root = Environment.getExternalStorageDirectory();
-				FileWriter f = null;
 
-				file = new File(root, logfile);
+				file = new File(root, logpath);
 				if (!file.exists()) {
 					file.mkdirs();
-					file.createNewFile();
-					Log.d(TAG, "Log File "+file.getName()+" created.");
 				}
+				file = new File(root, logpath + logfile);
+//				if (!file.exists()) {
+//					file.createNewFile();
+//					Log.d(TAG, "Log File "+file.getName()+" created.");
+//				}
 				f = new FileWriter(file);
 				
 				// write dotty header
@@ -504,6 +521,9 @@ public class RoutingProtocol {
 							break;
 						}
 					}
+					else{
+						f.write(", color=salmon2");
+					}
 					f.write("];\n\t\t");
 				}
 				for (LinkStateAdvertisement lsa : lsas.values()) {
@@ -520,7 +540,7 @@ public class RoutingProtocol {
 				f.close();
 			} catch (IOException e) {
 				Log.e(TAG,
-						logfile + " could not be written.\n" + e.getMessage());
+						file.getAbsolutePath() + " could not be written.\n" + e.getMessage());
 			} 
 		}
 	}
