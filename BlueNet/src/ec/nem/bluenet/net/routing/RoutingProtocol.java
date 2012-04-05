@@ -197,6 +197,7 @@ public class RoutingProtocol {
 			mNetworkLayer.sendRoutingMessage(other, msg);
 		}
 		PrintRoutingTable(mRoutingTable);
+		PrintLSA(mGraph);
 	}
 
 	void removeNode(Node n) {
@@ -373,7 +374,7 @@ public class RoutingProtocol {
 	 * @param rt The Routing table to print
 	 */
 	private void PrintRoutingTable(Map<Node, GraphNode> rt) {
-		String logfile = "sdcard/BlueNet/logs/NextHop" + System.currentTimeMillis() + ".txt";
+		String logfile = "BlueNet/logs/NextHop" + System.currentTimeMillis() + ".gv";
 		
 		if(!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) 
         {
@@ -387,6 +388,7 @@ public class RoutingProtocol {
 
 				file = new File(root, logfile);
 				if (!file.exists()) {
+					file.mkdirs();
 					file.createNewFile();
 					Log.d(TAG, "Log File "+file.getName()+" created.");
 				}
@@ -427,6 +429,81 @@ public class RoutingProtocol {
 					// Write out connections
 					f.write("\"" + n.node + "\" -> \""
 							+ n.nextHop + "\";\n\t\t");
+				}
+
+				// write closing braces
+				f.write("\n}");
+
+				// close the file
+				f.close();
+			} catch (IOException e) {
+				Log.e(TAG,
+						logfile + " could not be written.\n" + e.getMessage());
+			} 
+		}
+	}
+	
+	/**
+	 * Saves the routing table passed in to a text file named by timestamp
+	 * @param rt The Routing table to print
+	 */
+	private void PrintLSA(HashMap<Node, LinkStateAdvertisement> lsas) {
+		String logfile = "BlueNet/logs/LSA" + System.currentTimeMillis() + ".gv";
+		
+		if(!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) 
+        {
+           Log.d(TAG, "Sdcard was not mounted !!" ); 
+		} else {
+			try {
+				// open file to write in our dir and timestamp
+				File file;
+				File root = Environment.getExternalStorageDirectory();
+				FileWriter f = null;
+
+				file = new File(root, logfile);
+				if (!file.exists()) {
+					file.mkdirs();
+					file.createNewFile();
+					Log.d(TAG, "Log File "+file.getName()+" created.");
+				}
+				f = new FileWriter(file);
+				
+				// write dotty header
+				f.write(PrintGraphHeader);
+
+				for (Node n : lsas.keySet()) {
+					// print out the graph Nodes and status
+					f.write("\"" + n + "\""
+							+ " [sides=" + 9 + ", distortion=\"" + 0.936354 + "\","
+							+ " orientation=28, skew=\"" + -0.126818 + "\"");
+					// print states for each node.
+					LinkState state = mLinks.get(n);
+					if (state != null) {
+						switch (state) {
+						case None:
+							f.write(", color=salmon2");
+							break;
+						case HelloSent:
+							f.write(", color=yellow");
+							break;
+						case HandshakeCompleted:
+							f.write(", color=blue");
+							break;
+						case FullyConnected:
+							f.write(", color=green");
+							break;
+						default:
+							f.write(", color=red");
+							break;
+						}
+					}
+					f.write("];\n\t\t");
+				}
+				for (LinkStateAdvertisement lsa : lsas.values()) {
+					// Write out connections
+					for (Node n : lsa.others) {
+						f.write("\"" + lsa.source + "\" -> \""+ n + "\";\n\t\t");
+					}
 				}
 
 				// write closing braces
