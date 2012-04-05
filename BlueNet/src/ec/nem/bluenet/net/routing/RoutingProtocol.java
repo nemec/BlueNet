@@ -21,7 +21,7 @@ import ec.nem.bluenet.net.routing.RoutingMessage.Type;
  */
 public class RoutingProtocol {
 	///Graph drawing header
-	static final String PrintGraphHeader = "digraph \"Routes\" {\n\tgraph [ fontsize=12,\n\t\tlabel=\"\\n\\n\\n\\nRouting Graph View\\nBulueNet, 2012\" ];\n\tnode [ shape = polygon,\n\t\tsides=4,\n\t\tdistortion=\"0.0\",\n\t\torientation=\"0.0\",\n\t\tskew=\"0.0\",\n\t\tcolor=white,\n\t\tstyle=filled ];\n\t\t";
+	static final String PrintGraphHeader = "digraph \"Routes\" {\n\tgraph [ fontsize=12,\n\t\tlabel=\"\\n\\n\\n\\nRouting Graph View\\nBulueNet, 2012\" ];\n\tnode [ shape = box,\n\t\tdistortion=\"0.0\",\n\t\torientation=\"0.0\",\n\t\tskew=\"0.0\",\n\t\tcolor=black,\n\t\tfillcolor=white,\n\t\tstyle=filled ];\n\t\t";
 	
 	static String TAG = "RoutingProtocol";
 	
@@ -414,31 +414,30 @@ public class RoutingProtocol {
 				for (Node n : rt.keySet()) {
 					// print out the graph Nodes and status
 					f.write("\"" + n + "\""
-							+ " [sides=" + 9 + ", distortion=\"" + 0.936354 + "\","
-							+ " orientation=28, skew=\"" + -0.126818 + "\"");
+							+ " [ skew=\"" + -0.126818 + "\"");
 					// print states for each node.
 					LinkState state = mLinks.get(n);
 					if (state != null) {
 						switch (state) {
 						case None:
-							f.write(", color=salmon2");
+							f.write(", fillcolor=salmon2");
 							break;
 						case HelloSent:
-							f.write(", color=yellow");
+							f.write(", fillcolor=yellow");
 							break;
 						case HandshakeCompleted:
-							f.write(", color=blue");
+							f.write(", fillcolor=blue");
 							break;
 						case FullyConnected:
-							f.write(", color=green");
+							f.write(", fillcolor=green");
 							break;
 						default:
-							f.write(", color=red");
+							f.write(", fillcolor=red");
 							break;
 						}
 					}
 					else{
-						f.write(", color=salmon2");
+						f.write(", fillcolor=salmon2");
 					}
 					f.write("];\n\t\t");
 				}
@@ -498,31 +497,30 @@ public class RoutingProtocol {
 				for (Node n : lsas.keySet()) {
 					// print out the graph Nodes and status
 					f.write("\"" + n + "\""
-							+ " [sides=" + 9 + ", distortion=\"" + 0.936354 + "\","
-							+ " orientation=28, skew=\"" + -0.126818 + "\"");
+							+ " [ skew=\"" + -0.126818 + "\"");
 					// print states for each node.
 					LinkState state = mLinks.get(n);
 					if (state != null) {
 						switch (state) {
 						case None:
-							f.write(", color=salmon2");
+							f.write(", fillcolor=salmon2");
 							break;
 						case HelloSent:
-							f.write(", color=yellow");
+							f.write(", fillcolor=yellow");
 							break;
 						case HandshakeCompleted:
-							f.write(", color=blue");
+							f.write(", fillcolor=blue");
 							break;
 						case FullyConnected:
-							f.write(", color=green");
+							f.write(", fillcolor=green");
 							break;
 						default:
-							f.write(", color=red");
+							f.write(", fillcolor=red");
 							break;
 						}
 					}
 					else{
-						f.write(", color=salmon2");
+						f.write(", fillcolor=salmon2");
 					}
 					f.write("];\n\t\t");
 				}
