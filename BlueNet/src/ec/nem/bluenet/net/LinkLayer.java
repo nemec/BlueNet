@@ -70,6 +70,9 @@ public class LinkLayer extends Layer {
 				h.sendMessage(m);
 				// mCommThread.showProgress(false);
 			}
+			else{
+				Log.d(TAG, "Failed to connect to " +node);
+			}
 		} catch (Exception e) {
 			/// TODO later this can be wtf it shuoldn't happen
 			Log.e(TAG, "Message from above killed us", e);
@@ -319,10 +322,8 @@ public class LinkLayer extends Layer {
 
 								// finally, I think we're ready to send s up the
 								// chain
-								android.os.Message m = new android.os.Message();
-								m.obj = s;
 								Log.d(TAG, "Got a message:" + s);
-								hSendAbove.sendMessage(m);
+								sendMessageAbove(s);
 							}
 
 							os = new ByteArrayOutputStream();

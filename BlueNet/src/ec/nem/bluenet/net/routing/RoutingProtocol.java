@@ -402,10 +402,7 @@ public class RoutingProtocol {
 					file.mkdirs();
 				}
 				file = new File(root, logpath + logfile);
-//				if (!file.exists()) {
-//					file.createNewFile();
-//					Log.d(TAG, "Log File "+file.getName()+" created.");
-//				}
+
 				f = new FileWriter(file);
 				
 				// write dotty header
@@ -487,10 +484,7 @@ public class RoutingProtocol {
 					file.mkdirs();
 				}
 				file = new File(root, logpath + logfile);
-//				if (!file.exists()) {
-//					file.createNewFile();
-//					Log.d(TAG, "Log File "+file.getName()+" created.");
-//				}
+
 				f = new FileWriter(file);
 				
 				// write dotty header
