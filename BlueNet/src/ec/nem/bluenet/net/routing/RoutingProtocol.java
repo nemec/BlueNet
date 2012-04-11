@@ -112,7 +112,6 @@ public class RoutingProtocol {
 			LinkState state = mLinks.get(n);
 			if (state == LinkState.FullyConnected) {
 				mLinks.remove(n);
-				
 				removeNode(n);
 			} else {
 				Log.e(TAG, MessageFormat.format("Received erroneous Quit from {0}. Current state:{1}", n.getAddress(), state));

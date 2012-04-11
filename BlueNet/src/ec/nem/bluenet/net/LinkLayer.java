@@ -369,6 +369,7 @@ public class LinkLayer extends Layer {
 				toEscape.write(protocol & 0xFF);
 				toEscape.write(data);
 			} catch (Exception e) {
+				Log.e(TAG, "Encapsulation broke");
 			}
 
 			// escaped frame for sending directly across the wire
