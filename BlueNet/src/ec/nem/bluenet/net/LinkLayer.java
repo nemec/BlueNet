@@ -23,7 +23,7 @@ import ec.nem.bluenet.NodeListener;
  * In our case, this just means managing Bluetooth connectivity. In the
  * traditional internet, it could mean WiFi, ethernet, etc.
  * 
- * @author Darren White, Matt Mullins
+ * @author Darren White, Matt Mullins, Ivan Hernandez
  */
 public class LinkLayer extends Layer {
 	private static final String TAG = "LinkLayer";
@@ -71,7 +71,7 @@ public class LinkLayer extends Layer {
 				// mCommThread.showProgress(false);
 			}
 			else{
-				Log.d(TAG, "Failed to connect to " +node);
+				Log.d(TAG, "Failed to send message to " +node);
 			}
 		} catch (Exception e) {
 			/// TODO later this can be wtf it shuoldn't happen

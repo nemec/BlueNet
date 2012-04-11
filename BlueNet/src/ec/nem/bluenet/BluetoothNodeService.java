@@ -16,7 +16,10 @@ import ec.nem.bluenet.net.SocketManager;
 
 public class BluetoothNodeService extends Service {
 	private static final String TAG = "BluetoothNodeService";
-
+	
+	/** Username that will show up on messages sent on this service */
+	public String username = "No one.";
+	
 	/** Thread that owns the networking stack */
 	private static CommunicationThread mCommThread;
 	/** Timeout to determine how many seconds to wait before the service crashes. Set to 0 for no timeout*/
@@ -136,7 +139,7 @@ public class BluetoothNodeService extends Service {
 		resetTimeout();
 		// Don't send message to self
 		if (destinationNode != getLocalNode()) {
-			Message m = new Message("No one.", text, (System.currentTimeMillis() / 1000L));
+			Message m = new Message(username, text, (System.currentTimeMillis() / 1000L));
 			socket.connect(destinationNode, 50000);
 			socket.send(Message.serialize(m));
 		}

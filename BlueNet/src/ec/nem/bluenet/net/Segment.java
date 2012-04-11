@@ -57,8 +57,8 @@ public class Segment {
 	@Override
 	public String toString(){
 		return  MessageFormat.format(
-				"Segment::Going to:{0} With Data:{1}",
-				getMacAddressAsString(nextHopMACAddress),
+				" Segment::{0} With data:{1}",
+				IPHeader,
 				transportSegment); 
 	}
 
@@ -79,8 +79,7 @@ public class Segment {
 		// pull out destination IP
 		os.reset();
 		os.write(data, 24, 16);
-		s.IPHeader.destinationAddress = os
-				.toByteArray();
+		s.IPHeader.destinationAddress = os.toByteArray();
 
 		// rest of the data
 		os.reset();

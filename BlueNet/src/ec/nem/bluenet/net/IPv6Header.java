@@ -1,5 +1,7 @@
 package ec.nem.bluenet.net;
 
+import java.text.MessageFormat;
+
 public class IPv6Header {
 	public static final int NH_UDP = 1;
 //	public static final int NH_SCTP = 2; 
@@ -96,4 +98,15 @@ public class IPv6Header {
 		headerFields[7] &= 0x0;
 		headerFields[7] |= hopLimit;
 	}
+
+	@Override
+	public String toString(){
+		return  MessageFormat.format(
+				" Segment::To:{0} From:{1} Type:{2} ",
+				Segment.getMacAddressAsString(destinationAddress),
+				Segment.getMacAddressAsString(sourceAddress),
+				getNextHeader(),
+				getHopLimit()); 
+	}
+	
 }

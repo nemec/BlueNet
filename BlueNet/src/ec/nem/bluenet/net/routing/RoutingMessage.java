@@ -2,7 +2,11 @@ package ec.nem.bluenet.net.routing;
 
 import java.io.*;
 
+import android.util.Log;
+
 public class RoutingMessage implements Serializable {
+	private static final String TAG = "RoutingMessage";
+	
 	public static final long serialVersionUID = 1L;
 	
 	public enum Type {
@@ -22,6 +26,7 @@ public class RoutingMessage implements Serializable {
 			oos.writeObject(msg);
 			return os.toByteArray();
 		} catch (IOException e) {
+			Log.e(TAG,e.getMessage());
 			return null;
 		}
 	}
@@ -33,9 +38,11 @@ public class RoutingMessage implements Serializable {
 			RoutingMessage msg = (RoutingMessage) ois.readObject();
 			return msg;
 		} catch (IOException e) {
+			Log.e(TAG,e.getMessage());
 			return null;
 		} catch (ClassNotFoundException e) {
 			/* This really shouldn't happen, since we *ARE* the RoutingMessage class! */
+			Log.e(TAG,e.getMessage());
 			return null;
 		}
 	}
