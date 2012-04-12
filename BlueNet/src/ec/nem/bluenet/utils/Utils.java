@@ -1,12 +1,8 @@
 package ec.nem.bluenet.utils;
 
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-
 public class Utils {
 	
-	
+
 	/**
 	 * Turn MAC address byte array into human readable string.
 	 * @param mac byte[] representing MAC address

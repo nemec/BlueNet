@@ -3,6 +3,8 @@ package ec.nem.bluenet;
 import java.text.ParseException;
 import java.util.HashMap;
 
+import ec.nem.bluenet.utils.Utils;
+
 public class NodeFactory {
 	public static NodeFactory factory = new NodeFactory();
 	
@@ -24,7 +26,7 @@ public class NodeFactory {
 	
 	public synchronized Node fromMacAddress(byte[] bytes) {
 		try {
-			return fromMacAddress(Node.addressFromBytes(bytes));
+			return fromMacAddress(Utils.getMacAddressAsString(bytes));
 		} catch (ParseException e) {
 			return null;
 		}
