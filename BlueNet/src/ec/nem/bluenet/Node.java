@@ -31,14 +31,11 @@ public class Node implements Serializable {
 	private String deviceAddress;
 	/** The device's bluetooth MAC address (binary) */
 	private transient byte[] deviceAddressBytes;
-	/** The measure of this node's state for distance calculation*/
-	private int cost;
-	
+		
 	public Node() {
 		userName = "Unknown";
 		deviceName = "Unknown";
 		deviceAddress = "Unknown";
-		cost = 0;
 		deviceAddressBytes = new byte[6];
 	}
 	
@@ -47,10 +44,11 @@ public class Node implements Serializable {
 		setAddress(address);
 	}
 
-	public Node(String userName, String deviceName, String deviceAddress) {
+	public Node(String userName, String deviceName, String deviceAddress) throws ParseException {
+		this();
 		this.userName = userName;
 		this.deviceName = deviceName;
-		this.deviceAddress = deviceAddress;
+		setAddress(deviceAddress);
 	}
 	
 	public synchronized final String getName() {
@@ -129,14 +127,6 @@ public class Node implements Serializable {
 		
 		// keep the string around for old-times' sake
 		deviceAddress = addr;
-	}
-
-	public int getCost() {
-		return cost;
-	}
-
-	public void setCost(int cost) {
-		this.cost = cost;
 	}
 
 	/** 

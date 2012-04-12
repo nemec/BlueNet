@@ -1,7 +1,19 @@
 package ec.nem.bluenet.utils;
 
+
 public class Utils {
 	
+//	public static double getBatteryLevel() {
+//		Intent batteryIntent = BlueNetApplication.getContext().registerReceiver(null,
+//						new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+//		int rawlevel = batteryIntent.getIntExtra("level", -1);
+//		double scale = batteryIntent.getIntExtra("scale", -1);
+//		double level = -1;
+//		if (rawlevel >= 0 && scale > 0) {
+//			level = rawlevel / scale;
+//		}
+//		return level;
+//	}
 
 	/**
 	 * Turn MAC address byte array into human readable string.

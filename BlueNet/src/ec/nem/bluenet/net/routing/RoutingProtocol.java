@@ -32,13 +32,7 @@ public class RoutingProtocol {
 	Node mNode;
 	///Our network layer that we use to send messages
 	NetworkLayer mNetworkLayer;
-	
-	///Constructs a routing table with our local node and Network Layer Access
-	public RoutingProtocol(Node node, NetworkLayer networkLayer) {
-		mNode = node;
-		mNetworkLayer = networkLayer;
-	}
-	
+
 	///Possible states for nodes on the network to be in.
 	enum LinkState {
 		None,
@@ -53,6 +47,12 @@ public class RoutingProtocol {
 	HashMap<Node, LinkStateAdvertisement> mGraph = new HashMap<Node, LinkStateAdvertisement>();
 	///The actual Routing Table
 	Map<Node, GraphNode> mRoutingTable;
+	
+	///Constructs a routing table with our local node and Network Layer Access
+	public RoutingProtocol(Node node, NetworkLayer networkLayer) {
+		mNode = node;
+		mNetworkLayer = networkLayer;
+	}
 	
 	public void receiveMessage(RoutingMessage msg) {
 		switch (msg.type) {
