@@ -24,7 +24,7 @@ public class CommunicationThread extends Thread {
 	private final String TAG = "CommunicationThread";
 	
 	private boolean running;
-	private Context context;
+	public static Context context;
 	
 	private SocketManager mSocketManager;
 	private Layer mTransportLayer;

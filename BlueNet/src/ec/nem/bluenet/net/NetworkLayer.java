@@ -10,6 +10,7 @@ import ec.nem.bluenet.Node;
 import ec.nem.bluenet.NodeFactory;
 //import ec.nem.bluenet.BaseActivity.ProgressHandler;
 import ec.nem.bluenet.net.routing.*;
+import ec.nem.bluenet.utils.Utils;
 
 
 import android.os.Message;
@@ -86,7 +87,7 @@ public class NetworkLayer extends Layer {
 					Log.w(TAG,
 						MessageFormat.format(
 								"Could not forward message to {0}.",
-								Segment.getMacAddressAsString(destination)));
+								Utils.getMacAddressAsString(destination)));
 				}
 				else{
 					s.nextHopMACAddress = nextHop.getAddressBytes();
@@ -164,7 +165,6 @@ public class NetworkLayer extends Layer {
 			RoutingTable routingTable = new RoutingTable();
 
 			for (Node n : protocolTable.keySet()) {
-				// TODO If we want to change the distance in the graph this is where we do it.
 				routingTable.add(new Route(n.getIPAddress(), (short) 128, protocolTable.get(n).nextHop));
 			}
 

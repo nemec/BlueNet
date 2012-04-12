@@ -327,7 +327,7 @@ public class RoutingProtocol {
 		//LinkStateAdvertisement thisLsa = mGraph.get(mNode);
 		Map<Node, GraphNode> finalGraph = new HashMap<Node, GraphNode>();
 		PriorityQueue<GraphNode> queue = new PriorityQueue<GraphNode>();
-		
+		//our node added to the queue
 		queue.add(new GraphNode(mNode, 0, null));
 		
 		while (!queue.isEmpty()) {
