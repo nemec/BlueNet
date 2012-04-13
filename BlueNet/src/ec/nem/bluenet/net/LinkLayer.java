@@ -36,7 +36,7 @@ public class LinkLayer extends Layer {
 
 	private BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
-	private Map<String, Handler> mConnectionHandlers;
+	private Map<String, ConnectionThread> mConnectionThreads;
 
 	public LinkLayer(CommunicationThread commThread) {
 		super();
@@ -79,8 +79,13 @@ public class LinkLayer extends Layer {
 		}
 	}
 
+	/**
+	 * Connects to the specified node and adds the handler thread to our list of handlers
+	 * @param n The node to create a connection to
+	 * @return The Handler for the Node to which we connected.
+	 */
 	private Handler connectToNode(Node n) {
-		Handler h = mConnectionHandlers.get(n.getAddress());
+		Handler h = mConnectionThreads.get(n.getAddress()).getHandler();
 		if (h != null) {
 			return h;
 		}
@@ -138,6 +143,16 @@ public class LinkLayer extends Layer {
 			return null;
 		}
 	}
+	
+	/**
+	 * Closes the connection to the given node shutting down the bluetooth socket and related connections
+	 * @param n The node from which to disconnect
+	 * @return whether disconnection was successful
+	 */
+	public void closeConnection(Node n) {
+		ConnectionThread thread = mConnectionThreads.get(n.getAddress());
+		thread.closeConnection();
+	}
 
 	@Override
 	public void handleMessageFromBelow(android.os.Message msg) {}
@@ -151,7 +166,7 @@ public class LinkLayer extends Layer {
 	}
 
 	public void run() {
-		mConnectionHandlers = new HashMap<String, Handler>();
+		mConnectionThreads = new HashMap<String, ConnectionThread>();
 
 		try {
 			mAcceptThread = new AcceptThread();
@@ -260,7 +275,7 @@ public class LinkLayer extends Layer {
 
 			BluetoothDevice remote = mSocket.getRemoteDevice();
 			mRemoteAddress = remote.getAddress();
-			mConnectionHandlers.put(mRemoteAddress, mHandler);
+			mConnectionThreads.put(mRemoteAddress, this);
 			for (NodeListener l : mCommThread.getNodeListeners()) {
 				l.onNodeEnter(mRemoteAddress);
 			}
@@ -295,8 +310,9 @@ public class LinkLayer extends Layer {
 			} catch (NullPointerException e) {
 				e.printStackTrace();
 			} finally {
-				mConnectionHandlers.remove(mRemoteAddress);
+				mConnectionThreads.remove(mRemoteAddress);
 				for (NodeListener l : mCommThread.getNodeListeners()) {
+					//TODO: This should be NodeDisconnect not exit.
 					l.onNodeExit(mRemoteAddress);
 				}
 			}

@@ -50,6 +50,20 @@ public class NetworkLayer extends Layer {
 		mRoutingProtocol.connectTo(n);
 	}
 	
+	/**
+	 * This disconnects from to the specified node
+	 */
+	public void disconnectFrom(Node n) {
+		mRoutingProtocol.disconnectFrom(n);
+	}
+	
+	/**
+	 * This closes the connection to the specified node
+	 */
+	public void closeConnection(Node n) {
+		mCommThread.closeConnection(n);
+	}
+	
 	@Override
 	public void handleMessageFromAbove(Message msg) {
 		Segment s = (Segment) msg.obj;

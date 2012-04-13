@@ -244,6 +244,34 @@ public class RoutingProtocol {
 	}
 	
 	/**
+	 * Disconnects this device from the specified node
+	 * @param n Node to which to disconnect. 
+	 */
+	public void disconnectFrom(Node n) {
+		Log.d(TAG, MessageFormat.format("Disconnecting from {0}.", n.getAddress()));
+		
+		LinkStateAdvertisement thisLsa;
+		if (mGraph.containsKey(mNode)) {
+			thisLsa = mGraph.get(mNode);
+			thisLsa.sequence++;
+		} else {
+			thisLsa = new LinkStateAdvertisement();
+			thisLsa.source = mNode;
+			mGraph.put(mNode, thisLsa);
+		}
+		//TODO: send disconnect routing message to the node we want to disconnect from. Hope that they close the connection to you before they try to send to you again.
+		
+		
+		//make it extremely costly to go to that node via us.
+		
+		
+		//close the connection to the node (this is the socket and handler thread)
+		mNetworkLayer.closeConnection(n);
+		
+		recomputeRoutingTable();
+	}
+	
+	/**
 	 * Obtains all nodes that routing knows about
 	 * @return list of all Routing table key nodes
 	 */
