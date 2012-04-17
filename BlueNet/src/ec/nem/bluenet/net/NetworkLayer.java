@@ -142,33 +142,37 @@ public class NetworkLayer extends Layer {
 		DataSegment ds = new DataSegment();
 		ds.setRawBytes(s.transportSegment.getRawBytes());
 		RoutingMessage rm = RoutingMessage.deserializeMessage(ds.getRawBytes());
-		/* Since the Node class is probably serialized without its addressBytes */ 
-	 	/* TODO: this violates encapsulation A LOT, since it depends on how RoutingMessage is 
-	 	* serialized and depends on Node's serialization mechanism */ 
-	 	if(rm.type == RoutingMessage.Type.Hello || rm.type == RoutingMessage.Type.HelloAck || rm.type == RoutingMessage.Type.Quit) { 
-	 		Node n = (Node) rm.obj; 
-	 		try { 
-	 			Node newNode = NodeFactory.factory.fromMacAddress(n.getAddress());
-	 			newNode.setDeviceName(n.getDeviceName()); 
-	 			newNode.setName(n.getDeviceName()); 
-	 			rm.obj = newNode; 
-	 		}catch(ParseException e) {
-	 			e.printStackTrace(); 
-	 		} 
-	 	}
-		mRoutingProtocol.receiveMessage(rm);
-		
-		/* Get the routing table that might have been calculated */
-		Map<Node, RoutingProtocol.GraphNode> protocolTable = mRoutingProtocol.getRoutingTable();
-		if (protocolTable != null) {
-			RoutingTable routingTable = new RoutingTable();
-
-			for (Node n : protocolTable.keySet()) {
-				// TODO If we want to change the distance in the graph this is where we do it.
-				routingTable.add(new Route(n.getIPAddress(), (short) 128, protocolTable.get(n).nextHop));
+		if(rm != null){
+			/* Since the Node class is probably serialized without its addressBytes */ 
+		 	/* TODO: this violates encapsulation A LOT, since it depends on how RoutingMessage is 
+		 	* serialized and depends on Node's serialization mechanism */ 
+		 	if(rm.type == RoutingMessage.Type.Hello || 
+		 			rm.type == RoutingMessage.Type.HelloAck || 
+		 			rm.type == RoutingMessage.Type.Quit) { 
+		 		Node n = (Node) rm.obj; 
+		 		try { 
+		 			Node newNode = NodeFactory.factory.fromMacAddress(n.getAddress());
+		 			newNode.setDeviceName(n.getDeviceName()); 
+		 			newNode.setName(n.getDeviceName()); 
+		 			rm.obj = newNode; 
+		 		}catch(ParseException e) {
+		 			e.printStackTrace(); 
+		 		} 
+		 	}
+			mRoutingProtocol.receiveMessage(rm);
+			
+			/* Get the routing table that might have been calculated */
+			Map<Node, RoutingProtocol.GraphNode> protocolTable = mRoutingProtocol.getRoutingTable();
+			if (protocolTable != null) {
+				RoutingTable routingTable = new RoutingTable();
+	
+				for (Node n : protocolTable.keySet()) {
+					// TODO If we want to change the distance in the graph this is where we do it.
+					routingTable.add(new Route(n.getIPAddress(), (short) 128, protocolTable.get(n).nextHop));
+				}
+	
+				mRoutingTable = routingTable;
 			}
-
-			mRoutingTable = routingTable;
 		}
  	}
 }
