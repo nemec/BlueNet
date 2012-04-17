@@ -37,7 +37,7 @@ public class DemoActivity extends Activity implements MessageListener, NodeListe
         ListView l = (ListView)findViewById(R.id.chat_log);
         l.setAdapter(logAdapter);
         
-        if(savedInstanceState != null){
+                                 if(savedInstanceState != null){
         	ArrayList<String> messages = savedInstanceState.getStringArrayList(MESSAGES_KEY);
         	for(String s: messages){
         		logAdapter.add(s);
@@ -116,7 +116,7 @@ public class DemoActivity extends Activity implements MessageListener, NodeListe
 
 	@Override
 	public void onMessageReceived(Message message) {
-		final String from = message.getTransmitterAddress();
+		final String from = message.getTransmitterName();
 		final String text = message.getText();
 		
 		uiHandler.post(new Runnable() {

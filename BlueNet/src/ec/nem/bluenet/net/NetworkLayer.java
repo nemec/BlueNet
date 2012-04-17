@@ -164,8 +164,6 @@ public class NetworkLayer extends Layer {
 	 		Node n = (Node) rm.obj; 
 	 		try { 
 	 			Node newNode = NodeFactory.factory.fromMacAddress(n.getAddress());
-	 			newNode.setDeviceName(n.getDeviceName()); 
-	 			newNode.setName(n.getDeviceName()); 
 	 			rm.obj = newNode; 
 	 		}catch(ParseException e) {
 	 			e.printStackTrace(); 

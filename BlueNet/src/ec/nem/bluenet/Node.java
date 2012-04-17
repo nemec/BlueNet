@@ -22,19 +22,13 @@ import ec.nem.bluenet.utils.Utils;
 public class Node implements Serializable {
 	private final static String TAG = "Node";
 	private static final long serialVersionUID = 1L;
-	
-	/** A human readable name for the user */
-	private transient String userName;
-	/** The device's bluetooth adapter name */
-	private String deviceName;
+
 	/** The device's bluetooth MAC address */
 	private String deviceAddress;
 	/** The device's bluetooth MAC address (binary) */
 	private transient byte[] deviceAddressBytes;
 		
 	public Node() {
-		userName = "Unknown";
-		deviceName = "Unknown";
 		deviceAddress = "Unknown";
 		deviceAddressBytes = new byte[6];
 	}
@@ -46,17 +40,7 @@ public class Node implements Serializable {
 
 	public Node(String userName, String deviceName, String deviceAddress) throws ParseException {
 		this();
-		this.userName = userName;
-		this.deviceName = deviceName;
 		setAddress(deviceAddress);
-	}
-	
-	public synchronized final String getName() {
-		return userName;
-	}
-	
-	public synchronized final String getDeviceName() {
-		return deviceName;
 	}
 	
 	public synchronized final String getAddress() {
@@ -90,18 +74,11 @@ public class Node implements Serializable {
 		return os.toByteArray();
 	}
 	
-	public synchronized final void setName(String name) {
-		userName = name;
-	}
-	
-	public synchronized final void setDeviceName(String name) {
-		deviceName = name;
-	}
-	
 	public synchronized final void setAddress(String addr) throws ParseException {
 		/*
 		 * Parses the Bluetooth address from a string into a byte array.
 		 */
+		addr = addr.toUpperCase();
 		String[] bytes = addr.split(":");
 		
 		if (bytes.length != 6) {
@@ -176,6 +153,8 @@ public class Node implements Serializable {
 	
 	@Override
 	public String toString(){
-		return  MessageFormat.format("Node Username:{0}, DeviceName:{1}, DeviceAddress{2}, IP:{3}",this.userName,this.deviceName,this.deviceAddress,Utils.getMacAddressAsString(getIPAddress()));
+		return  MessageFormat.format("Node {0}, IP:{1}",
+				this.deviceAddress,
+				Utils.getMacAddressAsString(getIPAddress()));
 	}
 }

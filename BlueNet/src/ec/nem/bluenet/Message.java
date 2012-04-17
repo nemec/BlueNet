@@ -17,23 +17,6 @@ public class Message implements Comparable<Message>, Serializable {
 	private long mTime = 0;
 	private boolean isDateSeparator = false;
 	
-	/**
-	 * Constructor used only for creating separators in the ListView.
-	 * Not the greatest code I've ever written...
-	 * 
-	 * @param timestamp
-	 */
-	public Message(long timestamp) {
-		isDateSeparator = true;
-		mTime = timestamp;
-	}
-	
-	public Message(String txName, String text, long timestamp) {
-		mTransmitterName = txName;
-		mText = text;
-		mTime = timestamp;
-	}
-	
 	public Message(String txName, String txAddr, String text, long timestamp) {
 		mTransmitterName = txName;
 		mTransmitterAddress = txAddr;

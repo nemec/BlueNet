@@ -156,7 +156,8 @@ public class BluetoothNodeService extends Service {
 		resetTimeout();
 		// Don't send message to self
 		if (destinationNode != getLocalNode()) {
-			Message m = new Message(username, text, (System.currentTimeMillis() / 1000L));
+			Message m = new Message(username, getLocalNode().getAddress(),
+					text, (System.currentTimeMillis() / 1000L));
 			socket.connect(destinationNode, 50000);
 			socket.send(Message.serialize(m));
 		}

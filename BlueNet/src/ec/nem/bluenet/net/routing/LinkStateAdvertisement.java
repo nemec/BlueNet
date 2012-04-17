@@ -25,7 +25,6 @@ public class LinkStateAdvertisement implements Serializable {
 		oos.writeObject(others.size());
 		for (Node n: others) {
 			oos.writeObject(n.getAddress());
-			oos.writeObject(n.getDeviceName());
 		}
 	}
 	
@@ -45,12 +44,9 @@ public class LinkStateAdvertisement implements Serializable {
 		Integer numNodes = (Integer) ois.readObject();
 		for (int i = 0; i < numNodes; ++i) {
 			String address = (String) ois.readObject();
-			String name = (String) ois.readObject();
 			
 			try {
 				Node n = NodeFactory.factory.fromMacAddress(address);
-				n.setName(name);
-				n.setDeviceName(name);
 				others.add(n);
 			} catch (ParseException e) {
 				Log.d(TAG, "Failed to get node from factory properly");

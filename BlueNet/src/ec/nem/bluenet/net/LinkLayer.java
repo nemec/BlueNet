@@ -85,9 +85,10 @@ public class LinkLayer extends Layer {
 	 * @return The Handler for the Node to which we connected.
 	 */
 	private Handler connectToNode(Node n) {
-		Handler h = mConnectionThreads.get(n.getAddress()).getHandler();
-		if (h != null) {
-			return h;
+		ConnectionThread c = mConnectionThreads.get(n.getAddress());
+		
+		if (c != null && c.getHandler() != null) {
+			return c.getHandler();
 		}
 
 		BluetoothDevice device;
@@ -98,16 +99,16 @@ public class LinkLayer extends Layer {
 
 			try {
 				Log.d(TAG, MessageFormat.format(
-						"Attemtpting to connect to {0}:{1}", n.getName(),
+						"Attemtpting to connect to {0}",
 						n.getAddress()));
 				socket.connect();
 				Log.d(TAG, MessageFormat.format(
-						"Succeeded in connecting to {0}:{1}", n.getName(),
+						"Succeeded in connecting to {0}",
 						n.getAddress()));
 			} catch (IOException e) {
 				Log.e(TAG, MessageFormat.format(
-						"Failed to connect to {0}:{1}\nException:{2}",
-						n.getName(), n.getAddress(), e.getMessage()));
+						"Failed to connect to {0}\nException:{1}",
+						n.getAddress(), e.getMessage()));
 				// Try a hack for some broken devices (like ones by HTC)
 				// instead:
 				Method m = device.getClass().getMethod("createRfcommSocket",
@@ -115,7 +116,7 @@ public class LinkLayer extends Layer {
 				socket = (BluetoothSocket) m.invoke(device, Integer.valueOf(1));
 				socket.connect(); // If this fails, then we can't connect.
 				Log.d(TAG, MessageFormat.format(
-						"Succeeded in connecting to {0}:{1}", n.getName(),
+						"Succeeded in connecting to {0}",
 						n.getAddress()));
 			}
 
@@ -185,9 +186,6 @@ public class LinkLayer extends Layer {
 				String address = device.getAddress();
 				if (address != null) {
 					Node n = NodeFactory.factory.fromMacAddress(address);
-					n.setName(device.getName());
-					n.setDeviceName(device.getName());
-
 					out.add(n);
 				}
 			} catch (ParseException ex) {
@@ -202,12 +200,9 @@ public class LinkLayer extends Layer {
 
 	public Node getLocalNode() {
 		try {
-			Node n = NodeFactory.factory.fromMacAddress(mBluetoothAdapter.getAddress());
-			n.setName(mBluetoothAdapter.getName());
-			n.setDeviceName(mBluetoothAdapter.getName());
-
-			return n;
+			return NodeFactory.factory.fromMacAddress(mBluetoothAdapter.getAddress());
 		} catch (ParseException e) {
+			Log.e(TAG, "Parse exception parsing address: " + e.getMessage());
 			return null;
 		}
 	}
