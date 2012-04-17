@@ -8,10 +8,11 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.text.MessageFormat;
 import java.text.ParseException;
-import java.util.Formatter;
-import java.util.IllegalFormatException;
 
 import android.util.Log;
+
+import ec.nem.bluenet.utils.Utils;
+
 
 /**
  * Represents a user on the mesh.
@@ -21,19 +22,13 @@ import android.util.Log;
 public class Node implements Serializable {
 	private final static String TAG = "Node";
 	private static final long serialVersionUID = 1L;
-	
-	/** A human readable name for the user */
-	private transient String userName;
-	/** The device's bluetooth adapter name */
-	private String deviceName;
+
 	/** The device's bluetooth MAC address */
 	private String deviceAddress;
 	/** The device's bluetooth MAC address (binary) */
 	private transient byte[] deviceAddressBytes;
-	
+		
 	public Node() {
-		userName = "Unknown";
-		deviceName = "Unknown";
 		deviceAddress = "Unknown";
 		deviceAddressBytes = new byte[6];
 	}
@@ -43,18 +38,9 @@ public class Node implements Serializable {
 		setAddress(address);
 	}
 
-	public Node(String userName, String deviceName, String deviceAddress) {
-		this.userName = userName;
-		this.deviceName = deviceName;
-		this.deviceAddress = deviceAddress;
-	}
-	
-	public synchronized final String getName() {
-		return userName;
-	}
-	
-	public synchronized final String getDeviceName() {
-		return deviceName;
+	public Node(String userName, String deviceName, String deviceAddress) throws ParseException {
+		this();
+		setAddress(deviceAddress);
 	}
 	
 	public synchronized final String getAddress() {
@@ -88,18 +74,11 @@ public class Node implements Serializable {
 		return os.toByteArray();
 	}
 	
-	public synchronized final void setName(String name) {
-		userName = name;
-	}
-	
-	public synchronized final void setDeviceName(String name) {
-		deviceName = name;
-	}
-	
 	public synchronized final void setAddress(String addr) throws ParseException {
 		/*
 		 * Parses the Bluetooth address from a string into a byte array.
 		 */
+		addr = addr.toUpperCase();
 		String[] bytes = addr.split(":");
 		
 		if (bytes.length != 6) {
@@ -127,18 +106,11 @@ public class Node implements Serializable {
 		deviceAddress = addr;
 	}
 
-	public static String addressFromBytes(byte[] bytes) {
-		String deviceAddress = null;
-		try{
-		Formatter f = new Formatter();
-		deviceAddress = f.format("%02X:%02X:%02X:%02X:%02X:%02X", bytes[0],
-				bytes[1], bytes[2], bytes[3], bytes[4], bytes[5]).toString();
-		}catch(IllegalFormatException e){
-			Log.e(TAG, e.getMessage());
-		}
-		return deviceAddress;
-	}
-	
+	/** 
+	 * Serializes the node safely
+	 * @param node Node to serialize
+	 * @return Bytes representing this object
+	 */
 	public static byte[] serialize(Node node) {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		try {
@@ -152,6 +124,11 @@ public class Node implements Serializable {
 		return bos.toByteArray();
 	}
 	
+	/**
+	 * Deserializes a node from its byte representation
+	 * @param nodeData Node data to Deserialize
+	 * @return The node represented by the byte array
+	 */
 	public static Node deserialize(byte[] nodeData) {
 		Node node = null;
 		ObjectInputStream ois;
@@ -164,9 +141,11 @@ public class Node implements Serializable {
 		}
 		catch(IOException e1) {
 			e1.printStackTrace();
+			Log.e(TAG,"Reading the node broke badly.");
 		}
 		catch(ClassNotFoundException e2) {
 			e2.printStackTrace();
+			Log.e(TAG,"Reading the node resulted in not finding the class.");
 		}
 		
 		return node;
@@ -174,6 +153,8 @@ public class Node implements Serializable {
 	
 	@Override
 	public String toString(){
-		return  MessageFormat.format("Node Username:{0}, DeviceName:{1}, DeviceAddress{2}, IP:{3}",this.userName,this.deviceName,this.deviceAddress,addressFromBytes(getIPAddress()));
+		return  MessageFormat.format("Node {0}, IP:{1}",
+				this.deviceAddress,
+				Utils.getMacAddressAsString(getIPAddress()));
 	}
 }

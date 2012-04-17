@@ -32,13 +32,7 @@ public class RoutingProtocol {
 	Node mNode;
 	///Our network layer that we use to send messages
 	NetworkLayer mNetworkLayer;
-	
-	///Constructs a routing table with our local node and Network Layer Access
-	public RoutingProtocol(Node node, NetworkLayer networkLayer) {
-		mNode = node;
-		mNetworkLayer = networkLayer;
-	}
-	
+
 	///Possible states for nodes on the network to be in.
 	enum LinkState {
 		None,
@@ -53,6 +47,12 @@ public class RoutingProtocol {
 	HashMap<Node, LinkStateAdvertisement> mGraph = new HashMap<Node, LinkStateAdvertisement>();
 	///The actual Routing Table
 	Map<Node, GraphNode> mRoutingTable;
+	
+	///Constructs a routing table with our local node and Network Layer Access
+	public RoutingProtocol(Node node, NetworkLayer networkLayer) {
+		mNode = node;
+		mNetworkLayer = networkLayer;
+	}
 	
 	public void receiveMessage(RoutingMessage msg) {
 		switch (msg.type) {
@@ -111,8 +111,6 @@ public class RoutingProtocol {
 			//if we're connected we want the network to know that we're not anymore.
 			LinkState state = mLinks.get(n);
 			if (state == LinkState.FullyConnected) {
-				mLinks.remove(n);
-				
 				removeNode(n);
 			} else {
 				Log.e(TAG, MessageFormat.format("Received erroneous Quit from {0}. Current state:{1}", n.getAddress(), state));
@@ -217,6 +215,13 @@ public class RoutingProtocol {
 			mGraph.put(mNode, thisLsa);
 		}
 		
+		//send that node quit to the network
+		RoutingMessage newMsg = new RoutingMessage();
+		newMsg.type = Type.Quit;
+		newMsg.obj = n;
+		mNetworkLayer.sendRoutingMessage(n, newMsg);
+		
+		//complete removal of node
 		thisLsa.others.remove(n);
 		mGraph.remove(n);
 		mLinks.remove(n);
@@ -236,6 +241,34 @@ public class RoutingProtocol {
 		
 		mLinks.put(n, LinkState.HelloSent);
 		mNetworkLayer.sendRoutingMessage(n, newMsg);
+	}
+	
+	/**
+	 * Disconnects this device from the specified node
+	 * @param n Node to which to disconnect. 
+	 */
+	public void disconnectFrom(Node n) {
+		Log.d(TAG, MessageFormat.format("Disconnecting from {0}.", n.getAddress()));
+		
+		LinkStateAdvertisement thisLsa;
+		if (mGraph.containsKey(mNode)) {
+			thisLsa = mGraph.get(mNode);
+			thisLsa.sequence++;
+		} else {
+			thisLsa = new LinkStateAdvertisement();
+			thisLsa.source = mNode;
+			mGraph.put(mNode, thisLsa);
+		}
+		//TODO: send disconnect routing message to the node we want to disconnect from. Hope that they close the connection to you before they try to send to you again.
+		
+		
+		//make it extremely costly to go to that node via us.
+		
+		
+		//close the connection to the node (this is the socket and handler thread)
+		mNetworkLayer.closeConnection(n);
+		
+		recomputeRoutingTable();
 	}
 	
 	/**
@@ -322,7 +355,7 @@ public class RoutingProtocol {
 		//LinkStateAdvertisement thisLsa = mGraph.get(mNode);
 		Map<Node, GraphNode> finalGraph = new HashMap<Node, GraphNode>();
 		PriorityQueue<GraphNode> queue = new PriorityQueue<GraphNode>();
-		
+		//our node added to the queue
 		queue.add(new GraphNode(mNode, 0, null));
 		
 		while (!queue.isEmpty()) {
@@ -402,10 +435,7 @@ public class RoutingProtocol {
 					file.mkdirs();
 				}
 				file = new File(root, logpath + logfile);
-//				if (!file.exists()) {
-//					file.createNewFile();
-//					Log.d(TAG, "Log File "+file.getName()+" created.");
-//				}
+
 				f = new FileWriter(file);
 				
 				// write dotty header
@@ -487,10 +517,7 @@ public class RoutingProtocol {
 					file.mkdirs();
 				}
 				file = new File(root, logpath + logfile);
-//				if (!file.exists()) {
-//					file.createNewFile();
-//					Log.d(TAG, "Log File "+file.getName()+" created.");
-//				}
+
 				f = new FileWriter(file);
 				
 				// write dotty header
@@ -528,9 +555,40 @@ public class RoutingProtocol {
 					}
 					f.write("];\n\t\t");
 				}
+				
 				for (LinkStateAdvertisement lsa : lsas.values()) {
 					// Write out connections
 					for (Node n : lsa.others) {
+						// print out the graph Nodes and status
+						f.write("\"" + n + "\"" + " [ skew=\"" + -0.126818
+								+ "\"");
+						// print states for each node.
+						LinkState state = mLinks.get(n);
+						if (state != null) {
+							switch (state) {
+							case None:
+								f.write(", fillcolor=salmon2");
+								break;
+							case HelloSent:
+								f.write(", fillcolor=yellow");
+								break;
+							case HandshakeCompleted:
+								f.write(", fillcolor=blue");
+								break;
+							case FullyConnected:
+								f.write(", fillcolor=green");
+								break;
+							default:
+								f.write(", fillcolor=red");
+								break;
+							}
+						} else {
+							if (n != mNode) {
+								f.write(", fillcolor=salmon2");
+							}
+						}
+						f.write("];\n\t\t");
+						
 						f.write("\"" + lsa.source + "\" -> \""+ n + "\";\n\t\t");
 					}
 				}

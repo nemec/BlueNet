@@ -25,6 +25,7 @@ public class RoutingMessage implements Serializable {
 			oos.writeObject(msg);
 			return os.toByteArray();
 		} catch (IOException e) {
+			Log.e(TAG,e.getMessage());
 			return null;
 		}
 	}
@@ -40,6 +41,7 @@ public class RoutingMessage implements Serializable {
 			return null;
 		} catch (ClassNotFoundException e) {
 			/* This really shouldn't happen, since we *ARE* the RoutingMessage class! */
+			Log.e(TAG,e.getMessage());
 			return null;
 		}
 	}

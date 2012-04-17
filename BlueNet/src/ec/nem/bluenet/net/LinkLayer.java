@@ -23,7 +23,7 @@ import ec.nem.bluenet.NodeListener;
  * In our case, this just means managing Bluetooth connectivity. In the
  * traditional internet, it could mean WiFi, ethernet, etc.
  * 
- * @author Darren White, Matt Mullins
+ * @author Darren White, Matt Mullins, Ivan Hernandez
  */
 public class LinkLayer extends Layer {
 	private static final String TAG = "LinkLayer";
@@ -36,7 +36,7 @@ public class LinkLayer extends Layer {
 
 	private BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
-	private Map<String, Handler> mConnectionHandlers;
+	private Map<String, ConnectionThread> mConnectionThreads;
 
 	public LinkLayer(CommunicationThread commThread) {
 		super();
@@ -70,16 +70,25 @@ public class LinkLayer extends Layer {
 				h.sendMessage(m);
 				// mCommThread.showProgress(false);
 			}
+			else{
+				Log.d(TAG, "Failed to send message to " +node);
+			}
 		} catch (Exception e) {
 			/// TODO later this can be wtf it shuoldn't happen
 			Log.e(TAG, "Message from above killed us", e);
 		}
 	}
 
+	/**
+	 * Connects to the specified node and adds the handler thread to our list of handlers
+	 * @param n The node to create a connection to
+	 * @return The Handler for the Node to which we connected.
+	 */
 	private Handler connectToNode(Node n) {
-		Handler h = mConnectionHandlers.get(n.getAddress());
-		if (h != null) {
-			return h;
+		ConnectionThread c = mConnectionThreads.get(n.getAddress());
+		
+		if (c != null && c.getHandler() != null) {
+			return c.getHandler();
 		}
 
 		BluetoothDevice device;
@@ -90,16 +99,16 @@ public class LinkLayer extends Layer {
 
 			try {
 				Log.d(TAG, MessageFormat.format(
-						"Attemtpting to connect to {0}:{1}", n.getName(),
+						"Attemtpting to connect to {0}",
 						n.getAddress()));
 				socket.connect();
 				Log.d(TAG, MessageFormat.format(
-						"Succeeded in connecting to {0}:{1}", n.getName(),
+						"Succeeded in connecting to {0}",
 						n.getAddress()));
 			} catch (IOException e) {
 				Log.e(TAG, MessageFormat.format(
-						"Failed to connect to {0}:{1}\nException:{2}",
-						n.getName(), n.getAddress(), e.getMessage()));
+						"Failed to connect to {0}\nException:{1}",
+						n.getAddress(), e.getMessage()));
 				// Try a hack for some broken devices (like ones by HTC)
 				// instead:
 				Method m = device.getClass().getMethod("createRfcommSocket",
@@ -107,7 +116,7 @@ public class LinkLayer extends Layer {
 				socket = (BluetoothSocket) m.invoke(device, Integer.valueOf(1));
 				socket.connect(); // If this fails, then we can't connect.
 				Log.d(TAG, MessageFormat.format(
-						"Succeeded in connecting to {0}:{1}", n.getName(),
+						"Succeeded in connecting to {0}",
 						n.getAddress()));
 			}
 
@@ -135,6 +144,16 @@ public class LinkLayer extends Layer {
 			return null;
 		}
 	}
+	
+	/**
+	 * Closes the connection to the given node shutting down the bluetooth socket and related connections
+	 * @param n The node from which to disconnect
+	 * @return whether disconnection was successful
+	 */
+	public void closeConnection(Node n) {
+		ConnectionThread thread = mConnectionThreads.get(n.getAddress());
+		thread.closeConnection();
+	}
 
 	@Override
 	public void handleMessageFromBelow(android.os.Message msg) {}
@@ -148,7 +167,7 @@ public class LinkLayer extends Layer {
 	}
 
 	public void run() {
-		mConnectionHandlers = new HashMap<String, Handler>();
+		mConnectionThreads = new HashMap<String, ConnectionThread>();
 
 		try {
 			mAcceptThread = new AcceptThread();
@@ -167,9 +186,6 @@ public class LinkLayer extends Layer {
 				String address = device.getAddress();
 				if (address != null) {
 					Node n = NodeFactory.factory.fromMacAddress(address);
-					n.setName(device.getName());
-					n.setDeviceName(device.getName());
-
 					out.add(n);
 				}
 			} catch (ParseException ex) {
@@ -184,12 +200,9 @@ public class LinkLayer extends Layer {
 
 	public Node getLocalNode() {
 		try {
-			Node n = NodeFactory.factory.fromMacAddress(mBluetoothAdapter.getAddress());
-			n.setName(mBluetoothAdapter.getName());
-			n.setDeviceName(mBluetoothAdapter.getName());
-
-			return n;
+			return NodeFactory.factory.fromMacAddress(mBluetoothAdapter.getAddress());
 		} catch (ParseException e) {
+			Log.e(TAG, "Parse exception parsing address: " + e.getMessage());
 			return null;
 		}
 	}
@@ -257,7 +270,7 @@ public class LinkLayer extends Layer {
 
 			BluetoothDevice remote = mSocket.getRemoteDevice();
 			mRemoteAddress = remote.getAddress();
-			mConnectionHandlers.put(mRemoteAddress, mHandler);
+			mConnectionThreads.put(mRemoteAddress, this);
 			for (NodeListener l : mCommThread.getNodeListeners()) {
 				l.onNodeEnter(mRemoteAddress);
 			}
@@ -292,8 +305,9 @@ public class LinkLayer extends Layer {
 			} catch (NullPointerException e) {
 				e.printStackTrace();
 			} finally {
-				mConnectionHandlers.remove(mRemoteAddress);
+				mConnectionThreads.remove(mRemoteAddress);
 				for (NodeListener l : mCommThread.getNodeListeners()) {
+					//TODO: This should be NodeDisconnect not exit.
 					l.onNodeExit(mRemoteAddress);
 				}
 			}
@@ -319,10 +333,8 @@ public class LinkLayer extends Layer {
 
 								// finally, I think we're ready to send s up the
 								// chain
-								android.os.Message m = new android.os.Message();
-								m.obj = s;
 								Log.d(TAG, "Got a message:" + s);
-								hSendAbove.sendMessage(m);
+								sendMessageAbove(s);
 							}
 
 							os = new ByteArrayOutputStream();
@@ -368,6 +380,7 @@ public class LinkLayer extends Layer {
 				toEscape.write(protocol & 0xFF);
 				toEscape.write(data);
 			} catch (Exception e) {
+				Log.e(TAG, "Encapsulation broke");
 			}
 
 			// escaped frame for sending directly across the wire

@@ -10,6 +10,7 @@ import ec.nem.bluenet.Node;
 import ec.nem.bluenet.NodeFactory;
 //import ec.nem.bluenet.BaseActivity.ProgressHandler;
 import ec.nem.bluenet.net.routing.*;
+import ec.nem.bluenet.utils.Utils;
 
 
 import android.os.Message;
@@ -49,6 +50,20 @@ public class NetworkLayer extends Layer {
 		mRoutingProtocol.connectTo(n);
 	}
 	
+	/**
+	 * This disconnects from to the specified node
+	 */
+	public void disconnectFrom(Node n) {
+		mRoutingProtocol.disconnectFrom(n);
+	}
+	
+	/**
+	 * This closes the connection to the specified node
+	 */
+	public void closeConnection(Node n) {
+		mCommThread.closeConnection(n);
+	}
+	
 	@Override
 	public void handleMessageFromAbove(Message msg) {
 		Segment s = (Segment) msg.obj;
@@ -86,7 +101,7 @@ public class NetworkLayer extends Layer {
 					Log.w(TAG,
 						MessageFormat.format(
 								"Could not forward message to {0}.",
-								Segment.getMacAddressAsString(destination)));
+								Utils.getMacAddressAsString(destination)));
 				}
 				else{
 					s.nextHopMACAddress = nextHop.getAddressBytes();
@@ -152,8 +167,6 @@ public class NetworkLayer extends Layer {
 		 		Node n = (Node) rm.obj; 
 		 		try { 
 		 			Node newNode = NodeFactory.factory.fromMacAddress(n.getAddress());
-		 			newNode.setDeviceName(n.getDeviceName()); 
-		 			newNode.setName(n.getDeviceName()); 
 		 			rm.obj = newNode; 
 		 		}catch(ParseException e) {
 		 			e.printStackTrace(); 

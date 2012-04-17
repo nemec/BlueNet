@@ -16,7 +16,10 @@ import ec.nem.bluenet.net.SocketManager;
 
 public class BluetoothNodeService extends Service {
 	private static final String TAG = "BluetoothNodeService";
-
+	
+	/** Username that will show up on messages sent on this service */
+	public String username = "No one.";
+	
 	/** Thread that owns the networking stack */
 	private static CommunicationThread mCommThread;
 	/** Timeout to determine how many seconds to wait before the service crashes. Set to 0 for no timeout*/
@@ -120,6 +123,23 @@ public class BluetoothNodeService extends Service {
 			Node n = new Node(address);
 			mCommThread.connectTo(n);
 		} catch (ParseException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+	
+	/** 
+	 * This serves to close a connection to the address specified. 
+	 * @param address Bluetooth MAC Address of the node from which to disconnect
+	 * @return Whether disconnection was successful
+	 */
+	public boolean disconnectFrom(String address){
+		try {
+			Node n = new Node(address);
+			mCommThread.disconnectFrom(n);
+		} catch (ParseException e) {
+			e.printStackTrace();
 			return false;
 		}
 		return true;
@@ -127,34 +147,19 @@ public class BluetoothNodeService extends Service {
 	
 	public void broadcastMessage(String text){
 		resetTimeout();
-		if(text.startsWith("/"))
-		{
-			if(text.contains("quit")){
-				mCommThread.stopThread();
-			}
-		}
-		else{
-		for(Node n: mCommThread.getAvailableNodes()){
+		for (Node n : mCommThread.getAvailableNodes()) {
 			sendMessage(n, text);
-		}
 		}
 	}
 	
-	public void sendMessage(Node destinationNode, String text){
+	public void sendMessage(Node destinationNode, String text) {
 		resetTimeout();
-		if(text.startsWith("/"))
-		{
-			if(text.contains("quit")){
-				mCommThread.stopThread();
-			}
-		}
-		else{
-			// Don't send message to self
-			if(destinationNode != getLocalNode()){
-				Message m = new Message("No one.", text, (System.currentTimeMillis() / 1000L));
-				socket.connect(destinationNode, 50000);
-				socket.send(Message.serialize(m));
-			}
+		// Don't send message to self
+		if (destinationNode != getLocalNode()) {
+			Message m = new Message(username, getLocalNode().getAddress(),
+					text, (System.currentTimeMillis() / 1000L));
+			socket.connect(destinationNode, 50000);
+			socket.send(Message.serialize(m));
 		}
 	}
 	

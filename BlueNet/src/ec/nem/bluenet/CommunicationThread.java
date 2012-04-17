@@ -1,20 +1,17 @@
 package ec.nem.bluenet;
 
-import ec.nem.bluenet.BluetoothNodeService.LocalBinder;
+import java.util.ArrayList;
+import java.util.List;
+
+import android.content.Context;
+import android.content.Intent;
+import android.os.Handler;
+import android.util.Log;
 import ec.nem.bluenet.net.Layer;
 import ec.nem.bluenet.net.LinkLayer;
 import ec.nem.bluenet.net.NetworkLayer;
 import ec.nem.bluenet.net.SocketManager;
 import ec.nem.bluenet.net.TransportLayer;
-
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
-import android.os.Handler;
-import android.os.IBinder;
-import android.util.Log;
-import java.util.*;
 
 /*
  * This sets up the communication between all the layers and the application. 
@@ -24,7 +21,7 @@ public class CommunicationThread extends Thread {
 	private final String TAG = "CommunicationThread";
 	
 	private boolean running;
-	private Context context;
+	public Context context;
 	
 	private SocketManager mSocketManager;
 	private Layer mTransportLayer;
@@ -80,6 +77,14 @@ public class CommunicationThread extends Thread {
 	 */
 	public void connectTo(Node n){
 		mNetworkLayer.connectTo(n);
+	}
+	
+	/**
+	 * Disconnect from a specific node in the network.
+	 * @param n The node to disconnect from.
+	 */
+	public void disconnectFrom(Node n){
+		mNetworkLayer.disconnectFrom(n);
 	}
 	
 	/**
@@ -187,5 +192,14 @@ public class CommunicationThread extends Thread {
 	 */
 	public boolean removeMessageListener(MessageListener l){
 		return mSocketManager.removeMessageListener(l);
+	}
+	
+	/**
+	 * This closes the connection to the specified node
+	 * WARNING!!!
+	 * Do not call this except from NetworkLayer!!!
+	 */
+	public void closeConnection(Node n) {
+		mLinkLayer.closeConnection(n);
 	}
 }

@@ -1,5 +1,7 @@
 package ec.nem.bluenet.net;
 
+import java.text.MessageFormat;
+
 public class DataSegment extends TransportSegment {
 	private byte[] mData;
 
@@ -15,6 +17,8 @@ public class DataSegment extends TransportSegment {
 	
 	@Override
 	public String toString(){
-		return mData.toString();
+		return  MessageFormat.format( 
+				" UDPHeader::{0}",
+				mData.toString());
 	}
 }
