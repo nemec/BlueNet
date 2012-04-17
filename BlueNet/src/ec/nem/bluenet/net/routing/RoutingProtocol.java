@@ -202,7 +202,7 @@ public class RoutingProtocol {
 	 * Removes the node from the network  
 	 * @param n The node to be removed
 	 */
-	void removeNode(Node n) {
+	public void removeNode(Node n) {
 		Log.d(TAG, MessageFormat.format("{0} has quit.", n.getAddress()));
 		
 		LinkStateAdvertisement thisLsa;

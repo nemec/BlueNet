@@ -246,6 +246,7 @@ public class LinkLayer extends Layer {
 	}
 
 	private class ConnectionThread extends Thread {
+		private static final String TAG = "ConnectionThread";
 		private BluetoothSocket mSocket;
 		private Handler mHandler;
 		private HandlerThread mHandlerThread;
@@ -307,8 +308,13 @@ public class LinkLayer extends Layer {
 			} finally {
 				mConnectionThreads.remove(mRemoteAddress);
 				for (NodeListener l : mCommThread.getNodeListeners()) {
-					//TODO: This should be NodeDisconnect not exit.
 					l.onNodeExit(mRemoteAddress);
+				}
+				try {
+					mCommThread.removeNode(NodeFactory.factory.fromMacAddress(mRemoteAddress));
+				} catch (ParseException e) {
+					Log.e(TAG,"Could not create node from address " + mRemoteAddress);
+					e.printStackTrace();
 				}
 			}
 		}
@@ -346,6 +352,7 @@ public class LinkLayer extends Layer {
 					}
 				}
 			} catch (Exception e) {
+				Log.d(TAG, "Cannot send data on Bluetooth node.");
 				closeConnection();
 			}
 		}

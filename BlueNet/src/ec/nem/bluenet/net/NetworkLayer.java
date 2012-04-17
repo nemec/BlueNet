@@ -51,10 +51,17 @@ public class NetworkLayer extends Layer {
 	}
 	
 	/**
-	 * This disconnects from to the specified node
+	 * This disconnects from the specified node
 	 */
 	public void disconnectFrom(Node n) {
 		mRoutingProtocol.disconnectFrom(n);
+	}
+	
+	/**
+	 * This removes from the network the specified node
+	 */
+	public void removeNode(Node n) {
+		mRoutingProtocol.removeNode(n);
 	}
 	
 	/**

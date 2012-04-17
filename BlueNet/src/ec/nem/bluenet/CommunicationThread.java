@@ -88,6 +88,25 @@ public class CommunicationThread extends Thread {
 	}
 	
 	/**
+	 * Removes a specific node from the network.
+	 * WARNING do not expose to users
+	 * @param n The node to disconnect from.
+	 */
+	public void removeNode(Node n){
+		mNetworkLayer.removeNode(n);
+	}
+	
+	/**
+	 * This closes the connection to the specified node
+	 * WARNING do not expose to users
+	 * WARNING!!!
+	 * Do not call this except from NetworkLayer!!!
+	 */
+	public void closeConnection(Node n) {
+		mLinkLayer.closeConnection(n);
+	}
+	
+	/**
 	 * Begin the Link Layer and then wait for a timeout.
 	 * If the thread is woken up before the timeout ends,
 	 * it sleeps again for another `timeout` milliseconds.
@@ -192,14 +211,5 @@ public class CommunicationThread extends Thread {
 	 */
 	public boolean removeMessageListener(MessageListener l){
 		return mSocketManager.removeMessageListener(l);
-	}
-	
-	/**
-	 * This closes the connection to the specified node
-	 * WARNING!!!
-	 * Do not call this except from NetworkLayer!!!
-	 */
-	public void closeConnection(Node n) {
-		mLinkLayer.closeConnection(n);
 	}
 }
