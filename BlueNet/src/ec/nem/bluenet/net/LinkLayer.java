@@ -145,16 +145,6 @@ public class LinkLayer extends Layer {
 		}
 	}
 	
-	/**
-	 * Closes the connection to the given node shutting down the bluetooth socket and related connections
-	 * @param n The node from which to disconnect
-	 * @return whether disconnection was successful
-	 */
-	public void closeConnection(Node n) {
-		ConnectionThread thread = mConnectionThreads.get(n.getAddress());
-		thread.closeConnection();
-	}
-
 	@Override
 	public void handleMessageFromBelow(android.os.Message msg) {}
 

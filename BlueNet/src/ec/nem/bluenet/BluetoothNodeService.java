@@ -129,22 +129,6 @@ public class BluetoothNodeService extends Service {
 		return true;
 	}
 	
-	/** 
-	 * This serves to close a connection to the address specified. 
-	 * @param address Bluetooth MAC Address of the node from which to disconnect
-	 * @return Whether disconnection was successful
-	 */
-	public boolean disconnectFrom(String address){
-		try {
-			Node n = new Node(address);
-			mCommThread.disconnectFrom(n);
-		} catch (ParseException e) {
-			e.printStackTrace();
-			return false;
-		}
-		return true;
-	}
-	
 	public void broadcastMessage(String text){
 		resetTimeout();
 		for (Node n : mCommThread.getAvailableNodes()) {

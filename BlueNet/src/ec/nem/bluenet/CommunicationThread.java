@@ -80,30 +80,12 @@ public class CommunicationThread extends Thread {
 	}
 	
 	/**
-	 * Disconnect from a specific node in the network.
-	 * @param n The node to disconnect from.
-	 */
-	public void disconnectFrom(Node n){
-		mNetworkLayer.disconnectFrom(n);
-	}
-	
-	/**
 	 * Removes a specific node from the network.
 	 * WARNING do not expose to users
 	 * @param n The node to disconnect from.
 	 */
 	public void removeNode(Node n){
 		mNetworkLayer.removeNode(n);
-	}
-	
-	/**
-	 * This closes the connection to the specified node
-	 * WARNING do not expose to users
-	 * WARNING!!!
-	 * Do not call this except from NetworkLayer!!!
-	 */
-	public void closeConnection(Node n) {
-		mLinkLayer.closeConnection(n);
 	}
 	
 	/**
