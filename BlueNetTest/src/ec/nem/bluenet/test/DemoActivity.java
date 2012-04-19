@@ -96,7 +96,7 @@ public class DemoActivity extends Activity implements MessageListener, NodeListe
 		uiHandler.post(new Runnable() {
 			@Override
 			public void run() {
-				logAdapter.add("Node " + txt + " has joined the chat.");
+				logAdapter.add("Node " + txt + " has Connected to us.");
 				logAdapter.notifyDataSetChanged();
 			}
 		});
@@ -108,7 +108,7 @@ public class DemoActivity extends Activity implements MessageListener, NodeListe
 		uiHandler.post(new Runnable() {
 			@Override
 			public void run() {
-				logAdapter.add("Node " + txt + " has left the chat.");
+				logAdapter.add("Node " + txt + " has disconnected from us.");
 				logAdapter.notifyDataSetChanged();
 			}
 		});

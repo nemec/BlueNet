@@ -219,7 +219,7 @@ public class BuildNetworkActivity extends Activity implements NodeListener {
             }
             else{
             	Toast.makeText(BuildNetworkActivity.this, 
-            			"Connected to " + info, Toast.LENGTH_SHORT).show();
+            			"Connecting to " + info, Toast.LENGTH_SHORT).show();
             }
         }
     };
@@ -262,11 +262,13 @@ public class BuildNetworkActivity extends Activity implements NodeListener {
             connectionService.addNodeListener(BuildNetworkActivity.this);
             boundToService = true;
             Toast.makeText(connectionService, "Service Connected...", Toast.LENGTH_LONG).show();
+            Log.d(TAG, "Service Connected...");
         }
 
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
         	Toast.makeText(connectionService, "Service disconnected...", Toast.LENGTH_LONG).show();
+        	Log.d(TAG, "Service disconnected...");
             boundToService = false;
             connectionService.removeNodeListener(BuildNetworkActivity.this);
             connectionService = null;
@@ -283,7 +285,7 @@ public class BuildNetworkActivity extends Activity implements NodeListener {
 
 	@Override
 	public void onNodeEnter(final String node) {
-		Log.d(TAG, "We have joined the network.");
+		Log.d(TAG, node + "has joined the network.");
 		
 		uiHandler.post(new Runnable() {
 			@Override
@@ -305,8 +307,8 @@ public class BuildNetworkActivity extends Activity implements NodeListener {
 	}
 
 	@Override
-	public void onNodeExit(String node) {
-		Log.d(TAG, "We have left the network.");
+	public void onNodeExit(final String node) {
+		Log.d(TAG, node + "has left the network.");
 		/*if(connectionService != null &&
 				connectionService.getNetworkSize() < minimumNetworkSize){
 			uiHandler.post(new Runnable() {
