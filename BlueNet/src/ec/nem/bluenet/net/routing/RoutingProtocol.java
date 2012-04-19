@@ -482,12 +482,17 @@ public class RoutingProtocol {
 				// write closing braces
 				f.write("\n}");
 
-				// close the file
-				f.close();
 			} catch (IOException e) {
 				Log.e(TAG,
 						file.getAbsolutePath() + " could not be written.\n" + e.getMessage());
-			} 
+			} finally{
+				try {
+					//close the file
+					f.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 	
@@ -596,12 +601,18 @@ public class RoutingProtocol {
 				// write closing braces
 				f.write("\n}");
 
-				// close the file
-				f.close();
+				
 			} catch (IOException e) {
 				Log.e(TAG,
 						file.getAbsolutePath() + " could not be written.\n" + e.getMessage());
-			} 
+			} finally{
+				try {
+					//close the file
+					f.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 }
