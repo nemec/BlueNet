@@ -104,7 +104,7 @@ public class IPv6Header {
 	@Override
 	public String toString(){
 		return  MessageFormat.format(
-				" Segment::To:{0} From:{1} Type:{2} ",
+				" IPV6 Header::To:{0} From:{1} Next:{2} Hops:{3} ",
 				Utils.getMacAddressAsString(destinationAddress),
 				Utils.getMacAddressAsString(sourceAddress),
 				getNextHeader(),

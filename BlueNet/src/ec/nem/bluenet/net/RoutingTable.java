@@ -27,6 +27,10 @@ public class RoutingTable {
 				winningRoute = r;
 				maxPrefixLength = r.getPrefixLength();
 			}
+			else
+			{
+				Log.d(TAG, "PrefixLength is bad... WTF length:" + r.getPrefixLength());
+			}
 		}
 		
 		/* protect against NullPointerException, in the case that there is no next hop */

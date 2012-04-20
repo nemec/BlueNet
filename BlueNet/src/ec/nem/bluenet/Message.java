@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.text.MessageFormat;
 import java.util.Calendar;
 
 public class Message implements Comparable<Message>, Serializable {
@@ -161,5 +162,14 @@ public class Message implements Comparable<Message>, Serializable {
 		}
 		
 		return message;
+	}
+	
+	@Override
+	public String toString(){
+		return MessageFormat.format("Name:{0} Address:{1} Time:{3} Text{2} ", 
+					mTransmitterName,
+					mTransmitterAddress,
+					mText,
+					mTime);
 	}
 }

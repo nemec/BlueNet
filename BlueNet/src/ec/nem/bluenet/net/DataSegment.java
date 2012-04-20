@@ -2,6 +2,8 @@ package ec.nem.bluenet.net;
 
 import java.text.MessageFormat;
 
+import ec.nem.bluenet.net.routing.RoutingMessage;
+
 public class DataSegment extends TransportSegment {
 	private byte[] mData;
 
@@ -18,7 +20,7 @@ public class DataSegment extends TransportSegment {
 	@Override
 	public String toString(){
 		return  MessageFormat.format( 
-				" UDPHeader::{0}",
-				mData.toString());
+				"DataSegment::{0}",
+				RoutingMessage.deserializeMessage(mData));
 	}
 }

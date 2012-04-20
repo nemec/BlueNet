@@ -80,7 +80,6 @@ public class NetworkLayer extends Layer {
 		Segment s = (Segment) msg.obj;
 		
 		if (s.IPHeader.getNextHeader() == IPv6Header.NH_ROUTING) {
-			Log.d(TAG, "Forwarding Routing Message.");
 			dispatchRoutingMessage(s);
 		} else {
 			byte[] destination = s.IPHeader.destinationAddress;

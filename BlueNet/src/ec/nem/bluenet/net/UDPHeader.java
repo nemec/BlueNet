@@ -2,6 +2,7 @@ package ec.nem.bluenet.net;
 
 import java.text.MessageFormat;
 
+import ec.nem.bluenet.Message;
 import ec.nem.bluenet.utils.Utils;
 
 public class UDPHeader extends TransportSegment {
@@ -141,6 +142,6 @@ public class UDPHeader extends TransportSegment {
 				" UDPHeader::Source Port:{0} DestinationPort:{1} Data:{2}",
 				Utils.getMacAddressAsString(sourcePort),
 				Utils.getMacAddressAsString(destinationPort),
-				data);
+				Message.deserialize(data));
 	}
 }

@@ -285,7 +285,7 @@ public class BuildNetworkActivity extends Activity implements NodeListener {
 
 	@Override
 	public void onNodeEnter(final String node) {
-		Log.d(TAG, node + "has joined the network.");
+		Log.d(TAG, node + " has joined the network.");
 		
 		uiHandler.post(new Runnable() {
 			@Override
@@ -308,7 +308,7 @@ public class BuildNetworkActivity extends Activity implements NodeListener {
 
 	@Override
 	public void onNodeExit(final String node) {
-		Log.d(TAG, node + "has left the network.");
+		Log.d(TAG, node + " has left the network.");
 		/*if(connectionService != null &&
 				connectionService.getNetworkSize() < minimumNetworkSize){
 			uiHandler.post(new Runnable() {

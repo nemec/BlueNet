@@ -21,7 +21,7 @@ import ec.nem.bluenet.net.routing.RoutingMessage.Type;
  */
 public class RoutingProtocol {
 	///Graph drawing header
-	static final String PrintGraphHeader = "digraph \"Routes\" {\n\tgraph [ fontsize=12,\n\t\tlabel=\"\\n\\n\\n\\nRouting Graph View\\nBulueNet, 2012\" ];\n\tnode [ shape = box,\n\t\tdistortion=\"0.0\",\n\t\torientation=\"0.0\",\n\t\tskew=\"0.0\",\n\t\tcolor=black,\n\t\tfillcolor=white,\n\t\tstyle=filled ];\n\t\t";
+	static final String PrintGraphHeader = "digraph \"Routes\" {\n\tgraph [ fontsize=12,\n\t\tlabel=\"\\n\\n\\n\\n{0}\\nBulueNet, 2012\" ];\n\tnode [ shape = box,\n\t\tdistortion=\"0.0\",\n\t\torientation=\"0.0\",\n\t\tskew=\"0.0\",\n\t\tcolor=black,\n\t\tfillcolor=white,\n\t\tstyle=filled ];\n\t\t";
 	
 	static String TAG = "RoutingProtocol";
 	
@@ -411,7 +411,7 @@ public class RoutingProtocol {
 				f = new FileWriter(file);
 				
 				// write dotty header
-				f.write(PrintGraphHeader);
+				f.write(MessageFormat.format(PrintGraphHeader,"Routing Graph View"));
 
 				for (Node n : rt.keySet()) {
 					// print out the graph Nodes and status
@@ -498,7 +498,7 @@ public class RoutingProtocol {
 				f = new FileWriter(file);
 				
 				// write dotty header
-				f.write(PrintGraphHeader);
+				f.write(MessageFormat.format(PrintGraphHeader,"Link State Advertisement View"));
 
 				for (Node n : lsas.keySet()) {
 					// print out the graph Nodes and status
