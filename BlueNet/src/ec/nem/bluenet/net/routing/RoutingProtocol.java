@@ -129,14 +129,7 @@ public class RoutingProtocol {
 					"Got an LSA of sequence {0} from {1}",
 					lsa.sequence, lsa.source.getAddress()));
 			
-			RoutingMessage msg = new RoutingMessage();
-			msg.type = Type.LinkStateAdvertisement;
-			msg.obj = lsa;
-			
-			LinkStateAdvertisement thisLsa = mGraph.get(mNode);
-			for (Node n: thisLsa.others) {
-				mNetworkLayer.sendRoutingMessage(n, msg);
-			}
+			SendLSA(lsa);
 			
 			mGraph.put(lsa.source, lsa);
 			
@@ -183,19 +176,19 @@ public class RoutingProtocol {
 	 */
 	private void SendLSA(LinkStateAdvertisement lsa) {
 		// Send the new link state announcement to all connected devices
-		for (Node other : lsa.others) {
+		RoutingMessage msg = new RoutingMessage();
+		msg.type = Type.LinkStateAdvertisement;
+		msg.obj = lsa;
+		LinkStateAdvertisement thisLsa = mGraph.get(mNode);
+		for (Node n: thisLsa.others) {
 			Log.d(TAG, MessageFormat.format(
 					"Sending updated LSA sequence {0} from {1} to {2}",
 					lsa.sequence, lsa.source.getAddress(),
-					other.getAddress()));
-
-			RoutingMessage msg = new RoutingMessage();
-			msg.type = Type.LinkStateAdvertisement;
-			msg.obj = lsa;
-			mNetworkLayer.sendRoutingMessage(other, msg);
+					n.getAddress()));
+			mNetworkLayer.sendRoutingMessage(n, msg);
 		}
-		PrintRoutingTable(mRoutingTable);
-		PrintLSA(mGraph);
+		printRoutingTable(mRoutingTable);
+		printLSAs(mGraph);
 	}
 
 	/**
@@ -372,7 +365,7 @@ public class RoutingProtocol {
 		}
 		
 		Log.d(TAG, "Routing table computation complete!");
-		PrintRoutingTable(finalGraph);
+		printRoutingTable(finalGraph);
 		mRoutingTable = finalGraph;
 	}
 	
@@ -385,7 +378,7 @@ public class RoutingProtocol {
 	 * Saves the routing table passed in to a text file named by timestamp
 	 * @param rt The Routing table to print
 	 */
-	private void PrintRoutingTable(Map<Node, GraphNode> rt) {
+	private void printRoutingTable(Map<Node, GraphNode> rt) {
 		if(rt == null){
 			return;
 		}
@@ -472,7 +465,7 @@ public class RoutingProtocol {
 	 * Saves the Link State Advertisement list passed in to a text file named by timestamp
 	 * @param rt The Routing table to print
 	 */
-	private void PrintLSA(HashMap<Node, LinkStateAdvertisement> lsas) {
+	private void printLSAs(HashMap<Node, LinkStateAdvertisement> lsas) {
 		if(lsas == null){
 			return;
 		}
