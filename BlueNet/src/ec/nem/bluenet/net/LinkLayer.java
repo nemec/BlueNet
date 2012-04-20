@@ -106,7 +106,7 @@ public class LinkLayer extends Layer {
 						"Succeeded in connecting to {0}",
 						n.getAddress()));
 			} catch (IOException e) {
-				Log.e(TAG, MessageFormat.format(
+				Log.d(TAG, MessageFormat.format(
 						"Failed to connect to {0}\nException:{1}",
 						n.getAddress(), e.getMessage()));
 				// Try a hack for some broken devices (like ones by HTC)
@@ -124,7 +124,7 @@ public class LinkLayer extends Layer {
 			ct.start();
 			return ct.getHandler();
 		} catch (IOException e) {
-			Log.e(TAG, MessageFormat.format("{0},IOException: {1}",
+			Log.d(TAG, MessageFormat.format("{0},IOException: {1}",
 					e.toString(), e.getMessage()));
 			return null;
 		} catch (NoSuchMethodException e) {
