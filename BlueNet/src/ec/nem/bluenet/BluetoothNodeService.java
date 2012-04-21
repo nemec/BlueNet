@@ -18,10 +18,14 @@ public class BluetoothNodeService extends Service {
 	private static final String TAG = "BluetoothNodeService";
 	
 	/** Username that will show up on messages sent on this service */
-	public String username = "No one.";
+	public static String username = "No one.";
 	
+	/** The port which this game will use*/
+	public static final int BLUENET_PORT = 50000;
+		
 	/** Thread that owns the networking stack */
 	private static CommunicationThread mCommThread;
+	
 	/** Timeout to determine how many seconds to wait before the service crashes. Set to 0 for no timeout*/
 	private int commThreadTimeout = 1000 * 60 * 10;
 
@@ -47,7 +51,7 @@ public class BluetoothNodeService extends Service {
 		if(socket==null){
 			SocketManager sm = SocketManager.getInstance();
 			socket = sm.requestSocket(Segment.TYPE_UDP);
-			socket.bind(SocketManager.BLUENET_PORT);
+			socket.bind(BluetoothNodeService.BLUENET_PORT);
 		}
 		else{
 			Log.d(TAG, "Tried to rebind to our own socket again...");

@@ -7,6 +7,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.Log;
+import ec.nem.bluenet.BluetoothNodeService;
 import ec.nem.bluenet.Message;
 import ec.nem.bluenet.MessageListener;
 import ec.nem.bluenet.net.Socket.ReceiveHandler;
@@ -24,7 +25,6 @@ import ec.nem.bluenet.net.Socket.ReceiveHandler;
  */
 public final class SocketManager {
 	private static final String TAG = "SocketManager";
-	public static final int BLUENET_PORT = 50000;
 	private static SocketManager mInstance;
 	/** Handles input to this layer from a lower layer */
 	private Handler hReceiveFromBelow;
@@ -115,7 +115,7 @@ public final class SocketManager {
 			/// Handles UPD packets
 			UDPHeader header = (UDPHeader) s.transportSegment;
 			int port = header.getDestinationPort();
-			if(port == BLUENET_PORT) {
+			if(port == BluetoothNodeService.BLUENET_PORT) {
 				//send it straight to our UI where magic will handle it
 				Message message = Message.deserialize(header.getData());
 				Log.d(TAG,"Message Received on BluePort:"+message+"\nWe have " + messageListeners.size() + " Listeners\n");
