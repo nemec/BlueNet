@@ -136,6 +136,13 @@ public class BluetoothNodeService extends Service {
 		}
 	}
 	
+	public void broadcastMessage(Object o){
+		resetTimeout();
+		for (Node n : mCommThread.getAvailableNodes()) {
+			sendMessage(n, o);
+		}
+	}
+	
 	public void sendMessage(Node destinationNode, String text) {
 		resetTimeout();
 		// Don't send message to self
