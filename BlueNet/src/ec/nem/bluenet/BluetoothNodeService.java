@@ -153,7 +153,7 @@ public class BluetoothNodeService extends Service {
 		if (destinationNode != getLocalNode()) {
 			Message m = new Message(username, getLocalNode().getAddress(),
 					text, (System.currentTimeMillis() / 1000L));
-			socket.connect(destinationNode, 50000);
+			socket.connect(destinationNode, BLUENET_PORT);
 			socket.send(Message.serialize(m));
 		}
 	}
@@ -164,7 +164,7 @@ public class BluetoothNodeService extends Service {
 		if (destinationNode != getLocalNode()) {
 			Message m = new Message(username, getLocalNode().getAddress(),
 					o, (System.currentTimeMillis() / 1000L));
-			socket.connect(destinationNode, 50000);
+			socket.connect(destinationNode, BLUENET_PORT);
 			socket.send(Message.serialize(m));
 		}
 	}
