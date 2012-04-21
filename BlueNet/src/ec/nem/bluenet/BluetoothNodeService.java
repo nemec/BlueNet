@@ -98,14 +98,14 @@ public class BluetoothNodeService extends Service {
     /*
      * Returns the Node for the current device
      */
-    protected Node getLocalNode() {
+    public Node getLocalNode() {
     	return mCommThread.getLocalNode();
     }
     
     /*
      * Returns a list of all devices that are on the network.
      */
-    protected List<Node> getAvailableNodes() {
+    public List<Node> getAvailableNodes() {
     	return mCommThread.getAvailableNodes();
     }
     
