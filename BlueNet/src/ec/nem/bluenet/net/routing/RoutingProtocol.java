@@ -48,7 +48,11 @@ public class RoutingProtocol {
 	///The actual Routing Table
 	Map<Node, GraphNode> mRoutingTable;
 	
-	///Constructs a routing table with our local node and Network Layer Access
+	/**
+	 * Constructs a routing table with our local node and Network Layer Access
+	 * @param node Local node
+	 * @param networkLayer The network layer we're going to work with
+	 */
 	public RoutingProtocol(Node node, NetworkLayer networkLayer) {
 		mNode = node;
 		mNetworkLayer = networkLayer;
@@ -62,14 +66,7 @@ public class RoutingProtocol {
 			
 			LinkState state = mLinks.get(n);
 			if (state==null || state == LinkState.None) {
-				Log.d(TAG, MessageFormat.format("Sending Hello packet to {0}", n.getAddress()));
-				
-				RoutingMessage newMsg = new RoutingMessage();
-				newMsg.type = Type.Hello;
-				newMsg.obj = mNode;
-				
-				mLinks.put(n, LinkState.HelloSent);
-				mNetworkLayer.sendRoutingMessage(n, newMsg);
+				connectTo(n);
 			} else if (state == LinkState.HelloSent) {
 				mLinks.put(n, LinkState.FullyConnected);
 					
@@ -129,7 +126,7 @@ public class RoutingProtocol {
 					"Got an LSA of sequence {0} from {1}",
 					lsa.sequence, lsa.source.getAddress()));
 			
-			SendLSA(lsa);
+			sendLSA(lsa);
 			
 			mGraph.put(lsa.source, lsa);
 			
@@ -155,9 +152,17 @@ public class RoutingProtocol {
 		
 		thisLsa.others.add(n);
 		
-		SendLSA(thisLsa);
+		sendLSA(thisLsa);
 		
-		// Send the entire link state database to the new node
+		sendLSADb(n);
+	}
+
+	/**
+	 * Send the entire link state database to the new node
+	 * 
+	 * @param n Node which to send the current database
+	 */
+	private void sendLSADb(Node n) {
 		for (Node origin : mGraph.keySet()) {
 			// Ignore the LSA received directly from the connecting node
 			if (n == origin)
@@ -174,7 +179,7 @@ public class RoutingProtocol {
 	 * Sends the Link State Advertisement to all connected nodes. 
 	 * @param lsa The Link State Advertisement to send to 
 	 */
-	private void SendLSA(LinkStateAdvertisement lsa) {
+	private void sendLSA(LinkStateAdvertisement lsa) {
 		// Send the new link state announcement to all connected devices
 		RoutingMessage msg = new RoutingMessage();
 		msg.type = Type.LinkStateAdvertisement;
@@ -220,7 +225,7 @@ public class RoutingProtocol {
 		mLinks.remove(n);
 		recomputeRoutingTable();
 		
-		SendLSA(thisLsa);
+		sendLSA(thisLsa);
 	}
 
 	/**
@@ -228,6 +233,8 @@ public class RoutingProtocol {
 	 * @param n Node to which to connect. 
 	 */
 	public void connectTo(Node n) {
+		Log.d(TAG, MessageFormat.format("Sending Hello packet to {0}", n.getAddress()));
+		
 		RoutingMessage newMsg = new RoutingMessage();
 		newMsg.type = Type.Hello;
 		newMsg.obj = mNode;
@@ -256,7 +263,7 @@ public class RoutingProtocol {
 		if (mGraph.containsKey(mNode)) {
 			thisLsa = mGraph.get(mNode);
 		} else {
-			Log.d(TAG, "Quitting when we're not even there...");
+			Log.d(TAG, "Quitting when we haven't even connected...");
 			return false;
 		}
 		Log.d(TAG, "Quitting!");
@@ -463,7 +470,7 @@ public class RoutingProtocol {
 	
 	/**
 	 * Saves the Link State Advertisement list passed in to a text file named by timestamp
-	 * @param rt The Routing table to print
+	 * @param lsas The Routing table to print
 	 */
 	private void printLSAs(HashMap<Node, LinkStateAdvertisement> lsas) {
 		if(lsas == null){

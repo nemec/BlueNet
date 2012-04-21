@@ -74,7 +74,7 @@ public class BluetoothNodeService extends Service {
 	@Override
 	public void onDestroy() {
 		Log.d(TAG, "onDestroy()");
-		stopCommThread();
+		stop();
 		// Tell the user we stopped.
 		Toast.makeText(this, R.string.comm_service_stopped, Toast.LENGTH_SHORT).show();
 	}
@@ -82,7 +82,7 @@ public class BluetoothNodeService extends Service {
 	/*
 	 * Kills the Communication thread for routing
 	 */
-    protected void stopCommThread() {
+    protected void stop() {
     	Log.d(TAG, "Communication thread is stopping...");
     	if(mCommThread.isRunning()) {
     		mCommThread.stopThread();
