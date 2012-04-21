@@ -17,11 +17,19 @@ public class Message implements Comparable<Message>, Serializable {
 	private String mText = "";
 	private long mTime = 0;
 	private boolean isDateSeparator = false;
+	private Object data;
 	
 	public Message(String txName, String txAddr, String text, long timestamp) {
 		mTransmitterName = txName;
 		mTransmitterAddress = txAddr;
 		mText = text;
+		mTime = timestamp;
+	}
+	
+	public Message(String txName, String txAddr, Object o, long timestamp){
+		mTransmitterName = txName;
+		mTransmitterAddress = txAddr;
+		data = o;
 		mTime = timestamp;
 	}
 	
@@ -71,6 +79,14 @@ public class Message implements Comparable<Message>, Serializable {
 			sMinutes + " ";
 		time += (cal.get(Calendar.AM_PM) < 1) ? "AM" : "PM";
 		return time;
+	}
+
+	public void setData(Object o){
+		data = o;
+	}
+
+	public Object getData(){
+		return data;
 	}
 	
 	public void setText(String text) {

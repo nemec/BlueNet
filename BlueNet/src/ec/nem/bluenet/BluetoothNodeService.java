@@ -146,6 +146,17 @@ public class BluetoothNodeService extends Service {
 			socket.send(Message.serialize(m));
 		}
 	}
+
+	public void sendMessage(Node destinationNode, Object o) {
+		resetTimeout();
+		// Don't send message to self
+		if (destinationNode != getLocalNode()) {
+			Message m = new Message(username, getLocalNode().getAddress(),
+					o, (System.currentTimeMillis() / 1000L));
+			socket.connect(destinationNode, 50000);
+			socket.send(Message.serialize(m));
+		}
+	}
 	
 	public void addNodeListener(NodeListener l){
 		resetTimeout();
