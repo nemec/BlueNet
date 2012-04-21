@@ -22,14 +22,16 @@ public class RoutingTable {
 		int maxPrefixLength = -1;
 		Route winningRoute = null;
 		
-		for (Route r: mEntries) {
-			if (r.matchesAddress(ipAddress) && r.getPrefixLength() > maxPrefixLength) {
-				winningRoute = r;
-				maxPrefixLength = r.getPrefixLength();
-			}
-			else
-			{
-				Log.d(TAG, "PrefixLength is bad... WTF length:" + r.getPrefixLength());
+		for (Route r : mEntries) {
+			if (r.matchesAddress(ipAddress)) {
+				if (r.getPrefixLength() > maxPrefixLength) {
+					winningRoute = r;
+					maxPrefixLength = r.getPrefixLength();
+				} else {
+					Log.d(TAG,
+							"PrefixLength is bad... WTF length:"
+									+ r.getPrefixLength());
+				}
 			}
 		}
 		
