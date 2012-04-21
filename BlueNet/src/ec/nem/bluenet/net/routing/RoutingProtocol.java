@@ -577,9 +577,12 @@ public class RoutingProtocol {
 			} catch (IOException e) {
 				Log.e(TAG,
 						file.getAbsolutePath() + " could not be written.\n" + e.getMessage());
-			} finally{
+			} catch (IllegalArgumentException e) {
+				Log.e(TAG,"Seems we've screwed up with our argumentations");
+			} finally {
+
 				try {
-					//close the file
+		//close the file
 					f.close();
 				} catch (IOException e) {
 					e.printStackTrace();
