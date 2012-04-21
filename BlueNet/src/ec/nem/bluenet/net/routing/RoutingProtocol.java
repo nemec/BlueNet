@@ -411,7 +411,11 @@ public class RoutingProtocol {
 				f = new FileWriter(file);
 				
 				// write dotty header
+				try{
 				f.write(MessageFormat.format(PrintGraphHeader,"Routing Graph View"));
+				}catch (IllegalArgumentException e) {
+					Log.e(TAG,"Seems we've screwed up with our argumentations");
+				} 
 
 				for (Node n : rt.keySet()) {
 					// print out the graph Nodes and status
@@ -498,7 +502,11 @@ public class RoutingProtocol {
 				f = new FileWriter(file);
 				
 				// write dotty header
+				try{
 				f.write(MessageFormat.format(PrintGraphHeader,"Link State Advertisement View"));
+				}catch (IllegalArgumentException e) {
+					Log.e(TAG,"Seems we've screwed up with our argumentations");
+				} 
 
 				for (Node n : lsas.keySet()) {
 					// print out the graph Nodes and status
@@ -577,8 +585,6 @@ public class RoutingProtocol {
 			} catch (IOException e) {
 				Log.e(TAG,
 						file.getAbsolutePath() + " could not be written.\n" + e.getMessage());
-			} catch (IllegalArgumentException e) {
-				Log.e(TAG,"Seems we've screwed up with our argumentations");
 			} finally {
 
 				try {
