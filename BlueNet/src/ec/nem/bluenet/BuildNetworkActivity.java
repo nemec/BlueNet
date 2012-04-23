@@ -36,6 +36,11 @@ public class BuildNetworkActivity extends Activity implements NodeListener {
 	private static final String TAG = "BuildNetworkActivity";
 	public static String EXTRA_DEVICE_ADDRESS = "device_address";
 	public static String EXTRA_MINIMUM_NETWORK_SIZE = "network_size";
+	
+	// Extras to be passed to the Service
+	public static String EXTRA_USERNAME = "username";
+	public static String EXTRA_PORT = "port";
+	
 	private static final int REQUEST_ENABLE_BT = 2039234;
 	
 	private BluetoothNodeService connectionService;
@@ -50,6 +55,10 @@ public class BuildNetworkActivity extends Activity implements NodeListener {
     
     private int minimumNetworkSize;
     
+    // Holds the service's extras
+    private String username;
+    private int port;
+    
     /*
 	* BuildNetworkActivity
 	* - takes minimum network size, name, uuid, next activity?
@@ -61,6 +70,8 @@ public class BuildNetworkActivity extends Activity implements NodeListener {
 	public void onCreate(Bundle savedInstance){
 		super.onCreate(savedInstance);
 		minimumNetworkSize = getIntent().getIntExtra(EXTRA_MINIMUM_NETWORK_SIZE, 2);
+		username = getIntent().getStringExtra(EXTRA_USERNAME);
+		port = getIntent().getIntExtra(EXTRA_PORT, -1);
 		setContentView(R.layout.buildnetwork);
 		
 		btAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -102,7 +113,7 @@ public class BuildNetworkActivity extends Activity implements NodeListener {
 			    startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
 			}
 			else{
-				onBluetoothEnabled(RESULT_OK, null);
+				startNetwork(null);
 			}
 		}
 		else{
@@ -129,62 +140,60 @@ public class BuildNetworkActivity extends Activity implements NodeListener {
     	}
 	}
 	
-	public void onBluetoothEnabled(int resultCode, Intent data){
-		if(resultCode == RESULT_OK){
-			Log.d(TAG, "Bluetooth has been enabled.");
-			
-			Intent intent = new Intent(this, BluetoothNodeService.class);
-			startService(intent);
-	    	bindService(intent, connection, Context.BIND_AUTO_CREATE);
-			
-			Button scanButton = (Button) findViewById(R.id.discover_users_button);
-	        scanButton.setOnClickListener(new OnClickListener() {
-	            public void onClick(View v) {
-	                doDiscovery();
-	                Button discoverUsers = (Button)v;
-	                discoverUsers.setEnabled(false);
-	            }
-	        });
-
-	        ExpandableListView currentNetworkView = (ExpandableListView)findViewById(R.id.current_network);
-	        currentNetworkView.setAdapter(currentNetworkListAdapter);
-	        
-	        pairedDevicesArrayAdapter = new UniqueArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
-	        newDevicesArrayAdapter = new UniqueArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
-	        
-	        ListView pairedListView = (ListView) findViewById(R.id.paired_devices);
-	        pairedListView.setAdapter(pairedDevicesArrayAdapter);
-	        pairedListView.setOnItemClickListener(mDeviceClickListener);
-	        
-	        ListView newDevicesListView = (ListView) findViewById(R.id.new_devices);
-	        newDevicesListView.setAdapter(newDevicesArrayAdapter);
-	        newDevicesListView.setOnItemClickListener(mDeviceClickListener);
-	        
-	        // Register for broadcasts when a device is discovered
-	        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-	        this.registerReceiver(mReceiver, filter);
-	        
-	        // Register for broadcasts when discovery has finished
-	        filter = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
-	        this.registerReceiver(mReceiver, filter);
-	        
-	        Set<BluetoothDevice> pairedDevices = btAdapter.getBondedDevices();
-
-	        // If there are paired devices, add each one to the ArrayAdapter
-	        if (pairedDevices.size() > 0) {
-	            findViewById(R.id.title_paired_devices).setVisibility(View.VISIBLE);
-	            for (BluetoothDevice device : pairedDevices) {
-	                pairedDevicesArrayAdapter.add(device.getName() + "\n" + device.getAddress());
-	            }
-	        } else {
-	            String noDevices = getResources().getText(R.string.none_paired).toString();
-	            pairedDevicesArrayAdapter.add(noDevices);
-	        }
+	public void startNetwork(Intent data){
+		Intent serviceIntent = new Intent(this, BluetoothNodeService.class);
+		if(username != null){
+			serviceIntent.putExtra(BluetoothNodeService.EXTRA_USERNAME, username);
 		}
-		else{
-			Log.d(TAG, "Bluetooth was not enabled. Exiting.");
-			finish();
+		if(port >= 0){
+			serviceIntent.putExtra(BluetoothNodeService.EXTRA_PORT, port);
 		}
+		startService(serviceIntent);
+    	bindService(serviceIntent, connection, Context.BIND_AUTO_CREATE);
+		
+		Button scanButton = (Button) findViewById(R.id.discover_users_button);
+        scanButton.setOnClickListener(new OnClickListener() {
+            public void onClick(View v) {
+                doDiscovery();
+                Button discoverUsers = (Button)v;
+                discoverUsers.setEnabled(false);
+            }
+        });
+
+        ExpandableListView currentNetworkView = (ExpandableListView)findViewById(R.id.current_network);
+        currentNetworkView.setAdapter(currentNetworkListAdapter);
+        
+        pairedDevicesArrayAdapter = new UniqueArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
+        newDevicesArrayAdapter = new UniqueArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
+        
+        ListView pairedListView = (ListView) findViewById(R.id.paired_devices);
+        pairedListView.setAdapter(pairedDevicesArrayAdapter);
+        pairedListView.setOnItemClickListener(mDeviceClickListener);
+        
+        ListView newDevicesListView = (ListView) findViewById(R.id.new_devices);
+        newDevicesListView.setAdapter(newDevicesArrayAdapter);
+        newDevicesListView.setOnItemClickListener(mDeviceClickListener);
+        
+        // Register for broadcasts when a device is discovered
+        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+        this.registerReceiver(mReceiver, filter);
+        
+        // Register for broadcasts when discovery has finished
+        filter = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+        this.registerReceiver(mReceiver, filter);
+        
+        Set<BluetoothDevice> pairedDevices = btAdapter.getBondedDevices();
+
+        // If there are paired devices, add each one to the ArrayAdapter
+        if (pairedDevices.size() > 0) {
+            findViewById(R.id.title_paired_devices).setVisibility(View.VISIBLE);
+            for (BluetoothDevice device : pairedDevices) {
+                pairedDevicesArrayAdapter.add(device.getName() + "\n" + device.getAddress());
+            }
+        } else {
+            String noDevices = getResources().getText(R.string.none_paired).toString();
+            pairedDevicesArrayAdapter.add(noDevices);
+        }
 	}
 	
 	private void doDiscovery() {
@@ -279,7 +288,13 @@ public class BuildNetworkActivity extends Activity implements NodeListener {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data){
 		super.onActivityResult(requestCode, resultCode, data);
 		if(requestCode == REQUEST_ENABLE_BT){
-			onBluetoothEnabled(resultCode, data);
+			if(resultCode == RESULT_OK){
+				startNetwork(data);
+			}
+			else{ 
+				Log.d(TAG, "Bluetooth was not enabled. Exiting.");
+				finish();
+			}
 		}
 	}
 

@@ -4,12 +4,14 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import ec.nem.bluenet.BluetoothNodeService;
 import ec.nem.bluenet.BuildNetworkActivity;
 import ec.nem.bluenet.R;
 
 public class BlueNetLibApp extends Activity {
 	
 	private static final int RESULT_BUILD_NETWORK = 3478344;
+	private static final int PORT_NUMBER = 55;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -17,8 +19,15 @@ public class BlueNetLibApp extends Activity {
         setContentView(R.layout.main);
     }
     
+    @Override
+    public void onDestroy(){
+    	Intent serviceIntent = new Intent(this, BluetoothNodeService.class); 
+    	stopService(serviceIntent);
+    }
+    
     public void onBuildNetworkClicked(View v){
     	Intent intent = new Intent(this, BuildNetworkActivity.class);
+    	intent.putExtra(BuildNetworkActivity.EXTRA_PORT, PORT_NUMBER);
     	startActivityForResult(intent, RESULT_BUILD_NETWORK);
     }
     

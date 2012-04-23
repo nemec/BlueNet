@@ -464,7 +464,9 @@ public class RoutingProtocol {
 			} finally{
 				try {
 					//close the file
-					f.close();
+					if(f!= null){
+						f.close();
+					}
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -589,7 +591,9 @@ public class RoutingProtocol {
 
 				try {
 		//close the file
-					f.close();
+					if(f != null){
+						f.close();
+					}
 				} catch (IOException e) {
 					e.printStackTrace();
 				}

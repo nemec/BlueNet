@@ -70,6 +70,7 @@ public class Socket {
 	 */
 	public boolean bind(int port) {
 		mSourcePort = port;
+		mSocketManager.initializePort(port);
 		return true;
 	}
 	 /* 

@@ -1,13 +1,13 @@
 package ec.nem.bluenet.net;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import android.content.Context;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.Log;
-import ec.nem.bluenet.BluetoothNodeService;
 import ec.nem.bluenet.Message;
 import ec.nem.bluenet.MessageListener;
 import ec.nem.bluenet.net.Socket.ReceiveHandler;
@@ -16,7 +16,7 @@ import ec.nem.bluenet.net.Socket.ReceiveHandler;
  * The SocketManager sits above the network stack and interfaces with sockets that
  * belong to individual programs within the application.  It essentially receives all
  * messages and routes them to the correct socket.  Sockets pass their messages through
- * this layer as well.<br><br>
+ * this layer as well.
  * 
  * The SocketManager is a singleton, and users should get an instance of it using
  * getInstance().
@@ -34,11 +34,11 @@ public final class SocketManager {
 	/** Processes packets as they flow up the stack */
 	private HandlerThread upThread;
 	
-	private List<MessageListener> messageListeners;
+	private Map<Integer, List<MessageListener>> messageListeners;
 	private ArrayList<Socket> mSockets;
 	
 	private SocketManager() {
-		messageListeners = new ArrayList<MessageListener>();
+		messageListeners = new HashMap<Integer, List<MessageListener>>();
 		mSockets = new ArrayList<Socket>();
 		upThread = new HandlerThread("SocketManager Receive Thread");
 		upThread.start();
@@ -63,6 +63,13 @@ public final class SocketManager {
 	
 	public void stopManager() {
 		upThread.quit();
+	}
+	
+	public void initializePort(int port){
+		if(!messageListeners.containsKey(port)){
+			ArrayList<MessageListener> listeners = new ArrayList<MessageListener>();
+			messageListeners.put(port, listeners);
+		}
 	}
 	
 	public Socket requestSocket(int type) {
@@ -112,14 +119,14 @@ public final class SocketManager {
 		Segment s = (Segment) msg.obj;
 		final int type = s.getType();
 		if(type == Segment.TYPE_UDP) {
-			/// Handles UPD packets
+			/// Handles UDP packets
 			UDPHeader header = (UDPHeader) s.transportSegment;
 			int port = header.getDestinationPort();
-			if(port == BluetoothNodeService.BLUENET_PORT) {
+			if(messageListeners.containsKey(port)) {
 				//send it straight to our UI where magic will handle it
 				Message message = Message.deserialize(header.getData());
 				Log.d(TAG,"Message Received on BluePort:"+message+"\nWe have " + messageListeners.size() + " Listeners\n");
-				for(MessageListener l : messageListeners){
+				for(MessageListener l : messageListeners.get(port)){
 					l.onMessageReceived(message);
 				}
 			}
@@ -142,11 +149,17 @@ public final class SocketManager {
 		}
 	}
 	
-	public boolean addMessageListener(MessageListener l){
-		return messageListeners.add(l);
+	public boolean addMessageListener(MessageListener l, int port){
+		if(messageListeners.containsKey(port)){
+			return messageListeners.get(port).add(l);
+		}
+		return false;
 	}
 
-	public boolean removeMessageListener(MessageListener l){
-		return messageListeners.remove(l);
+	public boolean removeMessageListener(MessageListener l, int port){
+		if(messageListeners.containsKey(port)){
+			return messageListeners.get(port).remove(l);
+		}
+		return false;
 	}
 }
