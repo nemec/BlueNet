@@ -16,7 +16,7 @@ import ec.nem.bluenet.net.Socket.ReceiveHandler;
  * The SocketManager sits above the network stack and interfaces with sockets that
  * belong to individual programs within the application.  It essentially receives all
  * messages and routes them to the correct socket.  Sockets pass their messages through
- * this layer as well.
+ * this layer as well.<br><br>
  * 
  * The SocketManager is a singleton, and users should get an instance of it using
  * getInstance().

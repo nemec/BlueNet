@@ -28,6 +28,7 @@ public class BlueNetLibApp extends Activity {
     public void onBuildNetworkClicked(View v){
     	Intent intent = new Intent(this, BuildNetworkActivity.class);
     	intent.putExtra(BuildNetworkActivity.EXTRA_PORT, PORT_NUMBER);
+    	intent.putExtra(BuildNetworkActivity.EXTRA_TIMEOUT, PORT_NUMBER);
     	startActivityForResult(intent, RESULT_BUILD_NETWORK);
     }
     

@@ -38,8 +38,9 @@ public class BuildNetworkActivity extends Activity implements NodeListener {
 	public static String EXTRA_MINIMUM_NETWORK_SIZE = "network_size";
 	
 	// Extras to be passed to the Service
-	public static String EXTRA_USERNAME = "username";
-	public static String EXTRA_PORT = "port";
+	public static String EXTRA_USERNAME = BluetoothNodeService.EXTRA_USERNAME;
+	public static String EXTRA_PORT = BluetoothNodeService.EXTRA_PORT;
+	public static String EXTRA_TIMEOUT = BluetoothNodeService.EXTRA_TIMEOUT;
 	
 	private static final int REQUEST_ENABLE_BT = 2039234;
 	
@@ -56,8 +57,9 @@ public class BuildNetworkActivity extends Activity implements NodeListener {
     private int minimumNetworkSize;
     
     // Holds the service's extras
-    private String username;
-    private int port;
+    private String blueUsername;
+    private int bluePort;
+    private int blueTimeout;
     
     /*
 	* BuildNetworkActivity
@@ -70,8 +72,9 @@ public class BuildNetworkActivity extends Activity implements NodeListener {
 	public void onCreate(Bundle savedInstance){
 		super.onCreate(savedInstance);
 		minimumNetworkSize = getIntent().getIntExtra(EXTRA_MINIMUM_NETWORK_SIZE, 2);
-		username = getIntent().getStringExtra(EXTRA_USERNAME);
-		port = getIntent().getIntExtra(EXTRA_PORT, -1);
+		blueUsername = getIntent().getStringExtra(BluetoothNodeService.EXTRA_USERNAME);
+		bluePort = getIntent().getIntExtra(BluetoothNodeService.EXTRA_PORT, -1);
+		blueTimeout = getIntent().getIntExtra(BluetoothNodeService.EXTRA_TIMEOUT, -1);
 		setContentView(R.layout.buildnetwork);
 		
 		btAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -142,11 +145,15 @@ public class BuildNetworkActivity extends Activity implements NodeListener {
 	
 	public void startNetwork(Intent data){
 		Intent serviceIntent = new Intent(this, BluetoothNodeService.class);
-		if(username != null){
-			serviceIntent.putExtra(BluetoothNodeService.EXTRA_USERNAME, username);
+		if(blueUsername != null){
+			serviceIntent.putExtra(BluetoothNodeService.EXTRA_USERNAME, blueUsername);
 		}
-		if(port >= 0){
-			serviceIntent.putExtra(BluetoothNodeService.EXTRA_PORT, port);
+		if(bluePort >= 0){
+			serviceIntent.putExtra(BluetoothNodeService.EXTRA_PORT, bluePort);
+		}
+		//timeout min is 1 Min
+		if(blueTimeout >= 1000 * 60){
+			serviceIntent.putExtra(BluetoothNodeService.EXTRA_TIMEOUT, blueTimeout);
 		}
 		startService(serviceIntent);
     	bindService(serviceIntent, connection, Context.BIND_AUTO_CREATE);

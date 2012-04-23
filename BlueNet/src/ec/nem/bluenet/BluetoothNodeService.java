@@ -17,20 +17,32 @@ import ec.nem.bluenet.net.SocketManager;
 public class BluetoothNodeService extends Service {
 	private static final String TAG = "BluetoothNodeService";
 
-	public static final String EXTRA_PORT = "port";
+	/** The name for the key in getIntExtra for the username */
 	public static final String EXTRA_USERNAME = "username";
+
+	/** The name for the key in getIntExtra for the port <br> Note, value must be greater than 0 */
+	public static final String EXTRA_PORT = "port";
 	
-	private static final int DEFAULT_BLUENET_PORT = 50000;
-	private int port = DEFAULT_BLUENET_PORT;
-	
+	/** The name for the key in getIntExtra for the port <br> Note, value is minimum of 1 Minute in order to ensure connection */
+	public static final String EXTRA_TIMEOUT = "timeout";
+
 	/** Username that will show up on messages sent on this service */
 	private String username = "No one.";
-		
+	
+	/** The default port which this game will use*/
+	private static final int DEFAULT_BLUENET_PORT = 50000;
+	
+	/** The port which this game will use*/
+	private int port = DEFAULT_BLUENET_PORT;
+	
+	/** Default timeout for the service: 10 minutes*/
+	public static final int DEFAULT_TIMEOUT = 1000 * 60 * 10;
+	
 	/** Thread that owns the networking stack */
 	private CommunicationThread mCommThread;
 	
 	/** Timeout to determine how many seconds to wait before the service crashes. Set to 0 for no timeout*/
-	private int commThreadTimeout = 1000 * 60 * 10;
+	private int commThreadTimeout = DEFAULT_TIMEOUT;
 
 	/** Exposes the service to clients. */
 	private final IBinder binder = new LocalBinder();
@@ -64,6 +76,7 @@ public class BluetoothNodeService extends Service {
 				this.username = username;
 			}
 			port = intent.getIntExtra(EXTRA_PORT, DEFAULT_BLUENET_PORT);
+			commThreadTimeout = intent.getIntExtra(EXTRA_TIMEOUT, DEFAULT_TIMEOUT);
 		}
 		else{
 			Log.d(TAG, "Serivce Intent is null.");
