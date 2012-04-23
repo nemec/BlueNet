@@ -38,8 +38,11 @@ public class BuildNetworkActivity extends Activity implements NodeListener {
 	public static String EXTRA_MINIMUM_NETWORK_SIZE = "network_size";
 	
 	// Extras to be passed to the Service
+	/** The name for the key in getIntExtra for the username*/
 	public static String EXTRA_USERNAME = BluetoothNodeService.EXTRA_USERNAME;
+	/** The name for the key in getIntExtra for the port*/
 	public static String EXTRA_PORT = BluetoothNodeService.EXTRA_PORT;
+	/** The name for the key in getIntExtra for the timeout*/
 	public static String EXTRA_TIMEOUT = BluetoothNodeService.EXTRA_TIMEOUT;
 	
 	private static final int REQUEST_ENABLE_BT = 2039234;
