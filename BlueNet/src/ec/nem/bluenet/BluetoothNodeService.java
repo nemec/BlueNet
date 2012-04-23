@@ -66,7 +66,7 @@ public class BluetoothNodeService extends Service {
 			port = intent.getIntExtra(EXTRA_PORT, DEFAULT_BLUENET_PORT);
 		}
 		else{
-			Log.d(TAG, "Serivce Intent is null.");
+			Log.d(TAG, "Service Intent is null.");
 		}
 		
 		if(socket==null){
@@ -74,9 +74,6 @@ public class BluetoothNodeService extends Service {
 			socket = sm.requestSocket(Segment.TYPE_UDP);
 			socket.bind(port);
 			Log.d(TAG, "Bound on port " + port);
-		}
-		else{
-			Log.d(TAG, "Tried to rebind to our own socket again...");
 		}
 
 		Log.d(TAG, "Thread state when calling startService: " + mCommThread.getState().name());
@@ -120,10 +117,6 @@ public class BluetoothNodeService extends Service {
 		return username;
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
     /*
      * Returns the Node for the current device
      */
@@ -137,10 +130,6 @@ public class BluetoothNodeService extends Service {
     public List<Node> getAvailableNodes() {
     	return mCommThread.getAvailableNodes();
     }
-    
-	protected boolean supportsBluetooth(){
-		return adapter != null;
-	}
 	
 	public int getNetworkSize(){
 		return mCommThread.getAvailableNodes().size();

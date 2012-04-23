@@ -34,12 +34,12 @@ import ec.nem.bluenet.utils.UniqueArrayAdapter;
 public class BuildNetworkActivity extends Activity implements NodeListener {
 
 	private static final String TAG = "BuildNetworkActivity";
-	public static String EXTRA_DEVICE_ADDRESS = "device_address";
-	public static String EXTRA_MINIMUM_NETWORK_SIZE = "network_size";
 	
 	// Extras to be passed to the Service
-	public static String EXTRA_USERNAME = "username";
-	public static String EXTRA_PORT = "port";
+	public static final String EXTRA_MINIMUM_NETWORK_SIZE = "network_size";
+	public static final String EXTRA_DEVICE_ADDRESS = "device_address";
+	public static final String EXTRA_USERNAME = "username";
+	public static final String EXTRA_PORT = "port";
 	
 	private static final int REQUEST_ENABLE_BT = 2039234;
 	
@@ -53,9 +53,8 @@ public class BuildNetworkActivity extends Activity implements NodeListener {
     
     private Handler uiHandler;
     
-    private int minimumNetworkSize;
-    
     // Holds the service's extras
+    private int minimumNetworkSize;
     private String username;
     private int port;
     
