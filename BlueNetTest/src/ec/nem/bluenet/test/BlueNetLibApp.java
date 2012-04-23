@@ -10,6 +10,7 @@ import ec.nem.bluenet.R;
 public class BlueNetLibApp extends Activity {
 	
 	private static final int RESULT_BUILD_NETWORK = 3478344;
+	private static final int PORT_NUMBER = 55;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -19,6 +20,7 @@ public class BlueNetLibApp extends Activity {
     
     public void onBuildNetworkClicked(View v){
     	Intent intent = new Intent(this, BuildNetworkActivity.class);
+    	intent.putExtra(BuildNetworkActivity.EXTRA_PORT, PORT_NUMBER);
     	startActivityForResult(intent, RESULT_BUILD_NETWORK);
     }
     

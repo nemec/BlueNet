@@ -4,7 +4,7 @@ import android.test.ActivityInstrumentationTestCase2;
 
 public class BlueNetTest extends ActivityInstrumentationTestCase2<BlueNetLibApp> {
 
-	private BlueNetLibApp activity;
+	//private BlueNetLibApp activity;
 	
 	public BlueNetTest(){
 		super(BlueNetLibApp.class);
@@ -12,7 +12,7 @@ public class BlueNetTest extends ActivityInstrumentationTestCase2<BlueNetLibApp>
 	
 	@Override
 	protected void setUp(){
-		activity = this.getActivity();
+		//activity = this.getActivity();
 	}
 	
 	/*public void testServiceBound() throws InterruptedException{

@@ -16,15 +16,18 @@ import ec.nem.bluenet.net.SocketManager;
 
 public class BluetoothNodeService extends Service {
 	private static final String TAG = "BluetoothNodeService";
+
+	public static final String EXTRA_PORT = "port";
+	public static final String EXTRA_USERNAME = "username";
+	
+	private static final int DEFAULT_BLUENET_PORT = 50000;
+	private int port = DEFAULT_BLUENET_PORT;
 	
 	/** Username that will show up on messages sent on this service */
-	public static String username = "No one.";
-	
-	/** The port which this game will use*/
-	public static final int BLUENET_PORT = 50000;
+	private String username = "No one.";
 		
 	/** Thread that owns the networking stack */
-	private static CommunicationThread mCommThread;
+	private CommunicationThread mCommThread;
 	
 	/** Timeout to determine how many seconds to wait before the service crashes. Set to 0 for no timeout*/
 	private int commThreadTimeout = 1000 * 60 * 10;
@@ -33,7 +36,7 @@ public class BluetoothNodeService extends Service {
 	private final IBinder binder = new LocalBinder();
 	
 	/** The socket representing our Bluetooth socket. */
-	private static Socket socket;
+	private Socket socket;
 
 	/** Provides access to the local bluetooth adapter*/
 	BluetoothAdapter adapter;
@@ -48,19 +51,33 @@ public class BluetoothNodeService extends Service {
 		else{
 			Log.d(TAG, "Tried to start comm thread again oops");
 		}
-		if(socket==null){
-			SocketManager sm = SocketManager.getInstance();
-			socket = sm.requestSocket(Segment.TYPE_UDP);
-			socket.bind(BluetoothNodeService.BLUENET_PORT);
-		}
-		else{
-			Log.d(TAG, "Tried to rebind to our own socket again...");
-		}
 	}
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		Log.d(TAG, "Received start id " + startId + ": " + intent);
+		
+		// Set the username and port if passed in.
+		if(intent != null){
+			String username = intent.getStringExtra(EXTRA_USERNAME);
+			if(username != null){
+				this.username = username;
+			}
+			port = intent.getIntExtra(EXTRA_PORT, DEFAULT_BLUENET_PORT);
+		}
+		else{
+			Log.d(TAG, "Serivce Intent is null.");
+		}
+		
+		if(socket==null){
+			SocketManager sm = SocketManager.getInstance();
+			socket = sm.requestSocket(Segment.TYPE_UDP);
+			socket.bind(port);
+			Log.d(TAG, "Bound on port " + port);
+		}
+		else{
+			Log.d(TAG, "Tried to rebind to our own socket again...");
+		}
 
 		Log.d(TAG, "Thread state when calling startService: " + mCommThread.getState().name());
 		if(mCommThread.getState() == Thread.State.NEW) {
@@ -98,6 +115,14 @@ public class BluetoothNodeService extends Service {
 			}
     	}
     }
+    
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
 
     /*
      * Returns the Node for the current device
@@ -134,37 +159,35 @@ public class BluetoothNodeService extends Service {
 	}
 	
 	public void broadcastMessage(String text){
-		resetTimeout();
-		for (Node n : mCommThread.getAvailableNodes()) {
-			sendMessage(n, text);
-		}
+		broadcastMessage(text, null);
 	}
 	
 	public void broadcastMessage(Object o){
+		broadcastMessage(null, o);
+	}
+	
+	public void broadcastMessage(String text, Object o){
 		resetTimeout();
 		for (Node n : mCommThread.getAvailableNodes()) {
-			sendMessage(n, o);
+			sendMessage(n, text, o);
 		}
 	}
 	
 	public void sendMessage(Node destinationNode, String text) {
-		resetTimeout();
-		// Don't send message to self
-		if (destinationNode != getLocalNode()) {
-			Message m = new Message(username, getLocalNode().getAddress(),
-					text, (System.currentTimeMillis() / 1000L));
-			socket.connect(destinationNode, BLUENET_PORT);
-			socket.send(Message.serialize(m));
-		}
+		sendMessage(destinationNode, text, null);
 	}
 
 	public void sendMessage(Node destinationNode, Object o) {
+		sendMessage(destinationNode, null, o);
+	}
+	
+	public void sendMessage(Node destinationNode, String text, Object o){
 		resetTimeout();
 		// Don't send message to self
 		if (destinationNode != getLocalNode()) {
 			Message m = new Message(username, getLocalNode().getAddress(),
-					o, (System.currentTimeMillis() / 1000L));
-			socket.connect(destinationNode, BLUENET_PORT);
+					text, o, (System.currentTimeMillis() / 1000L));
+			socket.connect(destinationNode, port);
 			socket.send(Message.serialize(m));
 		}
 	}
@@ -182,12 +205,12 @@ public class BluetoothNodeService extends Service {
 	public void addMessageListener(MessageListener l){
 		resetTimeout();
 		/// This would break if we don't have the SocketManager in existence
-		SocketManager.getInstance().addMessageListener(l);
+		SocketManager.getInstance().addMessageListener(l, port);
 	}
 
 	public boolean removeMessageListener(MessageListener l){
 		resetTimeout();
-		return mCommThread.removeMessageListener(l);
+		return mCommThread.removeMessageListener(l, port);
 	}
 	
 	/**

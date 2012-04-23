@@ -184,14 +184,14 @@ public class CommunicationThread extends Thread {
 	/*
 	 * Register a message listener. 
 	 */
-	public boolean addMessageListener(MessageListener l){
-		return mSocketManager.addMessageListener(l);
+	public boolean addMessageListener(MessageListener l, int port){
+		return mSocketManager.addMessageListener(l, port);
 	}
 
 	/*
 	 * Remove a message listener from being activated.
 	 */
-	public boolean removeMessageListener(MessageListener l){
-		return mSocketManager.removeMessageListener(l);
+	public boolean removeMessageListener(MessageListener l, int port){
+		return mSocketManager.removeMessageListener(l, port);
 	}
 }

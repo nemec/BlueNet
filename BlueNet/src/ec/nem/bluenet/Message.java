@@ -19,16 +19,10 @@ public class Message implements Comparable<Message>, Serializable {
 	private boolean isDateSeparator = false;
 	private Object data;
 	
-	public Message(String txName, String txAddr, String text, long timestamp) {
+	public Message(String txName, String txAddr, String text, Object o, long timestamp){
 		mTransmitterName = txName;
 		mTransmitterAddress = txAddr;
-		mText = text;
-		mTime = timestamp;
-	}
-	
-	public Message(String txName, String txAddr, Object o, long timestamp){
-		mTransmitterName = txName;
-		mTransmitterAddress = txAddr;
+		mText = text == null ? "" : text;  // Ensure never null
 		data = o;
 		mTime = timestamp;
 	}
