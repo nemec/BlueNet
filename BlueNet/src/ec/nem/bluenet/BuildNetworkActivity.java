@@ -34,16 +34,14 @@ import ec.nem.bluenet.utils.UniqueArrayAdapter;
 public class BuildNetworkActivity extends Activity implements NodeListener {
 
 	private static final String TAG = "BuildNetworkActivity";
-	public static String EXTRA_DEVICE_ADDRESS = "device_address";
-	public static String EXTRA_MINIMUM_NETWORK_SIZE = "network_size";
-	
-	// Extras to be passed to the Service
+	/** The smallest number of nodes that need to be in the network for the app to function (this is not the same as number of players using your app just the number using BlueNet) */
+	public static final String EXTRA_MINIMUM_NETWORK_SIZE = "network_size";
 	/** The name for the key in getIntExtra for the username*/
-	public static String EXTRA_USERNAME = BluetoothNodeService.EXTRA_USERNAME;
+	public static final String EXTRA_USERNAME = BluetoothNodeService.EXTRA_USERNAME;
 	/** The name for the key in getIntExtra for the port*/
-	public static String EXTRA_PORT = BluetoothNodeService.EXTRA_PORT;
+	public static final String EXTRA_PORT = BluetoothNodeService.EXTRA_PORT;
 	/** The name for the key in getIntExtra for the timeout*/
-	public static String EXTRA_TIMEOUT = BluetoothNodeService.EXTRA_TIMEOUT;
+	public static final String EXTRA_TIMEOUT = BluetoothNodeService.EXTRA_TIMEOUT;
 	
 	private static final int REQUEST_ENABLE_BT = 2039234;
 	
