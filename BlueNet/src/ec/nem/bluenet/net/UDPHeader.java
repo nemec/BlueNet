@@ -144,19 +144,9 @@ public class UDPHeader extends TransportSegment {
 
 	@Override
 	public String toString() {
-		try {
 			return MessageFormat.format(
-					" UDPHeader::Source Port:{0} DestinationPort:{1} Data:{2}",
-					Utils.getMacAddressAsString(sourcePort),
-					Utils.getMacAddressAsString(destinationPort),
-					Message.deserialize(data));
-		} catch (Exception e) {
-			Log.e(TAG, e.getMessage());
-			return MessageFormat.format(
-					" UDPHeader::Source Port:{0} DestinationPort:{1} Data:{2}",
+					" UDPHeader::Source Port:{0} DestinationPort:{1} Data:{2} <- is either message or RoutingMessage and we don't know what for sure",
 					Utils.getMacAddressAsString(sourcePort),
 					Utils.getMacAddressAsString(destinationPort), data);
-
-		}
 	}
 }
