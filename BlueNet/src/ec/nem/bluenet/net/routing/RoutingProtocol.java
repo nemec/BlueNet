@@ -21,7 +21,7 @@ import ec.nem.bluenet.net.routing.RoutingMessage.Type;
  */
 public class RoutingProtocol {
 	///Graph drawing header
-	static final String PrintGraphHeader = "digraph \"Routes\" {\n\tgraph [ fontsize=12,\n\t\tlabel=\"\\n\\n\\n\\n{0}\\nBulueNet, 2012\" ];\n\tnode [ shape = box,\n\t\tdistortion=\"0.0\",\n\t\torientation=\"0.0\",\n\t\tskew=\"0.0\",\n\t\tcolor=black,\n\t\tfillcolor=white,\n\t\tstyle=filled ];\n\t\t";
+	static final String PrintGraphHeader = "digraph \"Routes\" {\n\tgraph [ fontsize=12,\n\t\tlabel=\"\\n\\n\\n\\nRouting Table\\nBulueNet, 2012\" ];\n\tnode [ shape = box,\n\t\tdistortion=\"0.0\",\n\t\torientation=\"0.0\",\n\t\tskew=\"0.0\",\n\t\tcolor=black,\n\t\tfillcolor=white,\n\t\tstyle=filled ];\n\t\t";
 	
 	static String TAG = "RoutingProtocol";
 	
@@ -412,7 +412,7 @@ public class RoutingProtocol {
 				
 				// write dotty header
 				try{
-				f.write(MessageFormat.format(PrintGraphHeader,"Routing Graph View"));
+					f.write(PrintGraphHeader);
 				}catch (IllegalArgumentException e) {
 					Log.e(TAG,"Seems we've screwed up with our argumentations");
 				} 
@@ -505,7 +505,7 @@ public class RoutingProtocol {
 				
 				// write dotty header
 				try{
-				f.write(MessageFormat.format(PrintGraphHeader,"Link State Advertisement View"));
+				f.write(PrintGraphHeader);
 				}catch (IllegalArgumentException e) {
 					Log.e(TAG,"Seems we've screwed up with our argumentations");
 				} 

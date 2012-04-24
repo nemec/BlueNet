@@ -176,7 +176,7 @@ public class Message implements Comparable<Message>, Serializable {
 	
 	@Override
 	public String toString(){
-		return MessageFormat.format("Name:{0} Address:{1} Time:{3} Text{2} ", 
+		return MessageFormat.format("Name:{0} Address:{1} Time:{3} Text:{2} ", 
 					mTransmitterName,
 					mTransmitterAddress,
 					mText,
