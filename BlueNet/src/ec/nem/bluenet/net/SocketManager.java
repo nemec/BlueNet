@@ -114,7 +114,6 @@ public final class SocketManager {
 	}
 	
 	public void handleMessageFromBelow(android.os.Message msg) {
-		Socket socket;
 		
 		Segment s = (Segment) msg.obj;
 		final int type = s.getType();
@@ -123,25 +122,19 @@ public final class SocketManager {
 			UDPHeader header = (UDPHeader) s.transportSegment;
 			int port = header.getDestinationPort();
 			if(messageListeners.containsKey(port)) {
+				List<MessageListener> handlers = messageListeners.get(port);
+				if((handlers.size()==0)){
+					notifySockets(header, port);
+				}
 				//send it straight to our UI where magic will handle it
 				Message message = Message.deserialize(header.getData());
 				Log.d(TAG,"Message Received on BluePort:"+message+"\nWe have " + messageListeners.size() + " Listeners\n");
-				for(MessageListener l : messageListeners.get(port)){
+				for(MessageListener l : handlers){
 					l.onMessageReceived(message);
 				}
 			}
 			else {
-				//Used with Socket.receive()
-				Message message = Message.deserialize(header.getData());
-				Log.d(TAG,"Message Reveived but not going to the UI apparently:" + message);
-				socket = getSocketByPort(port);
-				if(socket != null) {
-					ReceiveHandler rh = socket.getMessageHandler();
-					if(rh != null) {
-						android.os.Message m = rh.obtainMessage(Segment.TYPE_UDP, header.getData());
-						rh.sendMessage(m);
-					}
-				}
+				notifySockets(header, port);
 			}
 		}
 		else {
@@ -149,6 +142,22 @@ public final class SocketManager {
 		}
 	}
 	
+
+	private void notifySockets(UDPHeader header, int port) {
+		Socket socket;
+		//Used with Socket.receive()
+		Message message = Message.deserialize(header.getData());
+		Log.d(TAG,"Message Reveived but not going to the UI apparently:" + message);
+		socket = getSocketByPort(port);
+		if(socket != null) {
+			ReceiveHandler rh = socket.getMessageHandler();
+			if(rh != null) {
+				android.os.Message m = rh.obtainMessage(Segment.TYPE_UDP, header.getData());
+				rh.sendMessage(m);
+			}
+		}
+	}
+
 	public boolean addMessageListener(MessageListener l, int port){
 		if(messageListeners.containsKey(port)){
 			return messageListeners.get(port).add(l);

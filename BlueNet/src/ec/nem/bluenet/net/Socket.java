@@ -2,6 +2,7 @@ package ec.nem.bluenet.net;
 
 import android.os.*;
 
+import ec.nem.bluenet.Message;
 import ec.nem.bluenet.Node;
 
 /**
@@ -132,7 +133,7 @@ public class Socket {
 	 * 
 	 * @return the data received
 	 */
-	public byte[] receive() {
+	public Message receive() {
 		mReceiveHandler = new ReceiveHandler(mHandlerThread.getLooper());
 		
 		synchronized(mReceiveHandler) {
@@ -144,7 +145,7 @@ public class Socket {
 			}
 		}
 		
-		return mReceiveHandler.data;
+		return Message.deserialize(mReceiveHandler.data);
 	}
 	
 	/**
