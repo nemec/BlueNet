@@ -128,9 +128,15 @@ public final class SocketManager {
 				}
 				//send it straight to our UI where magic will handle it
 				Message message = Message.deserialize(header.getData());
-				Log.d(TAG,"Message Received on BluePort:"+message+"\nWe have " + messageListeners.size() + " Listeners\n");
-				for(MessageListener l : handlers){
-					l.onMessageReceived(message);
+				if (message != null) {
+					Log.d(TAG, "Message Received on BluePort:" + message
+							+ "\nWe have " + messageListeners.size()
+							+ " Listeners\n");
+					for (MessageListener l : handlers) {
+						l.onMessageReceived(message);
+					}
+				}else{
+					Log.e(TAG, "Message null from header:" + header);
 				}
 			}
 			else {
@@ -145,16 +151,22 @@ public final class SocketManager {
 
 	private void notifySockets(UDPHeader header, int port) {
 		Socket socket;
-		//Used with Socket.receive()
+		// Used with Socket.receive()
 		Message message = Message.deserialize(header.getData());
-		Log.d(TAG,"Message Reveived but not going to the UI apparently:" + message);
-		socket = getSocketByPort(port);
-		if(socket != null) {
-			ReceiveHandler rh = socket.getMessageHandler();
-			if(rh != null) {
-				android.os.Message m = rh.obtainMessage(Segment.TYPE_UDP, header.getData());
-				rh.sendMessage(m);
+		if (message != null) {
+			Log.d(TAG, "Message Reveived but not going to the UI apparently:"
+					+ message);
+			socket = getSocketByPort(port);
+			if (socket != null) {
+				ReceiveHandler rh = socket.getMessageHandler();
+				if (rh != null) {
+					android.os.Message m = rh.obtainMessage(Segment.TYPE_UDP,
+							header.getData());
+					rh.sendMessage(m);
+				}
 			}
+		} else {
+			Log.e(TAG, "Message null from header:" + header);
 		}
 	}
 
