@@ -135,7 +135,7 @@ public final class SocketManager {
 					}
 				}
 				else {
-					Log.e(TAG, "Message is null... should not happen.");
+					Log.d(TAG, "Message is null... should not happen unless someone else's data got crammed at us.");
 				}
 			}
 			else {
