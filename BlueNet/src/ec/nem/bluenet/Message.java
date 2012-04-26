@@ -9,8 +9,11 @@ import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.Calendar;
 
+import android.util.Log;
+
 public class Message implements Comparable<Message>, Serializable {
-	private static final long serialVersionUID = -8651367473468823389L;
+	private static final String TAG = "Message";
+	private static final long serialVersionUID = -8651367473468823379L;
 	
 	private String mTransmitterName = "Unknown";
 	private String mTransmitterAddress = "Unknown";
@@ -160,17 +163,20 @@ public class Message implements Comparable<Message>, Serializable {
 		try {
 			ois = new ObjectInputStream(new ByteArrayInputStream(messageData));
 			Object obj = ois.readObject();
-			if(obj instanceof Message) {
+			if (obj instanceof Message) {
 				message = (Message) obj;
 			}
-		}
-		catch(IOException e1) {
+		} catch (IOException e1) {
 			e1.printStackTrace();
+		} catch (ClassNotFoundException e2) {
+			Log.d(TAG,
+					"Class "
+							+ e2.getClass()
+							+ " is not one of your classes. If if you see this message and do not recognize the class, simply ignore this message.");
+		} catch (Exception e){
+			Log.e(TAG, "Unexpected Exception when deserializing Message class version:"+serialVersionUID,e);
 		}
-		catch(ClassNotFoundException e2) {
-			e2.printStackTrace();
-		}
-		
+
 		return message;
 	}
 	
