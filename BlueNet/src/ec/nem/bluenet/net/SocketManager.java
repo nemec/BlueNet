@@ -128,15 +128,14 @@ public final class SocketManager {
 				}
 				//send it straight to our UI where magic will handle it
 				Message message = Message.deserialize(header.getData());
-				if (message != null) {
-					Log.d(TAG, "Message Received on BluePort:" + message
-							+ "\nWe have " + messageListeners.size()
-							+ " Listeners\n");
-					for (MessageListener l : handlers) {
+				if(message != null){
+					Log.d(TAG,"Message Received on BluePort:"+message+"\nWe have " + messageListeners.size() + " Listeners\n");
+					for(MessageListener l : messageListeners.get(port)){
 						l.onMessageReceived(message);
 					}
-				}else{
-					Log.e(TAG, "Message null from header:" + header);
+				}
+				else {
+					Log.e(TAG, "Message is null... should not happen.");
 				}
 			}
 			else {
