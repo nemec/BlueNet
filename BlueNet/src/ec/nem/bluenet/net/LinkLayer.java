@@ -334,11 +334,7 @@ public class LinkLayer extends Layer {
 							}
 
 							os = new ByteArrayOutputStream();
-						} else if (i == -1) {
-							Log.e(TAG, "Got something that wasn't a message:"
-									+ i);
-							break;
-						}
+						} 
 					}
 				}
 			} catch (Exception e) {
