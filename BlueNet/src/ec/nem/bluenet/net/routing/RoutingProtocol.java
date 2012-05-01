@@ -192,8 +192,8 @@ public class RoutingProtocol {
 					n.getAddress()));
 			mNetworkLayer.sendRoutingMessage(n, msg);
 		}
-		printRoutingTable(mRoutingTable);
-		printLSAs(mGraph);
+//		printRoutingTable(mRoutingTable);
+//		printLSAs(mGraph);
 	}
 
 	/**
@@ -372,7 +372,7 @@ public class RoutingProtocol {
 		}
 		
 		Log.d(TAG, "Routing table computation complete!");
-		printRoutingTable(finalGraph);
+//		printRoutingTable(finalGraph);
 		mRoutingTable = finalGraph;
 	}
 	
