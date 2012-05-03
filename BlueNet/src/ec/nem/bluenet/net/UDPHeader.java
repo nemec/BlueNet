@@ -2,13 +2,10 @@ package ec.nem.bluenet.net;
 
 import java.text.MessageFormat;
 
-import android.util.Log;
-
-import ec.nem.bluenet.Message;
 import ec.nem.bluenet.utils.Utils;
 
 public class UDPHeader extends TransportSegment {
-	private static final String TAG = "UDPHeader";
+	//private static final String TAG = "UDPHeader";
 	private static final int MIN_HEADER_LENGTH = 8;
 
 	private byte[] sourcePort = new byte[2];

@@ -170,9 +170,9 @@ public class BluetoothNodeService extends Service {
 	
 	public void broadcastMessage(String text, Object o){
 		List<Node> nodes = mCommThread.getAvailableNodes();
-		if(nodes.size()<=0){
+		/*if(nodes.size()<=0){
 			Toast.makeText(getApplicationContext(), "No nodes Connected", Toast.LENGTH_LONG);
-		}
+		}*/
 			
 		for (Node n :nodes) {
 			sendMessage(n, text, o);

@@ -6,7 +6,11 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.PriorityQueue;
 
 import android.os.Environment;
 import android.util.Log;
@@ -385,6 +389,7 @@ public class RoutingProtocol {
 	 * Saves the routing table passed in to a text file named by timestamp
 	 * @param rt The Routing table to print
 	 */
+	@SuppressWarnings("unused")
 	private void printRoutingTable(Map<Node, GraphNode> rt) {
 		if(rt == null){
 			return;
@@ -478,6 +483,7 @@ public class RoutingProtocol {
 	 * Saves the Link State Advertisement list passed in to a text file named by timestamp
 	 * @param lsas The Routing table to print
 	 */
+	@SuppressWarnings("unused")
 	private void printLSAs(HashMap<Node, LinkStateAdvertisement> lsas) {
 		if(lsas == null){
 			return;

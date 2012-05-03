@@ -87,7 +87,12 @@ public class Message implements Comparable<Message>, Serializable {
 	}
 	
 	public void setText(String text) {
-		mText = text;
+		if(text == null){
+			mText = "";
+		}
+		else{
+			mText = text;
+		}
 	}
 	
 	public void setText(byte[] raw) {
@@ -182,10 +187,11 @@ public class Message implements Comparable<Message>, Serializable {
 	
 	@Override
 	public String toString(){
-		return MessageFormat.format("Name:{0} Address:{1} Time:{3} Text:{2} ", 
+		return MessageFormat.format("Name:{0} Address:{1} Time:{3} Text:{2} Data:{3}", 
 					mTransmitterName,
 					mTransmitterAddress,
 					mText,
-					mTime);
+					mTime,
+					data);
 	}
 }
